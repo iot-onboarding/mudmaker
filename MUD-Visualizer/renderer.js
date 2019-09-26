@@ -834,8 +834,6 @@ for (var mudfile_idx in default_mudfiles) {
 
 if ( incoming_mudfile != "" ) {
     network.add_mudfile(JSON.parse(incoming_mudfile));
-    network.add_mudfile(JSON.parse(incoming_mudfile));
-    network.add_mudfile(JSON.parse(incoming_mudfile));
 }
 
 
