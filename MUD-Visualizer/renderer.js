@@ -2,6 +2,8 @@ var traffic_direction = "incoming";
 var excluded_models = [];
 var tooltip_status;
 var hover_ready = true;
+var incoming_mudfile;
+
 function mud_drawer(inp_json) {
   d3.selectAll("svg > *").remove();
   var graph = JSON.parse(JSON.stringify(inp_json));
@@ -829,6 +831,14 @@ network.ready_to_draw = false;
 for (var mudfile_idx in default_mudfiles) {
   network.add_mudfile(default_mudfiles[mudfile_idx]);
 }
+
+if ( incoming_mudfile != "" ) {
+    network.add_mudfile(JSON.parse(incoming_mudfile));
+    network.add_mudfile(JSON.parse(incoming_mudfile));
+    network.add_mudfile(JSON.parse(incoming_mudfile));
+}
+
+
 network.create_network()
 
 var interval = setInterval(function () {

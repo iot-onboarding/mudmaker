@@ -1,4 +1,8 @@
 <!DOCTYPE html>
+<?php 
+  session_start();
+  $mudfile=preg_replace("/\n/", '\n',$_SESSION['mudfile']);
+?>
 <!--
 	Prism by TEMPLATED	templated.co @templatedco	Released for free under the Creative Commons Attribution 3.0 license (templated.co/license)-->
 <html>
@@ -118,6 +122,9 @@
     <script type="text/javascript" src="MUD-Visualizer/scripts/helpers.js"></script>
     <script type="text/javascript" src="MUD-Visualizer/scripts/mud.js"></script>
     <script type="text/javascript" src="MUD-Visualizer/scripts/default_devices.js"></script>
-    <script type="text/javascript" src="MUD-Visualizer/renderer.js"></script>
+   <script type="text/javascript">
+     var incoming_mudfile='<?php echo $mudfile;?>';
+   </script>
+   <script type="text/javascript" src="MUD-Visualizer/renderer.js"></script>
   </body>
 </html>
