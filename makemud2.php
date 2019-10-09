@@ -54,6 +54,12 @@ $downloadtext=<<< DOWNLOAD
   <input type="submit" value="Download">
   </p>
 </form>
+<form method="POST" action="mudvisualizer.php">
+  <p>Visualize this device in a network?
+  <input type="submit" value="Visualize">
+  </p>
+</form>
+
 DOWNLOAD;
   
 $actxt0=<<< ACTXT0
