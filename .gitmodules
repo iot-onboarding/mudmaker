@@ -1,0 +1,3 @@
+[submodule "mud-visualizer"]
+	path = mud-visualizer
+	url = https://github.com/iot-onboarding/mud-visualizer
