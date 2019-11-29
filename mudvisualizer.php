@@ -47,9 +47,9 @@
                     tooltip="Open Mud File(s)" flow="right" >
                 <img align="middle" src="img/menu_icons/openfile.png" width="35" height="35" vspace="5"></button>
 
-<!--            <button id="openurl-button" class="icon-button" data-intro="Open a MUD file by URL" data-step="2"-->
-<!--                    tooltip="Open Mud File(s)" flow="right" onclick="openurl()">-->
-<!--                <img align="middle" src="img/menu_icons/openurl.png" width="35" height="35" vspace="5"></button>-->
+            <button id="openurl-button" class="icon-button" data-intro="Open a MUD file by URL" data-step="2"
+                    tooltip="Open Mud File(s)" flow="right" onclick="openurl()">
+                <img align="middle" src="img/menu_icons/openurl.png" width="35" height="35" vspace="5"></button>
 
             <button class="icon-button" data-intro="Resets the drawing to initial position" data-step="3"
                     tooltip="Refresh the Drawing" flow="right">
@@ -75,6 +75,8 @@
 
     <div class="svg_board" id="svgplaceholder">
         <svg class="svg" style="position: relative !important"></svg>
+
+        <!-- Footer -->
         <footer id="footer">
           <div class="copyright"> Except as follows, this page is open source.<br>
             © Untitled. All rights reserved. Images: <a href="http://unsplash.com">Unsplash</a>.
@@ -93,14 +95,14 @@
 
     </section>
 
-    <!-- Footer -->
-    <div>
-        <footer id="footer">
-          <div class="copyright"> Except as follows, this page is open source.<br>
-            © Untitled. All rights reserved. Images: <a href="http://unsplash.com">Unsplash</a>.
-            Design: <a href="http://templated.co">TEMPLATED</a>. </div>
-        </footer>
-    </div>
+//     <!-- Footer -->
+//     <div>
+//         <footer id="footer">
+//           <div class="copyright"> Except as follows, this page is open source.<br>
+//             © Untitled. All rights reserved. Images: <a href="http://unsplash.com">Unsplash</a>.
+//             Design: <a href="http://templated.co">TEMPLATED</a>. </div>
+//         </footer>
+//     </div>
 
 
     <!-- Scripts -->
