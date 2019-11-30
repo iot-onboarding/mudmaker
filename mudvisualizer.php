@@ -95,16 +95,6 @@
 
     </section>
 
-//     <!-- Footer -->
-//     <div>
-//         <footer id="footer">
-//           <div class="copyright"> Except as follows, this page is open source.<br>
-//             © Untitled. All rights reserved. Images: <a href="http://unsplash.com">Unsplash</a>.
-//             Design: <a href="http://templated.co">TEMPLATED</a>. </div>
-//         </footer>
-//     </div>
-
-
     <!-- Scripts -->
     <!-- <script src="assets/js/jquery.min.js"></script>
     <script src="assets/js/skel.min.js"></script>
