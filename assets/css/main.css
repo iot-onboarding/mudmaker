@@ -3217,6 +3217,20 @@
 		padding: 14em 0 4em;
 	}
 
+	#banner_makemud {
+		background-image: url("images/overlay.png"), -moz-linear-gradient(45deg, #4A4771 0%, #7C3875 100%);
+		background-image: url("images/overlay.png"), -webkit-linear-gradient(45deg, #4A4771 0%, #7C3875 100%);
+		background-image: url("images/overlay.png"), -ms-linear-gradient(45deg, #4A4771 0%, #7C3875 100%);
+		background-image: url("images/overlay.png"), linear-gradient(45deg, #4A4771 0%, #7C3875 100%);
+		background-size: 100px 100px, cover;
+		color: rgba(255, 255, 255, 0.5);
+		line-height: 1.7em;
+		padding: 4em 4em 4em 4em;
+	}
+	#banner_makemud > h1 {
+		color: #38df6b
+	}
+
 		#banner h2 {
 			font-size: 2.5em;
 			line-height: 1.4;

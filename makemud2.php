@@ -677,9 +677,13 @@ if ( $gotin > 0 || $gotout > 0 ) {
   session_unset();
   $_SESSION['mudfile'] = $output;
   
-  print "<!DOCTYPE html>\n<html>\n<body>\n";
-
+  print "<!DOCTYPE html>\n<html>\n";
+  print  "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n";
+  print  "<link rel=\"stylesheet\" href=\"assets/css/main.css\">\n";
+  print "<body>\n";
+  print "<section id=\"banner_makemud\">\n";
   print "<h1>Your MUD file is ready!</h1>";
+
   print "<p>Congratulations!  You've just created a MUD file.  Simply ";
   print "Cut and paste beween the lines and stick into a file.  Your next steps ";
   print "are to sign the file and place it in the location that its corresponding ";
@@ -687,10 +691,11 @@ if ( $gotin > 0 || $gotout > 0 ) {
   print "<ul><li>Get a certificate with which to sign documents/email.</li>";
   print "<li>Use OpenSSL as follows:<br>openssl cms -sign -signer YourCertificate.pem -inkey YourKey.pem -in YourMUDfile.json -binary -outform DER -certfile intermediate-certs.pem -out YourSignature.p7s</li>";
   print "<li>Place the signature file and the MUD file on your web server (it should match the MUD-URL)</li></ul>";
-  print $downloadtext;
 
+  print $downloadtext;
+  print "</section>";
   print "<hr>\n";
-  print "<pre>" . htmlentities($output) . "</pre>";
+  print "<pre style=\"padding: 1em 1em 1em 1em; font-weight: bold;\">" . htmlentities($output) . "</pre>";
   print "<hr>\n";
 } else {
   
