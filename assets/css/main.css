@@ -2681,7 +2681,9 @@
 /* Wrapper */
 
 	.wrapper {
-		padding: 5em 0 3em 0;
+		/*padding: 5em 0em 3em 0em;*/
+		/*adding a small maring on left and right for mudmaker tool*/
+		padding: 5em 1em 3em 1em;
 		position: relative;
 	}
 
