@@ -1,10 +1,194 @@
-<!DOCTYPE html><!--	Prism by TEMPLATED	templated.co @templatedco	Released for free under the Creative Commons Attribution 3.0 license (templated.co/license)--><html>  <head>    <meta http-equiv="content-type" content="text/html; charset=utf-8">    <title>MUD Access Lists and Classes</title>    <meta name="viewport" content="width=device-width, initial-scale=1">    <!--[if lte IE 8]><script src="assets/js/ie/html5shiv.js"></script><![endif]-->    <link rel="stylesheet" href="assets/css/main.css">    <!--[if lte IE 9]><link rel="stylesheet" href="assets/css/ie9.css" /><![endif]-->  </head>  <body>    <!-- Banner -->    <section id="banner">      <div class="inner split">        <section>          <h2>Signing MUD Files using OpenSSL</h2>        </section>        <section>          <p>A tool to build your own MUD files</p>          <ul class="actions">            <li><a href="mudmaker.html" class="button special">Go Right to MUD                Maker</a></li>          </ul>          <ul class="actions">            <li><a href="index.html" class="button special">Back to the Intro</a></li>          </ul>        </section>      </div>    </section>    <section id="two" class="wrapper style2 alt">      <div class="inner">        <div class="content">          <h3>Why Sign?</h3>          <p>The purpose of signing a MUD file is so that it can be validated            and integrity checked from a location other than the web            server.&nbsp; In addition, signing provides an additional layer of            protection against attacks.&nbsp; If the MUD file server itself is            compromised, the MUD file can only be tampered with if the attacker            is also able to generate a valid signature that the MUD manager will            accept.</p>          <h3>What do I need to sign?</h3>          <p>You need a <strong>document</strong> signing certificate from a            well known certificate authority (CA) and an associated private            key.&nbsp; You also need any intermediate certificates that you            would receive with your signing certificate.&nbsp; Finally, your mud            file should reference the signature URL.&nbsp; By default, MUDMaker            assumes that the signature file will reside directly next to where            the MUD file resides, and it will append "p7s" to the end of the            file.</p>          <p>For example, if the MUD file is <strong>https://mud.example.com/thermostat.json</strong>,            the signature file by default will be named <strong>https://mud.example.com/thermostat.p7s</strong>.</p>          <p>The following table describes each file needed to sign or verify a            MUD file:</p>          <table style="width: auto;" border="1">            <tbody>              <tr>                <td><strong><img src="signerpem.jpg" alt="signer.pem"></strong><br>                </td>                <td style="vertical-align: middle; background-color: white;">This
-                  is your signing certificate that you receive from the CA.</td>              </tr>              <tr>                <td><strong></strong><img src="key.jpg" alt="signer.key"><br>                </td>                <td style="vertical-align: middle; background-color: white;">This
-                  is the private key associated with the signing                  certificate.&nbsp; <strong>Don't lose it</strong> <strong>and
-                    keep it protected!</strong></td>              </tr>              <tr>                <td><strong></strong><img src="intpem.jpg" alt="intermediate.pem"><br>                </td>                <td style="vertical-align: middle; background-color: white;">This
-                  is an intermediate certificate that your CA will have provided                  you.&nbsp; It is typically in the same file as the certificate                  you received.&nbsp; Intermediate certificates are used in the                  validation chain between the signing certificate and the root                  certificate that MUD managers can be expected to have.</td>              </tr>              <tr>                <td><img src="rootpem.jpg" alt="root.pem"><br>                </td>                <td style="vertical-align: middle; background-color: white;">This
-                  is the root certificate.&nbsp; It is not necessary to use the                  root certificate to sign.&nbsp; However, the root certificate                  must be available to verify the signature.&nbsp; MUD file                  managers will have root certificates of well known CAs.&nbsp;                  In fact, they <strong>may</strong> have intermediate                  certificates of well known CAs, but it is best not to count on                  that.</td>              </tr>              <tr>                <td><img src="mudjson.jpg" alt="mud.json" longdesc="mud.json"> </td>                <td style="vertical-align: middle; background-color: white;">The                  MUD file that you generated with mudmaker.&nbsp; For our                  example, we assume it is stored as <strong>mudfile.json</strong>.</td>              </tr>              <tr>                <td><img src="file:///Users/elear/src/git/github/mudmaker/sig.jpg"                    alt="Signature file"><br>                </td>                <td style="vertical-align: middle; background-color: white;">The                  signature file that is generated at the end of this process.</td>              </tr>            </tbody>          </table>          <h3>Signing Operation</h3>          <p>To sign the MUD file, you can issue the following command:</p>          <pre style=" margin: 0.0px 0.0px 0.0px 0.0px"><font style="font: 14.0px Menlo; font-variant-ligatures: no-common-ligatures; color: #000000"face="Menlo"size="4"color="#000000">	% openssl cms -sign -signer signer.pem -in mudfile.json -inkey signer.key -binary -outform DER<spanclass="Apple-converted-space"> \<br>&nbsp; </span>		-certfile intermediate.pem -out mudfile.p7s<br></font></pre>          <p>See that <strong>mudfile.p7s</strong>?&nbsp; That is the            signature.</p>          <h3>Verifying Operation</h3>          <p style="margin: 0.0px 0.0px 0.0px 0.0px">To verify that your MUD            file is properly signed:<font style="font: 14.0px Menlo; font-variant-ligatures: no-common-ligatures; color: #000000"              face="Menlo"              size="4"              color="#000000"><br>            </font></p>          <p style="margin: 0.0px 0.0px 0.0px 0.0px"><font style="font: 14.0px Menlo; font-variant-ligatures: no-common-ligatures; color: #000000"              face="Menlo"              size="4"              color="#000000"><br>            </font></p>          <p style="margin: 0.0px 0.0px 0.0px 0.0px"><font style="font: 14.0px Menlo; font-variant-ligatures: no-common-ligatures; color: #000000"              face="Menlo"              size="4"              color="#000000">&nbsp;&nbsp;&nbsp;
-              &nbsp;&nbsp;&nbsp; % openssl cms -verify -in mudfile.p7s -inform              DER<span class="Apple-converted-space">&nbsp; </span>-content              mud.json -binary \</font></p>          <p style="margin: 0.0px 0.0px 0.0px 0.0px"><font style="font: 14.0px Menlo; font-variant-ligatures: no-common-ligatures; color: #000000"              face="Menlo"              size="4"              color="#000000"><span                class="Apple-converted-space">&nbsp;&nbsp;
-                &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </span>-CAfile              root.pem -out /dev/null</font></p>          <p style="margin: 0.0px 0.0px 0.0px 0.0px"><font style="font: 14.0px Menlo; font-variant-ligatures: no-common-ligatures; color: #000000"              face="Menlo"              size="4"              color="#000000">&nbsp;&nbsp;&nbsp;
-              &nbsp;&nbsp;&nbsp; </font><font style="font: 14.0px Menlo; font-variant-ligatures: no-common-ligatures; color: #000000"              face="Menlo"              size="4"              color="#000000">Verification
-              successful</font></p>        </div>        <div class="content"><br>          <h3>Resources</h3>          <table style="width: 100%" border="1">            <tbody>              <tr>                <td><a href="signmudfile.sh" target="_blank">signmudfile.sh</a></td>                <td>A script that will sign a MUD file.&nbsp; It assumes that                  the files are in the form above, but takes a MUD file as an                  argument.</td>              </tr>              <tr>                <td><a href="https://www.digicert.com/document-signing/" target="_blank">digicert.com</a></td>                <td>Digicert Code Signing Certificates</td>              </tr>            </tbody>          </table>          <p><br>          </p>          <p><br>          </p>          <h3>Got All that? </h3>          <ul class="actions">            <li><a href="mudmaker.html" class="button alt">Build a mud file</a>              <a href="index.html" class="button alt">Back</a></li>          </ul>        </div>      </div>    </section>    <!-- Footer -->    <footer id="footer">      <div class="copyright"> © Untitled. All rights reserved. Images: <a href="http://unsplash.com">Unsplash</a>.        Design: <a href="http://templated.co">TEMPLATED</a>. </div>    </footer>    <!-- Scripts -->    <script src="assets/js/jquery.min.js"></script>    <script src="assets/js/skel.min.js"></script>    <script src="assets/js/util.js"></script>    <!--[if lte IE 8]><script src="assets/js/ie/respond.min.js"></script><![endif]-->    <script src="assets/js/main.js"></script>  </body></html>
+<!DOCTYPE html>
+<!--
+	Prism by TEMPLATED	templated.co @templatedco	Released for free under the Creative Commons Attribution 3.0 license (templated.co/license)-->
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <title>Signing MUD files</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--[if lte IE 8]><script src="assets/js/ie/html5shiv.js"></script><![endif]-->
+    <link rel="stylesheet" href="assets/css/main.css">
+    <!--[if lte IE 9]><link rel="stylesheet" href="assets/css/ie9.css" /><![endif]-->
+  </head>
+  <body>
+    <!-- Banner -->
+    <section id="banner">
+      <div class="inner split">
+        <section>
+          <h2>Signing MUD Files using OpenSSL</h2>
+        </section>
+        <section>
+          <p>A tool to build your own MUD files</p>
+          <ul class="actions">
+            <li><a href="mudmaker.html" class="button special">Go Right to MUD
+                Maker</a></li>
+          </ul>
+          <ul class="actions">
+            <li><a href="index.html" class="button special">Back to the Intro</a></li>
+          </ul>
+        </section>
+      </div>
+    </section>
+    <section id="two" class="wrapper style2 alt">
+      <div class="inner">
+        <div class="content">
+          <h3>Why Sign?</h3>
+          <p>The purpose of signing a MUD file is so that it can be validated
+            and integrity checked from a location other than the web
+            server.&nbsp; In addition, signing provides an additional layer of
+            protection against attacks.&nbsp; If the MUD file server itself is
+            compromised, the MUD file can only be tampered with if the attacker
+            is also able to generate a valid signature that the MUD manager will
+            accept.</p>
+          <h3>What do I need to sign?</h3>
+          <p>You need a <strong>document</strong> signing certificate from a
+            well known certificate authority (CA) and an associated private
+            key.&nbsp; You also need any intermediate certificates that you
+            would receive with your signing certificate.&nbsp; Finally, your mud
+            file should reference the signature URL.&nbsp; By default, MUDMaker
+            assumes that the signature file will reside directly next to where
+            the MUD file resides, and it will append "p7s" to the end of the
+            file.</p>
+          <p>For example, if the MUD file is <strong>https://mud.example.com/thermostat.json</strong>,
+            the signature file by default will be named <strong>https://mud.example.com/thermostat.p7s</strong>.</p>
+          <p>The following table describes each file needed to sign or verify a
+            MUD file:</p>
+          <table style="width: auto;" border="1">
+            <tbody>
+              <tr>
+                <td><strong><img src="signerpem.jpg" alt="signer.pem"></strong><br>
+                </td>
+                <td style="vertical-align: middle; background-color: white;">This
+                  is your signing certificate that you receive from the CA.</td>
+              </tr>
+              <tr>
+                <td><strong></strong><img src="key.jpg" alt="signer.key"><br>
+                </td>
+                <td style="vertical-align: middle; background-color: white;">This
+                  is the private key associated with the signing
+                  certificate.&nbsp; <strong>Don't lose it</strong> <strong>and
+                    keep it protected!</strong></td>
+              </tr>
+              <tr>
+                <td><strong></strong><img src="intpem.jpg" alt="intermediate.pem"><br>
+                </td>
+                <td style="vertical-align: middle; background-color: white;">This
+                  is an intermediate certificate that your CA will have provided
+                  you.&nbsp; It is typically in the same file as the certificate
+                  you received.&nbsp; Intermediate certificates are used in the
+                  validation chain between the signing certificate and the root
+                  certificate that MUD managers can be expected to have.</td>
+              </tr>
+              <tr>
+                <td><img src="rootpem.jpg" alt="root.pem"><br>
+                </td>
+                <td style="vertical-align: middle; background-color: white;">This
+                  is the root certificate.&nbsp; It is not necessary to use the
+                  root certificate to sign.&nbsp; However, the root certificate
+                  must be available to verify the signature.&nbsp; MUD file
+                  managers will have root certificates of well known CAs.&nbsp;
+                  In fact, they <strong>may</strong> have intermediate
+                  certificates of well known CAs, but it is best not to count on
+                  that.</td>
+              </tr>
+              <tr>
+                <td><img src="mudjson.jpg" alt="mud.json" longdesc="mud.json"> </td>
+                <td style="vertical-align: middle; background-color: white;">The
+                  MUD file that you generated with mudmaker.&nbsp; For our
+                  example, we assume it is stored as <strong>mudfile.json</strong>.</td>
+              </tr>
+              <tr>
+                <td><img src="sig.jpg" alt="Signature file"><br>
+                </td>
+                <td style="vertical-align: middle; background-color: white;">The
+                  signature file that is generated at the end of this
+                  process.</td>
+              </tr>
+            </tbody>
+          </table>
+          <h3>Signing Operation</h3>
+          <p>To sign the MUD file, you can issue the following command:</p>
+          <pre style=" margin: 0.0px 0.0px 0.0px 0.0px"><font style="font: 14.0px Menlo; font-variant-ligatures: no-common-ligatures; color: #000000"
+face="Menlo"
+size="4"
+color="#000000">	% openssl cms -sign -signer signer.pem -in mudfile.json -inkey signer.key -binary -outform DER<span
+class="Apple-converted-space"> \<br>&nbsp; </span>		-certfile intermediate.pem -out mudfile.p7s<br></font></pre>
+          <p>See that <strong>mudfile.p7s</strong>?&nbsp; That is the
+            signature.</p>
+          <h3>Verifying Operation</h3>
+          <p style="margin: 0.0px 0.0px 0.0px 0.0px">To verify that your MUD
+            file is properly signed:<font style="font: 14.0px Menlo; font-variant-ligatures: no-common-ligatures; color: #000000"
+              face="Menlo"
+              size="4"
+              color="#000000"><br>
+            </font></p>
+          <p style="margin: 0.0px 0.0px 0.0px 0.0px"><font style="font: 14.0px Menlo; font-variant-ligatures: no-common-ligatures; color: #000000"
+              face="Menlo"
+              size="4"
+              color="#000000"><br>
+            </font></p>
+          <p style="margin: 0.0px 0.0px 0.0px 0.0px"><font style="font: 14.0px Menlo; font-variant-ligatures: no-common-ligatures; color: #000000"
+              face="Menlo"
+              size="4"
+              color="#000000">&nbsp;&nbsp;&nbsp;
+              &nbsp;&nbsp;&nbsp; % openssl cms -verify -in mudfile.p7s -inform
+              DER<span class="Apple-converted-space">&nbsp; </span>-content
+              mud.json -binary \</font></p>
+          <p style="margin: 0.0px 0.0px 0.0px 0.0px"><font style="font: 14.0px Menlo; font-variant-ligatures: no-common-ligatures; color: #000000"
+              face="Menlo"
+              size="4"
+              color="#000000"><span
+                class="Apple-converted-space">&nbsp;&nbsp;
+                &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </span>-CAfile
+              root.pem -out /dev/null</font></p>
+          <p style="margin: 0.0px 0.0px 0.0px 0.0px"><font style="font: 14.0px Menlo; font-variant-ligatures: no-common-ligatures; color: #000000"
+              face="Menlo"
+              size="4"
+              color="#000000">&nbsp;&nbsp;&nbsp;
+              &nbsp;&nbsp;&nbsp; </font><font style="font: 14.0px Menlo; font-variant-ligatures: no-common-ligatures; color: #000000"
+              face="Menlo"
+              size="4"
+              color="#000000">Verification
+              successful</font></p>
+        </div>
+        <div class="content"><br>
+          <h3>Resources</h3>
+          <table style="width: 100%" border="1">
+            <tbody>
+              <tr>
+                <td><a href="signmudfile.sh" target="_blank">signmudfile.sh</a></td>
+                <td>A script that will sign a MUD file.&nbsp; It assumes that
+                  the files are in the form above, but takes a MUD file as an
+                  argument.</td>
+              </tr>
+              <tr>
+                <td><a href="https://www.digicert.com/document-signing/" target="_blank">digicert.com</a></td>
+                <td>Digicert Code Signing Certificates</td>
+              </tr>
+            </tbody>
+          </table>
+          <p><br>
+          </p>
+          <p><br>
+          </p>
+          <h3>Got All that? </h3>
+          <ul class="actions">
+            <li><a href="mudmaker.html" class="button alt">Build a mud file</a>
+              <a href="index.html" class="button alt">Back</a></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+    <!-- Footer -->
+    <footer id="footer">
+      <div class="copyright"> © Untitled. All rights reserved. Images: <a href="http://unsplash.com">Unsplash</a>.
+        Design: <a href="http://templated.co">TEMPLATED</a>. </div>
+    </footer>
+    <!-- Scripts -->
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/js/skel.min.js"></script>
+    <script src="assets/js/util.js"></script>
+    <!--[if lte IE 8]><script src="assets/js/ie/respond.min.js"></script><![endif]-->
+    <script src="assets/js/main.js"></script>
+  </body>
+</html>
