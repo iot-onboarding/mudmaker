@@ -559,7 +559,9 @@ if ( $gotin > 0 || $gotout > 0 ) {
   $doc_url=htmlspecialchars($_POST['doc_url'],ENT_QUOTES);
   $model_name=htmlspecialchars($_POST['model_name'],ENT_QUOTES);
   $mudurl= "https://" . htmlspecialchars($_POST['mudhost'],ENT_QUOTES) .
-  '/' . $model_name;
+  '/' . $model_name . ".json";
+  $mudsig= "https://" . htmlspecialchars($_POST['mudhost'],ENT_QUOTES) .
+  '/' . $model_name . ".p7s";
   
   if( isset($_POST['man_name']) && strlen(htmlspecialchars($_POST['man_name'],ENT_QUOTES)) > 0) {
     $man_name = htmlspecialchars($_POST['man_name'],ENT_QUOTES);
@@ -568,6 +570,7 @@ if ( $gotin > 0 || $gotout > 0 ) {
     $mfg_info = '';
   }
   $supportInfo = $actxt0 . '"mud-url" : "' . $mudurl . '",
+  	       "mud-signature" : "' . $mudsig . '",
   	       "last-update" : "' . $time . '",' . "\n" .
 	       '"cache-validity" : 48,' .
 	       '"is-supported": true,' . "\n" .
