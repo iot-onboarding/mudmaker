@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<!--
+	Prism by TEMPLATED	templated.co @templatedco	Released for free under the Creative Commons Attribution 3.0 license (templated.co/license)-->
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <title>Pretty Print a MUD file</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--[if lte IE 8]><script src="assets/js/ie/html5shiv.js"></script><![endif]-->
+    <link rel="stylesheet" href="assets/css/main.css">
+    <!--[if lte IE 9]><link rel="stylesheet" href="assets/css/ie9.css" /><![endif]-->
+  </head>
+  <body>
+    <!-- Banner -->
+    <section id="banner">
+      <div class="inner split">
+        <section>
+          <h2>Pretty Print an Existing MUD file</h2>
+        </section>
+        <section>
+          <p>A tool to build your own MUD files</p>
+          <ul class="actions">
+            <li><a href="mudmaker.html" class="button special">Go Right to MUD
+                Maker</a></li>
+          </ul>
+          <ul class="actions">
+            <li><a href="index.html" class="button special">Back to the Intro</a></li>
+          </ul>
+        </section>
+      </div>
+    </section>
+    <section id="two" class="wrapper style2 alt">
+      <div class="inner">
+        <div class="content">
+          <h3>Enter URL:</h3>
+          <form name="mudpp" action="http://localhost:5000/mudpp" method="GET" target="mudppoutput"><br>
+        
+          <p><br>
+          </p>
+          <input name="mudfile" value="mudfile" form="mudpp" required="required"
+            accept="application/json"
+            type="file">
+          <br>
+          <br>
+          <button name="Submit" value="Submit" type="submit" class="button special">Submit</button>
+          <p><br>
+          </p>
+          </form>
+        </div>
+        <div class="content"><iframe name="mudppoutput"></iframe><br>
+          <h3>Resources</h3>
+          <table style="width: 100%" border="1">
+            <tbody>
+              <tr>
+                <td><a href="signmudfile.sh" target="_blank">signmudfile.sh</a></td>
+                <td>A script that will sign a MUD file.&nbsp; It assumes that
+                  the files are in the form above, but takes a MUD file as an
+                  argument.</td>
+              </tr>
+              <tr>
+                <td><a href="https://www.digicert.com/document-signing/" target="_blank">digicert.com</a></td>
+                <td>Digicert Code Signing Certificates</td>
+              </tr>
+            </tbody>
+          </table>
+          <p><br>
+          </p>
+          <p><br>
+          </p>
+          <h3>Got All that? </h3>
+          <ul class="actions">
+            <li><a href="mudmaker.html" class="button alt">Build a mud file</a>
+              <a href="index.html" class="button alt">Back</a></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+    <!-- Footer -->
+    <footer id="footer">
+      <div class="copyright"> © Untitled. All rights reserved. Images: <a href="http://unsplash.com">Unsplash</a>.
+        Design: <a href="http://templated.co">TEMPLATED</a>. </div>
+    </footer>
+    <!-- Scripts -->
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/js/skel.min.js"></script>
+    <script src="assets/js/util.js"></script>
+    <!--[if lte IE 8]><script src="assets/js/ie/respond.min.js"></script><![endif]-->
+    <script src="assets/js/main.js"></script>
+  </body>
+</html>
