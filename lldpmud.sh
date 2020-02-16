@@ -14,7 +14,7 @@ if [ $? != 0 ]; then
   exit
 fi
 
-odval=`echo $1 |od -A n -t x1 -w1024 | sed -e 's/^ //' -e 's/ /,/g'`
+odval=`echo -n $1 |od -A n -t x1 -w1024 | sed -e 's/^ //' -e 's/ /,/g'`
 
 lldpcli=`which lldpcli`
 
