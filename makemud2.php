@@ -297,9 +297,9 @@ function addace($acename, $pdirect, $target, $proto, $lport, $port, $type,$dirin
       }
       
       if ( $proto == "tcp" ) {
-          $l3frag = $l3frag . '"protocol" : 6 },'; 
+          $l3frag = $l3frag . '"protocol" : 6 }'; 
       } else {
-          $l3frag = $l3frag . '"protocol" : 17 },';
+          $l3frag = $l3frag . '"protocol" : 17 }';
       }
       $ace = $ace . $l3frag;
       $l4frag="";
