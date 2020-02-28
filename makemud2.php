@@ -306,7 +306,7 @@ function addace($acename, $pdirect, $target, $proto, $lport, $port, $type,$dirin
       
       $endfrag = '}';
       if ( $proto == 'tcp' ) {
-          $l4frag = $l4frag . '"tcp" : {';
+          $l4frag = $l4frag . ', "tcp" : {';
           if ( $dirinit == 'thing' ) {
               $l4frag= $l4frag . '"ietf-mud:direction-initiated" : "from-device"';
           } else {
@@ -315,7 +315,7 @@ function addace($acename, $pdirect, $target, $proto, $lport, $port, $type,$dirin
               }
           }
       } else {
-          $l4frag = $l4frag . '"udp" : {';
+          $l4frag = $l4frag . ', "udp" : {';
       }
       
       $pfrag='';
