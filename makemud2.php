@@ -376,17 +376,17 @@ function buildacegroup(&$target, &$proto, &$portl, &$portarray,
 {
   global $inbound, $outbound, $gotin, $gotout;
 
-  if ( $gotin > 0 ) {
-    $inbound = $inbound . ",";
-  } else {
-    $gotin=1;
-  }
+//  if ( $gotin > 0 ) {
+//    $inbound = $inbound . ",";
+//  } else {
+//    $gotin=1;
+//  }
   
-  if ( $gotout > 0) {
-    $outbound = $outbound . ",";
-  } else {
-    $gotout = 1;
-  }
+//  if ( $gotout > 0) {
+//    $outbound = $outbound . ",";
+//  } else {
+//    $gotout = 1;
+//  }
 
   // loop through all entries in array
   // we can rely on proto as being set to SOME value...
@@ -400,9 +400,11 @@ function buildacegroup(&$target, &$proto, &$portl, &$portarray,
           continue;
       }
       
-      if ( $i > 0 ) {
+      if ( $i > 0 || $gotin > 0 ) {
           $outbound = $outbound . "  ,\n";
           $inbound = $inbound . "  ,\n";
+      } else {
+      	  $gotin = 1;
       }
 
       if ( $proto[$i] == 'any' ) {
