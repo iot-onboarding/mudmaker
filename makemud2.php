@@ -50,10 +50,8 @@ ACL_HEAD;
   
 $downloadtext=<<< DOWNLOAD
 <form method="POST" action="download.php">
-  <input type="submit" value="Download" class="button special">
-</form>
-<form method="POST" action="mudvisualizer.php">
-  <input type="submit" value="Visualize" class="button special">
+  <input type="submit" value="Download" formaction="download.php" class="button special">
+  <input type="submit" value="Visualize" formaction="mudvisualizer.php" class="button special">
 </form>
 
 DOWNLOAD;
