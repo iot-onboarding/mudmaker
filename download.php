@@ -31,9 +31,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 if ( session_id() ) {
   $output=$_SESSION['mudfile'];
+  $model = $_SESSION['model'];
   header('Content-Type: application/json+mud');
   header("Content-Transfer-Encoding: Binary");
-  header("Content-disposition: attachment; filename=\"mudfile.json\"");
+  header("Content-disposition: attachment; filename=\"" . $model . ".json\"");
   print $output;
 } else {
   print("<h1>NO SESSION</h1>");
