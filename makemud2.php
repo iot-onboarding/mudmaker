@@ -689,7 +689,7 @@ if ( $gotin > 0 || $gotout > 0 ) {
   print "<p>Congratulations!  You've just created a MUD file.  Simply ";
   print "download the file after reviewing it below.  Next you can\n";
   print "visualize the results.  You can also sign the file and place it in the location that its corresponding ";
-  print "MUD URL will find.  You can find instructions on how to sign your" ;
+  print "MUD URL will find.  You can find instructions on how to sign your " ;
   print "MUD file <a href=\"https://www.mudmaker.org/signing.html\">here.</a>";
   print "<br>";
 
