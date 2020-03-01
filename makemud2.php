@@ -51,12 +51,12 @@ ACL_HEAD;
 $downloadtext=<<< DOWNLOAD
 <form method="POST" action="download.php">
   <p>Would you like to download this file?
-  <input type="submit" value="Download">
+  <input type="submit" value="Download" class="button special">
   </p>
 </form>
 <form method="POST" action="mudvisualizer.php">
   <p>Visualize this device in a network?
-  <input type="submit" value="Visualize">
+  <input type="submit" value="Visualize" class="button special">
   </p>
 </form>
 
