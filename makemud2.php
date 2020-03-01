@@ -50,14 +50,10 @@ ACL_HEAD;
   
 $downloadtext=<<< DOWNLOAD
 <form method="POST" action="download.php">
-  <p>Would you like to download this file?
   <input type="submit" value="Download" class="button special">
-  </p>
 </form>
 <form method="POST" action="mudvisualizer.php">
-  <p>Visualize this device in a network?
   <input type="submit" value="Visualize" class="button special">
-  </p>
 </form>
 
 DOWNLOAD;
@@ -691,12 +687,11 @@ if ( $gotin > 0 || $gotout > 0 ) {
   print "<h1>Your MUD file is ready!</h1>";
 
   print "<p>Congratulations!  You've just created a MUD file.  Simply ";
-  print "Cut and paste beween the lines and stick into a file.  Your next steps ";
+  print "download the file after reviewing it below.  Your next steps\n";
   print "are to sign the file and place it in the location that its corresponding ";
-  print "MUD URL will find.  To sign the files, do the following:</p>";
-  print "<ul><li>Get a certificate with which to sign documents/email.</li>";
-  print "<li>Use OpenSSL as follows:<br>openssl cms -sign -signer YourCertificate.pem -inkey YourKey.pem -in YourMUDfile.json -binary -outform DER -certfile intermediate-certs.pem -out YourSignature.p7s</li>";
-  print "<li>Place the signature file and the MUD file on your web server (it should match the MUD-URL)</li></ul>";
+  print "MUD URL will find.  You can find instructions on how to sign your";
+  print "MUD file <a href=\"https://www.mudmaker.org/signing.html\">here.</a>";
+  print "<br>";
 
   print $downloadtext;
   print "</section>";
