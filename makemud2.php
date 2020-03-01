@@ -297,16 +297,16 @@ function addace($acename, $pdirect, $target, $proto, $lport, $port, $type,$dirin
       }
       
       if ( $proto == "tcp" ) {
-          $l3frag = $l3frag . '"protocol" : 6 },'; 
+          $l3frag = $l3frag . '"protocol" : 6 }'; 
       } else {
-          $l3frag = $l3frag . '"protocol" : 17 },';
+          $l3frag = $l3frag . '"protocol" : 17 }';
       }
       $ace = $ace . $l3frag;
       $l4frag="";
       
       $endfrag = '}';
       if ( $proto == 'tcp' ) {
-          $l4frag = $l4frag . '"tcp" : {';
+          $l4frag = $l4frag . ', "tcp" : {';
           if ( $dirinit == 'thing' ) {
               $l4frag= $l4frag . '"ietf-mud:direction-initiated" : "from-device"';
           } else {
@@ -315,7 +315,7 @@ function addace($acename, $pdirect, $target, $proto, $lport, $port, $type,$dirin
               }
           }
       } else {
-          $l4frag = $l4frag . '"udp" : {';
+          $l4frag = $l4frag . ', "udp" : {';
       }
       
       $pfrag='';
@@ -376,17 +376,17 @@ function buildacegroup(&$target, &$proto, &$portl, &$portarray,
 {
   global $inbound, $outbound, $gotin, $gotout;
 
-  if ( $gotin > 0 ) {
-    $inbound = $inbound . ",";
-  } else {
-    $gotin=1;
-  }
+//  if ( $gotin > 0 ) {
+//    $inbound = $inbound . ",";
+//  } else {
+//    $gotin=1;
+//  }
   
-  if ( $gotout > 0) {
-    $outbound = $outbound . ",";
-  } else {
-    $gotout = 1;
-  }
+//  if ( $gotout > 0) {
+//    $outbound = $outbound . ",";
+//  } else {
+//    $gotout = 1;
+//  }
 
   // loop through all entries in array
   // we can rely on proto as being set to SOME value...
@@ -400,9 +400,11 @@ function buildacegroup(&$target, &$proto, &$portl, &$portarray,
           continue;
       }
       
-      if ( $i > 0 ) {
+      if ( $i > 0 || $gotin > 0 ) {
           $outbound = $outbound . "  ,\n";
           $inbound = $inbound . "  ,\n";
+      } else {
+      	  $gotin = 1;
       }
 
       if ( $proto[$i] == 'any' ) {
