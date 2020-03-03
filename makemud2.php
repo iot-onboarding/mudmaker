@@ -51,9 +51,8 @@ ACL_HEAD;
 $downloadtext=<<< DOWNLOAD
 <form method="POST" action="download.php">
   <input type="submit" value="Download" formaction="download.php" class="button special">
-  <input type="submit" value="Visualize" formaction="mudvisualizer.php" class="button special">
-</form>
-
+   <input type="submit" value="Visualize" formaction="mudvisualizer.php" class="button special">
+   
 DOWNLOAD;
   
 $actxt0=<<< ACTXT0
@@ -671,15 +670,17 @@ if ( $gotin > 0 || $gotout > 0 ) {
   $devput = $devput . $actxt2;
   
   $output = $devput . $aclhead . $output . "]}}";
+  $b64in = $output;
   $output= prettyPrint($output);
 
   session_unset();
   $_SESSION['mudfile'] = $output;
   $_SESSION['model'] = $model_name;
-  
   print "<!DOCTYPE html>\n<html>\n";
   print  "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n";
   print  "<link rel=\"stylesheet\" href=\"assets/css/main.css\">\n";
+  print  "<script type=\"text/javascript\" src=\"aux.js\" defer=\"defer\"></script> ";
+ 
   print "<body>\n";
   print "<section id=\"banner_makemud\">\n";
   print "<h1>Your MUD file is ready!</h1>";
@@ -692,10 +693,13 @@ if ( $gotin > 0 || $gotout > 0 ) {
   print "<br>";
 
   print $downloadtext;
+  print "<button type=\"button\" class=\"button special\" onclick=\"j2pp('" . base64_encode($b64in) . "')\">ACL Text</button>";
+  print "</form>";
   print "</section>";
+  print "<div id=\"mudresults\">";
   print "<hr>\n";
   print "<pre style=\"padding: 1em 1em 1em 1em; font-weight: bold;\">" . htmlentities($output) . "</pre>";
-  print "<hr>\n";
+  print "<hr></div>\n";
 } else {
   
   print "<h1>No output selected.  Click back and try again</h1>";

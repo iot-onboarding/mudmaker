@@ -177,3 +177,24 @@ function toggleANIMA(anid,anspan) {
 	document.getElementById(anspan).style.display ='none';
     }
 }
+
+function j2pp(b64) {
+    var xhr = new XMLHttpRequest();
+    var url = "/mudpp";
+    var jsonText=atob(b64);
+    if (document.getElementById("mudframe") != null )
+	return;
+    xhr.open("POST", url, true);
+    xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.onreadystatechange = function () {
+	if (this.readyState === 4 && this.status === 200) {
+	    var iframe=document.createElement('iframe');
+	    iframe.id = "mudframe";
+	    iframe.src = "data:text/html;charset=utf-8," + this.responseText;
+	    iframe.style.width = "70%";
+	    document.body.insertBefore(iframe,document.getElementById('mudresults'));
+	}
+    };
+    xhr.send(jsonText);
+}
+
