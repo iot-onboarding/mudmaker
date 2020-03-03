@@ -180,7 +180,7 @@ function toggleANIMA(anid,anspan) {
 
 function j2pp(b64) {
     var xhr = new XMLHttpRequest();
-    var url = "/mudpp";
+    var url = "/mudrest/mudpp";
     var jsonText=atob(b64);
     if (document.getElementById("mudframe") != null )
         return;
