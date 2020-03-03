@@ -693,7 +693,7 @@ if ( $gotin > 0 || $gotout > 0 ) {
   print "<br>";
 
   print $downloadtext;
-  print "<button type=\"button\" class=\"button special\" onclick=\"j2pp('" . base64_encode($b64in) . "')\">ACL Text</button>";
+//  print "<button type=\"button\" class=\"button special\" onclick=\"j2pp('" . base64_encode($b64in) . "')\">ACL Text</button>";
   print "</form>";
   print "</section>";
   print "<div id=\"mudresults\">";
