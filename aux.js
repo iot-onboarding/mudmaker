@@ -178,7 +178,6 @@ function toggleANIMA(anid,anspan) {
     }
 }
 
-
 function j2pp(b64) {
     var xhr = new XMLHttpRequest();
     var url = "/mudpp";
@@ -198,3 +197,4 @@ function j2pp(b64) {
     };
     xhr.send(jsonText);
 }
+
