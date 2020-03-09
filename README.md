@@ -8,6 +8,9 @@ For more information about MUD, see [RFC8520](https://tools.ietf.org/html/rfc852
 
 Please feel free to post issues and PRs.
 
+This package also requires the python mudpp package, also available
+from this project.
+
 ### mud-visualizer submodule
 
 To configure the mud-visualizer submodule properly, follow these steps: 
