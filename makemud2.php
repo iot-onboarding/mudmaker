@@ -567,7 +567,7 @@ if ( $gotin > 0 || $gotout > 0 ) {
     $sbom_add =	'"contact-number" : "' . htmlspecialchars($_POST['sbomcc']) .
     	        htmlspecialchars($_POST['sbomnr']) . '"';
   }
-  if ( sbom_add != '' ) {
+  if ( _POST['sbom'] != 'none' ) {
    $sbom_add = '"extensions" : [ "sbom" ], "sboms" : [ {' . $sbom_add . '} ],' ;
   }
 
