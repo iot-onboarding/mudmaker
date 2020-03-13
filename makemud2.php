@@ -564,7 +564,7 @@ if ( $gotin > 0 || $gotout > 0 ) {
   } else if ( $_POST['sbom'] == 'local' ) {
     $sbom_add = '"sbom-local-frag" : "' . htmlspecialchars($_POST['sbomlocalurl']) . '" } ],';
   } else if ( $_POST['sbom'] == 'tel' ) {
-    $sbom_add =	'"contact-number" : "' . htmlspecialchars($_POST['sbomcc']) .
+    $sbom_add =	'{ "contact-number" : "' . htmlspecialchars($_POST['sbomcc']) .
     	        htmlspecialchars($_POST['sbomnr']) . '" } ],';
   }
   if ( sbom_add != '' ) {
