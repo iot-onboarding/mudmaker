@@ -560,15 +560,15 @@ if ( $gotin > 0 || $gotout > 0 ) {
   
   $sbom_add='';
   if ( $_POST['sbom'] == 'cloud' ) {
-    $sbom_add = '"sbom-url" : "' . htmlspecialchars($_POST['sbomcloudurl']) . '" } ],';
+    $sbom_add = '"sbom-url" : "' . htmlspecialchars($_POST['sbomcloudurl']) . '"';
   } else if ( $_POST['sbom'] == 'local' ) {
-    $sbom_add = '"sbom-local-frag" : "' . htmlspecialchars($_POST['sbomlocalurl']) . '" } ],';
+    $sbom_add = '"sbom-local-frag" : "' . htmlspecialchars($_POST['sbomlocalurl']) . '"';
   } else if ( $_POST['sbom'] == 'tel' ) {
-    $sbom_add =	'{ "contact-number" : "' . htmlspecialchars($_POST['sbomcc']) .
-    	        htmlspecialchars($_POST['sbomnr']) . '" } ],';
+    $sbom_add =	'"contact-number" : "' . htmlspecialchars($_POST['sbomcc']) .
+    	        htmlspecialchars($_POST['sbomnr']) . '"';
   }
   if ( sbom_add != '' ) {
-   $sbom_add = '"extensions" : [ "sbom" ], "sboms" : [' . $sbom_add;
+   $sbom_add = '"extensions" : [ "sbom" ], "sboms" : [ {' . $sbom_add . '} ]' ;
   }
 
   if( isset($_POST['man_name']) && strlen(htmlspecialchars($_POST['man_name'],ENT_QUOTES)) > 0) {
