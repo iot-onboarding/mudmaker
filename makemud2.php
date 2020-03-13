@@ -558,12 +558,26 @@ if ( $gotin > 0 || $gotout > 0 ) {
   $mudsig= "https://" . htmlspecialchars($_POST['mudhost'],ENT_QUOTES) .
   '/' . $model_name . ".p7s";
   
+  $sbom_add='';
+  if ( $_POST['sbom'] == 'cloud' ) {
+    $sbom_add = '"sbom-url" : "' . htmlspecialchars($_POST['sbomcloudurl']) . '" } ],';
+  } else if ( $_POST['sbom'] == 'local' ) {
+    $sbom_add = '"sbom-local-frag" : "' . htmlspecialchars($_POST['sbomlocalurl']) . '" } ],';
+  } else if ( $_POST['sbom'] == 'tel' ) {
+    $sbom_add =	'"contact-number" : "' . htmlspecialchars($_POST['sbomcc']) .
+    	        htmlspecialchars($_POST['sbomnr']) . '" } ],';
+  }
+  if ( sbom_add != '' ) {
+   sbom_add = ', "extensions" : [ "sbom" ], "sboms" : [' . $sbom_add;
+  }
+
   if( isset($_POST['man_name']) && strlen(htmlspecialchars($_POST['man_name'],ENT_QUOTES)) > 0) {
     $man_name = htmlspecialchars($_POST['man_name'],ENT_QUOTES);
     $mfg_info = '"mfg-name": "' . $man_name . '",' . "\n";
   } else {
     $mfg_info = '';
   }
+  
   $supportInfo = $actxt0 . '"mud-url" : "' . $mudurl . '",
   	       "mud-signature" : "' . $mudsig . '",
   	       "last-update" : "' . $time . '",' . "\n" .
@@ -572,7 +586,8 @@ if ( $gotin > 0 || $gotout > 0 ) {
 	       $masa . '"systeminfo": "' . $sysDesc . '",' . "\n" .
 	       $mfg_info .
 	       '"documentation": "' . $doc_url . '",' . "\n" .
-	       '"model-name": "' . $model_name . '",' . "\n";   
+	       '"model-name": "' . $model_name . '",' . "\n";
+  $supportInfo = $supportInfo . $sbom_add;
   $devput = "{\n". $supportInfo . "\n";
 
   $mudname="mud-" . rand(10000,99999) . "-";

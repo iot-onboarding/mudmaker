@@ -11,7 +11,8 @@
     <!--[if lte IE 9]><link rel="stylesheet" href="assets/css/ie9.css" /><![endif]-->
     <script type="text/javascript" src="aux.js" defer="defer"></script>
   </head>
-  <body> <!-- Banner -->
+  <body>
+    <!-- Banner -->
     <section id="banner">
       <div class="inner split">
         <section>
@@ -42,6 +43,36 @@
         <input name="sysDescr" maxlength="120" size="40" required="yes" type="text">
         <h3><br>
         </h3>
+        <p>How can one get a software bill of materials?</p>
+        <select id="sbom" name="sbom" onchange="setVisibility(sbom);">
+          <option value="none" selected="selected">Not available</option>
+          <option value="cloud">Cloud URL</option>
+          <option value="local">Local URL</option>
+          <option value="tel">On Request</option>
+        </select>
+        <br>
+        <span id="sbomany" style="display: none"><br>
+          Software version: <input id="sbomswver"
+            name="sbomswver"
+            size="20"
+            maxlength="20">&nbsp;&nbsp&nbsp;
+          <span id="sbcloud" style="display: none"> Static SBOM URL on Internet:
+            <input id="sbomcloudurl" name="sbomcloudurl" size="50" maxlength="200"
+              type="url">
+          </span>
+          <span id="sblocal" style="display: none"> SBOM URL on the device
+            https://device/<input id="sbomlocalurl" name="sbomlocalurl" size="50"
+              maxlength="200"
+              pattern="^(?!http(s)?:).*">
+          </span>
+          <span id="sbtel" style="display: none"> Country Code: +<input id="sbomcc"
+              name="sbomcc"
+              size="3"
+              maxlength="10"
+              pattern="[0-9]{1,3}">
+            Number <input id="sbomnr" name="sbomnr" size="10" maxlength="20" pattern="[0-9]{5,20}"><br>
+          </span>
+        </span> <br>
         <h3>How will this device communicate on the network? </h3>
         <table border="1">
           <tbody>
@@ -348,5 +379,6 @@
     <script src="assets/js/util.js"></script>
     <!--[if lte IE 8]><script src="assets/js/ie/respond.min.js"></script><![endif]-->
     <script src="assets/js/main.js"></script>
+    
   </body>
 </html>

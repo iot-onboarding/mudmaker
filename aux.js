@@ -178,6 +178,25 @@ function toggleANIMA(anid,anspan) {
     }
 }
 
+function setVisibility(outer) {
+
+    document.getElementById('sbcloud').style.display= 'none';
+    document.getElementById('sblocal').style.display= 'none';
+    document.getElementById('sbtel').style.display= 'none';
+    document.getElementById('sbomcloudurl').value='';
+    document.getElementById('sbomlocalurl').value='';
+    document.getElementById('sbomcc').value='';
+    document.getElementById('sbomnr').value='';
+    if (outer.value != 'none') {
+	var elid='sb' + outer.value;
+	document.getElementById('sbomany').style.display= 'inherit';
+	document.getElementById(elid).style.display= 'inline-block';
+    } else {
+	document.getElementById('sbomany').style.display= 'none';
+    }
+}
+
+
 function j2pp(b64) {
     var xhr = new XMLHttpRequest();
     var url = "/mudrest/mudpp";
