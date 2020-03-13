@@ -568,7 +568,7 @@ if ( $gotin > 0 || $gotout > 0 ) {
     	        htmlspecialchars($_POST['sbomnr']) . '" } ],';
   }
   if ( sbom_add != '' ) {
-   $sbom_add = ', "extensions" : [ "sbom" ], "sboms" : [' . $sbom_add;
+   $sbom_add = '"extensions" : [ "sbom" ], "sboms" : [' . $sbom_add;
   }
 
   if( isset($_POST['man_name']) && strlen(htmlspecialchars($_POST['man_name'],ENT_QUOTES)) > 0) {
