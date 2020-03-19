@@ -570,7 +570,7 @@ if ( $gotin > 0 || $gotout > 0 ) {
 
   if ( isset($_POST['sbomswver']) ) {
     if ( $sbom_add != '' ) {
-       $sbom_add = '"extensions" : [ "sbom" ], "sboms" : [ { "software-version": "' . $_POST['sbomswver'] . '", "' . $sbom_add . '} ],' ;
+       $sbom_add = '"extensions" : [ "sbom" ], "sboms" : [ { "software-version": "' . $_POST['sbomswver'] . '", ' . $sbom_add . '} ],' ;
     }
   }
 
