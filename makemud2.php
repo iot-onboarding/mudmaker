@@ -702,7 +702,6 @@ if ( $gotin > 0 || $gotout > 0 ) {
   print "<body>\n";
   print "<section id=\"banner_makemud\">\n";
   print "<h1>Your MUD file is ready!</h1>";
-
   print "<p>Congratulations!  You've just created a MUD file.  Simply ";
   print "download the file after reviewing it below.  Next you can\n";
   print "visualize the results.  You can also sign the file and place it in the location that its corresponding ";
@@ -716,6 +715,10 @@ if ( $gotin > 0 || $gotout > 0 ) {
   print "</section>";
   print "<div id=\"mudresults\">";
   print "<hr>\n";
+  print "<div style=\"float: right\">
+  print "<img src=\"" . "http://chart.apis.google.com/chart?cht=qr&chs=200x200&chl=" . $mudurl . "&chld=H|0\">";
+  print "Your MUDURL";
+  print "</div>";
   print "<pre style=\"padding: 1em 1em 1em 1em; font-weight: bold;\">" . htmlentities($output) . "</pre>";
   print "<hr></div>\n";
 } else {
