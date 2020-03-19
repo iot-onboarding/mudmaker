@@ -717,7 +717,7 @@ if ( $gotin > 0 || $gotout > 0 ) {
   print "</section>";
   print "<div id=\"mudresults\">";
   print "<hr>\n";
-  print "<div style=\"float: right\">";
+  print "<div style=\"float: right; text-align: center\">";
   print "<img src=\"" . 
   	"http://chart.apis.google.com/chart?cht=qr&chs=200x200&chl=" . 
 	$mudurl . 
