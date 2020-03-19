@@ -717,8 +717,11 @@ if ( $gotin > 0 || $gotout > 0 ) {
   print "</section>";
   print "<div id=\"mudresults\">";
   print "<hr>\n";
-  print "<div style=\"float: right\">
-  print "<img src=\"" . "http://chart.apis.google.com/chart?cht=qr&chs=200x200&chl=" . $mudurl . "&chld=H|0\">";
+  print "<div style=\"float: right\">";
+  print "<img src=\"" . 
+  	"http://chart.apis.google.com/chart?cht=qr&chs=200x200&chl=" . 
+	$mudurl . 
+	"&chld=H|0\">";
   print "Your MUDURL";
   print "</div>";
   print "<pre style=\"padding: 1em 1em 1em 1em; font-weight: bold;\">" . htmlentities($output) . "</pre>";
