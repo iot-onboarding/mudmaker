@@ -545,11 +545,13 @@ if ( $gotin > 0 || $gotout > 0 ) {
   $d=new Datetime('NOW');
   $time=$d->format(DATE_RFC3339);
 
-  if ( $_POST['anbox'] == 'Yes' && preg_match('/^(http|https):\\/\\/[a-z0-9_]+([\\-\\.]{1}[a-z_0-9]+)*\\.[_a-z]{2,5}'.'((:[0-9]{1,5})?\\/.*)?$/i',$_POST['masa']) ) {
-    $masa = '"masa-server" : "' . $_POST['masa'] . '",' . "\n";
-  } else {
-    $masa = '';
+  $masa='';
+  if ( isset($_POST['anbox']) ) {
+    if ( $_POST['anbox'] == 'Yes' && preg_match('/^(http|https):\\/\\/[a-z0-9_]+([\\-\\.]{1}[a-z_0-9]+)*\\.[_a-z]{2,5}'.'((:[0-9]{1,5})?\\/.*)?$/i',$_POST['masa']) ) {
+      $masa = '"masa-server" : "' . $_POST['masa'] . '",' . "\n";
+      }
   }
+
   $sysDesc=htmlspecialchars($_POST['sysDescr'],ENT_QUOTES);
   $doc_url=htmlspecialchars($_POST['doc_url'],ENT_QUOTES);
   $model_name=htmlspecialchars($_POST['model_name'],ENT_QUOTES);
@@ -604,7 +606,7 @@ if ( $gotin > 0 || $gotout > 0 ) {
   $pre6in='';
   $pre6out='';
   $output='';
-  
+  $ipv4outbound = '';
 
   
   if ( $choice == "ipv4" || $choice == "both" ) {
