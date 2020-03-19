@@ -722,7 +722,7 @@ if ( $gotin > 0 || $gotout > 0 ) {
   	"http://chart.apis.google.com/chart?cht=qr&chs=200x200&chl=" . 
 	$mudurl . 
 	"&chld=H|0\">";
-  print "<figcaption><br>Your MUDURL<br></figcaption>";
+  print "<figcaption style=\"text-align: center\">Your MUDURL<br></figcaption>";
   print "</figure></div>";
   print "<pre style=\"padding: 1em 1em 1em 1em; font-weight: bold;\">" . htmlentities($output) . "</pre>";
   print "<hr></div>\n";
