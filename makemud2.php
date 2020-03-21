@@ -711,7 +711,7 @@ if ( $gotin > 0 || $gotout > 0 ) {
   exec("/usr/bin/openssl cms -sign -binary -signer " . $signcert . 
        " -in " . $mudtmpfile . " -inkey " . $signkey . 
        " -outform DER -certfile " . $intcert . " -out " . $sigtmpfile);
-  $signature = readfile($sigtmpfile);
+  $signature = base64_encode(readfile($sigtmpfile));
   //  unlink($mudtmpfile);
   //  unlink($sigtmpfile);
   

@@ -30,7 +30,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 if ( session_id() ) {
-  $output=$_SESSION['signature'];
+  $output=base64_decode($_SESSION['signature']);
   $model = $_SESSION['model'];
   header('Content-Type: application/pkcs7-signature');
   header("Content-Transfer-Encoding: Binary");
