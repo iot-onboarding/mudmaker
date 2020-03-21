@@ -715,7 +715,8 @@ if ( $gotin > 0 || $gotout > 0 ) {
   exec($cmd);
   $sigfp=fopen($sigtmpfile,"rb") or die("Cannot read signature");
   
-  $signature = base64_encode(fread($sigtmpfile,32000));
+  $signature = base64_encode(fread($sigfp,32000));
+  fclose($sigfp);
   //  unlink($mudtmpfile);
   //  unlink($sigtmpfile);
   
