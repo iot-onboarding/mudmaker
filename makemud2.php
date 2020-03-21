@@ -702,7 +702,7 @@ if ( $gotin > 0 || $gotout > 0 ) {
   $intcert="/etc/ssl/mudi2.crt";
   $signkey="/etc/ssl/private/mudsigner.key";
   $mudfp=fopen($mudtmpfile, "w") or die("Unable to open file!");
-  fwrite($mudfp, $mudfile) or die ("Unable to write file!");
+  fwrite($mudfp, $output) or die ("Unable to write file!");
   fclose($mudfp);
   $sigtmpfile = tempnam(sys_get_temp_dir(),"sig");
   //  openssl_cms_sign($mudtmpfile,$sigtmp,$sigtmpfile,
