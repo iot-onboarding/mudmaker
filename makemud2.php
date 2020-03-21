@@ -698,8 +698,8 @@ if ( $gotin > 0 || $gotout > 0 ) {
  */
 
   $mudtmpfile = tempnam(sys_get_temp_dir(),"mud");
-  $signcert="/etc/ssl/mudsigner.crt";
-  $intcert="/etc/ssl/mudi2.crt";
+  $signcert="/etc/ssl/certs/mudsigner.crt";
+  $intcert="/etc/ssl/certs/mudi2.crt";
   $signkey="/etc/ssl/private/mudsigner.key";
   $mudfp=fopen($mudtmpfile, "w") or die("Unable to open file!");
   fwrite($mudfp, $output) or die ("Unable to write file!");
