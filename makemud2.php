@@ -705,6 +705,7 @@ if ( $gotin > 0 || $gotout > 0 ) {
   fwrite($mudfp, $output) or die ("Unable to write file!");
   fclose($mudfp);
   $sigtmpfile = tempnam(sys_get_temp_dir(),"sig");
+
   //  openssl_cms_sign($mudtmpfile,$sigtmp,$sigtmpfile,
   //   openssl_x509_read($signcert),$signkey,
   // NULL, CMS_DETACHED|CMS_BINARY, OPENSSL_ENCODING_DER);
