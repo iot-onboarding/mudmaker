@@ -31,7 +31,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 if ( session_id() ) {
   $output=$_SESSION['signature'];
-  $model = $_SESSION['sigfile'];
+  $model = $_SESSION['model'];
   header('Content-Type: application/pkcs7-signature');
   header("Content-Transfer-Encoding: Binary");
   header("Content-disposition: attachment; filename=\"" . $model . ".p7s\"");
