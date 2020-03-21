@@ -50,7 +50,8 @@ ACL_HEAD;
   
 $downloadtext=<<< DOWNLOAD
 <form method="POST" action="download.php">
-  <input type="submit" value="Download" formaction="download.php" class="button special">
+  <input type="submit" value="Download MUD file" formaction="download.php" class="button special">
+  <input type="submit" value="Download signature" formaction="downloadsig.php" class="button special">
    <input type="submit" value="Visualize" formaction="mudvisualizer.php" class="button special">
    
 DOWNLOAD;
@@ -559,7 +560,6 @@ if ( $gotin > 0 || $gotout > 0 ) {
   '/' . $model_name . ".json";
   $mudsig= "https://" . htmlspecialchars($_POST['mudhost'],ENT_QUOTES) .
   '/' . $model_name . ".p7s";
-  
   $sbom_add='';
   if ( $_POST['sbom'] == 'cloud' ) {
     $sbom_add = '"sbom-url" : "' . htmlspecialchars($_POST['sbomcloudurl']) . '"';
@@ -693,9 +693,32 @@ if ( $gotin > 0 || $gotout > 0 ) {
   $b64in = $output;
   $output= prettyPrint($output);
 
+/* and now we sign with a demo signature. store mudfile into file, and then
+ * call cms_sign.  Read in the resultant file, and attach it to a button.
+ */
+
+  $mudtmpfile = mktemp();
+  $signcert="/etc/ssl/mudsigner.crt";
+  $intcert="/etc/ssl/mudi2.crt";
+  $signkey="/etc/ssl/private/mudsigner.key";
+  $mudfp=fopen($mudtmpfile, "w") or die("Unable to open file!");
+  fwrite($mudfp, $mudfile) or die ("Unable to write file!");
+  fclose($mudfp);
+  $sigtmpfile = mktemp();
+  //  openssl_cms_sign($mudtmpfile,$sigtmp,$sigtmpfile,
+  //   openssl_x509_read($signcert),$signkey,
+  // NULL, CMS_DETACHED|CMS_BINARY, OPENSSL_ENCODING_DER);
+  exec("/usr/bin/openssl cms -sign -binary -signer " . $signcert . 
+       " -in " . $mudtmpfile . " -inkey " . $signkey . 
+       " -outform DER -certfile " . $intcert . " -out " . $signtmpfile);
+  $signature = readfile($sigtmpfile);
+  //  unlink($mudtmpfile);
+  //  unlink($sigtmpfile);
+  
   session_unset();
   $_SESSION['mudfile'] = $output;
   $_SESSION['model'] = $model_name;
+  $_SESSION['sigfile']= $signature;
   print "<!DOCTYPE html>\n<html>\n";
   print  "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n";
   print  "<link rel=\"stylesheet\" href=\"assets/css/main.css\">\n";
