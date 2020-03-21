@@ -712,9 +712,10 @@ if ( $gotin > 0 || $gotout > 0 ) {
   $cmd="/usr/bin/openssl cms -sign -binary -signer " . $signcert .
        " -in " . $mudtmpfile . " -inkey " . $signkey . 
        " -outform DER -certfile " . $intcert . " -out " . $sigtmpfile;
-  print $cmd;
   exec($cmd);
-  $signature = base64_encode(readfile($sigtmpfile));
+  $sigfp=fopen($sigtmpfile,"rb") or die("Cannot read signature");
+  
+  $signature = base64_encode(fread($sigtmpfile,32000));
   //  unlink($mudtmpfile);
   //  unlink($sigtmpfile);
   
