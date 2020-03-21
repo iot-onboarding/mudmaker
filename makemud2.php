@@ -717,8 +717,8 @@ if ( $gotin > 0 || $gotout > 0 ) {
   
   $signature = base64_encode(fread($sigfp,32000));
   fclose($sigfp);
-  //  unlink($mudtmpfile);
-  //  unlink($sigtmpfile);
+  unlink($mudtmpfile);
+  unlink($sigtmpfile);
   
   session_unset();
   $_SESSION['mudfile'] = $output;
@@ -747,7 +747,7 @@ if ( $gotin > 0 || $gotout > 0 ) {
   print "<hr>\n";
   print "<div style=\"float: right\"><figure>";
   print "<img src=\"" . 
-  	"http://chart.apis.google.com/chart?cht=qr&chs=200x200&chl=" . 
+  	"https://chart.apis.google.com/chart?cht=qr&chs=200x200&chl=" . 
 	$mudurl . 
 	"&chld=H|0\">";
   print "<figcaption style=\"text-align: center\">Your MUDURL<br></figcaption>";
