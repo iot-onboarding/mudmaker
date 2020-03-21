@@ -50,8 +50,7 @@ ACL_HEAD;
   
 $downloadtext=<<< DOWNLOAD
 <form method="POST" action="download.php">
-  <input type="submit" value="Download MUD file" formaction="download.php" class="button special">
-  <input type="submit" value="Download signature" formaction="downloadsig.php" class="button special">
+  <input type="submit" value="Download" formaction="download.php" class="button special">
    <input type="submit" value="Visualize" formaction="mudvisualizer.php" class="button special">
    
 DOWNLOAD;
@@ -546,13 +545,11 @@ if ( $gotin > 0 || $gotout > 0 ) {
   $d=new Datetime('NOW');
   $time=$d->format(DATE_RFC3339);
 
-  $masa='';
-  if ( isset($_POST['anbox']) ) {
-    if ( $_POST['anbox'] == 'Yes' && preg_match('/^(http|https):\\/\\/[a-z0-9_]+([\\-\\.]{1}[a-z_0-9]+)*\\.[_a-z]{2,5}'.'((:[0-9]{1,5})?\\/.*)?$/i',$_POST['masa']) ) {
-      $masa = '"masa-server" : "' . $_POST['masa'] . '",' . "\n";
-      }
+  if ( $_POST['anbox'] == 'Yes' && preg_match('/^(http|https):\\/\\/[a-z0-9_]+([\\-\\.]{1}[a-z_0-9]+)*\\.[_a-z]{2,5}'.'((:[0-9]{1,5})?\\/.*)?$/i',$_POST['masa']) ) {
+    $masa = '"masa-server" : "' . $_POST['masa'] . '",' . "\n";
+  } else {
+    $masa = '';
   }
-
   $sysDesc=htmlspecialchars($_POST['sysDescr'],ENT_QUOTES);
   $doc_url=htmlspecialchars($_POST['doc_url'],ENT_QUOTES);
   $model_name=htmlspecialchars($_POST['model_name'],ENT_QUOTES);
@@ -560,29 +557,13 @@ if ( $gotin > 0 || $gotout > 0 ) {
   '/' . $model_name . ".json";
   $mudsig= "https://" . htmlspecialchars($_POST['mudhost'],ENT_QUOTES) .
   '/' . $model_name . ".p7s";
-  $sbom_add='';
-  if ( $_POST['sbom'] == 'cloud' ) {
-    $sbom_add = '"sbom-url" : "' . htmlspecialchars($_POST['sbomcloudurl']) . '"';
-  } else if ( $_POST['sbom'] == 'local' ) {
-    $sbom_add = '"sbom-local-frag" : "' . htmlspecialchars($_POST['sbomlocalurl']) . '"';
-  } else if ( $_POST['sbom'] == 'tel' ) {
-    $sbom_add =	'"contact-number" : "+' . htmlspecialchars($_POST['sbomcc']) .
-    	        htmlspecialchars($_POST['sbomnr']) . '"';
-  }
-
-  if ( isset($_POST['sbomswver']) ) {
-    if ( $sbom_add != '' ) {
-       $sbom_add = '"extensions" : [ "sbom" ], "sboms" : [ { "software-version": "' . $_POST['sbomswver'] . '", ' . $sbom_add . '} ],' ;
-    }
-  }
-
+  
   if( isset($_POST['man_name']) && strlen(htmlspecialchars($_POST['man_name'],ENT_QUOTES)) > 0) {
     $man_name = htmlspecialchars($_POST['man_name'],ENT_QUOTES);
     $mfg_info = '"mfg-name": "' . $man_name . '",' . "\n";
   } else {
     $mfg_info = '';
   }
-  
   $supportInfo = $actxt0 . '"mud-url" : "' . $mudurl . '",
   	       "mud-signature" : "' . $mudsig . '",
   	       "last-update" : "' . $time . '",' . "\n" .
@@ -591,8 +572,7 @@ if ( $gotin > 0 || $gotout > 0 ) {
 	       $masa . '"systeminfo": "' . $sysDesc . '",' . "\n" .
 	       $mfg_info .
 	       '"documentation": "' . $doc_url . '",' . "\n" .
-	       '"model-name": "' . $model_name . '",' . "\n";
-  $supportInfo = $supportInfo . $sbom_add;
+	       '"model-name": "' . $model_name . '",' . "\n";   
   $devput = "{\n". $supportInfo . "\n";
 
   $mudname="mud-" . rand(10000,99999) . "-";
@@ -606,7 +586,7 @@ if ( $gotin > 0 || $gotout > 0 ) {
   $pre6in='';
   $pre6out='';
   $output='';
-  $ipv4outbound = '';
+  
 
   
   if ( $choice == "ipv4" || $choice == "both" ) {
@@ -693,32 +673,9 @@ if ( $gotin > 0 || $gotout > 0 ) {
   $b64in = $output;
   $output= prettyPrint($output);
 
-/* and now we sign with a demo signature. store mudfile into file, and then
- * call cms_sign.  Read in the resultant file, and attach it to a button.
- */
-
-  $mudtmpfile = mktemp();
-  $signcert="/etc/ssl/mudsigner.crt";
-  $intcert="/etc/ssl/mudi2.crt";
-  $signkey="/etc/ssl/private/mudsigner.key";
-  $mudfp=fopen($mudtmpfile, "w") or die("Unable to open file!");
-  fwrite($mudfp, $mudfile) or die ("Unable to write file!");
-  fclose($mudfp);
-  $sigtmpfile = mktemp();
-  //  openssl_cms_sign($mudtmpfile,$sigtmp,$sigtmpfile,
-  //   openssl_x509_read($signcert),$signkey,
-  // NULL, CMS_DETACHED|CMS_BINARY, OPENSSL_ENCODING_DER);
-  exec("/usr/bin/openssl cms -sign -binary -signer " . $signcert . 
-       " -in " . $mudtmpfile . " -inkey " . $signkey . 
-       " -outform DER -certfile " . $intcert . " -out " . $signtmpfile);
-  $signature = readfile($sigtmpfile);
-  //  unlink($mudtmpfile);
-  //  unlink($sigtmpfile);
-  
   session_unset();
   $_SESSION['mudfile'] = $output;
   $_SESSION['model'] = $model_name;
-  $_SESSION['sigfile']= $signature;
   print "<!DOCTYPE html>\n<html>\n";
   print  "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n";
   print  "<link rel=\"stylesheet\" href=\"assets/css/main.css\">\n";
@@ -740,13 +697,6 @@ if ( $gotin > 0 || $gotout > 0 ) {
   print "</section>";
   print "<div id=\"mudresults\">";
   print "<hr>\n";
-  print "<div style=\"float: right\"><figure>";
-  print "<img src=\"" . 
-  	"http://chart.apis.google.com/chart?cht=qr&chs=200x200&chl=" . 
-	$mudurl . 
-	"&chld=H|0\">";
-  print "<figcaption style=\"text-align: center\">Your MUDURL<br></figcaption>";
-  print "</figure></div>";
   print "<pre style=\"padding: 1em 1em 1em 1em; font-weight: bold;\">" . htmlentities($output) . "</pre>";
   print "<hr></div>\n";
 } else {
