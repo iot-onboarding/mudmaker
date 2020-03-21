@@ -51,6 +51,7 @@ ACL_HEAD;
 $downloadtext=<<< DOWNLOAD
 <form method="POST" action="download.php">
   <input type="submit" value="Download" formaction="download.php" class="button special">
+   <input type="submit" value="Get Demo\nSignature" formaction="downloadsig.php" class="button special">
    <input type="submit" value="Visualize" formaction="mudvisualizer.php" class="button special">
    
 DOWNLOAD;
