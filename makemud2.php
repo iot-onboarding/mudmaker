@@ -719,8 +719,8 @@ if ( $gotin > 0 || $gotout > 0 ) {
   fclose($sigfp);
   $z=new zipArchive();
   $z->open($ziptmpfile,ZIPARCHIVE::CREATE);
-  $z->addFromString($model_name . ".json", $output);
-  $z->addFromString($model_name . ".p7s", $signature);
+  $z->addFromString($model_name . ".json", $output, 0,0, ZipArchive::FL_ENC_RAW );
+  $z->addFromString($model_name . ".p7s", $signature, 0,0, ZipArchive::FL_ENC_RAW);
   $z->close();
   $zfp = $sigfp=fopen($ziptmpfile,"rb") or die("Cannot read signature");
   $zcontent= base64_encode(fread($zfp,64000));
