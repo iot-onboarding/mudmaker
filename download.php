@@ -33,7 +33,9 @@ if ( session_id() ) {
   $output=base64_decode($_SESSION['zipfile']);
   print("<HTML><BODY>\n");
   print("The size of output is " . strlen($output));
+  print($_SESSION['zipfile');
   print("</BODY></HTML");
+
 /*  $model = $_SESSION['model'];
   header('Content-Type: application/zip');
   header("Content-Transfer-Encoding: binary");
