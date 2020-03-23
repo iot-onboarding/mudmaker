@@ -31,10 +31,19 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 if ( session_id() ) {
   $model = $_SESSION['model'];
+  $output=base64_decode($_SESSION['zipfile']);
+  $debugfile = tempnam(sys_get_temp_dir(),"deb");
+  $debugsig = $debugfile . ".sig";
+  $dfp=fopen($debugfile,"w") or die("could not open debug file");
+  fprintf($dfp,"length of sigfile = %d\n",strlen($output));
+  fprintf($dfp,"\n%s\nend", $_SESSION['zipfile']);
+  fclose($dfp);
+  $dfp=fopen($debugsig,"w") or die ("could not open debug sig file");
+  fwrite($dfp,$output);
+  fclose($dfp);
   header('Content-Type: application/zip');
   header("Content-Transfer-Encoding: binary");
   header("Content-disposition: attachment; filename=\"" . $model . ".zip\"");
-  $output=base64_decode($_SESSION['zipfile']);
   print($output);
 } else {
   print("<h1>NO SESSION</h1>");
