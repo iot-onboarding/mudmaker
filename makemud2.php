@@ -1,8 +1,6 @@
 <?php
   session_start();
-?>
 
-<?php
 /* Copyright (c) 2016, Cisco Systems
 All rights reserved.
 
@@ -727,7 +725,7 @@ if ( $gotin > 0 || $gotout > 0 ) {
   fclose($zfp);
   unlink($mudtmpfile);
   unlink($sigtmpfile);
-//  unlink($ziptmpfile);    
+  unlink($ziptmpfile);    
   session_unset();
   $_SESSION['zipfile'] = $zcontent;
   $_SESSION['model'] = $model_name;
