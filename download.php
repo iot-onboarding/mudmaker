@@ -30,10 +30,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 if ( session_id() ) {
-  $output=base64_decode($_SESSION['zipfile']);
+  $output=$_SESSION['zipfile'];
   $model = $_SESSION['model'];
   header('Content-Type: application/zip');
-  header("Content-Transfer-Encoding: Binary");
+  header("Content-Transfer-Encoding: base64");
   header("Content-disposition: attachment; filename=\"" . $model . ".zip\"");
   printf("%s",$output);
 } else {
