@@ -35,7 +35,9 @@ if ( session_id() ) {
   header('Content-Type: application/zip');
   header("Content-Transfer-Encoding: Binary");
   header("Content-disposition: attachment; filename=\"" . $model . ".zip\"");
-  print $output;
+  $stdout= fopen('php://stdout', 'w');
+  fwrite($stdout, $output);
+  fclose($stdout);
 } else {
   print("<h1>NO SESSION</h1>");
 }

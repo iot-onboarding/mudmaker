@@ -696,8 +696,8 @@ if ( $gotin > 0 || $gotout > 0 ) {
  * call cms_sign.  Read in the resultant file, and attach it to a button.
  */
 
-  $mudtmpfile = tempnam(sys_get_temp_dir(),"mud") . ".zip";
-  $ziptmpfile = tempnam(sys_get_temp_dir(),"zip");
+  $mudtmpfile = tempnam(sys_get_temp_dir(),"mud");
+  $ziptmpfile = $mudtmpfile . ".zip";
   $signcert="/etc/ssl/certs/mudsigner.crt";
   $intcert="/etc/ssl/certs/mudi2.crt";
   $signkey="/etc/ssl/private/mudsigner.key";
@@ -727,7 +727,7 @@ if ( $gotin > 0 || $gotout > 0 ) {
   fclose($zfp);
   unlink($mudtmpfile);
   unlink($sigtmpfile);
-//  unlink($ziptmpfile);    
+  unlink($ziptmpfile);    
   session_unset();
   $_SESSION['zipfile'] = $zcontent;
   $_SESSION['model'] = $model_name;
