@@ -31,11 +31,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 if ( session_id() ) {
   $output=base64_decode($_SESSION['zipfile']);
-  $model = $_SESSION['model'];
+  print("<HTML><BODY>\n"
+  print("The size of output is " . strlen($output));
+  print("</BODY></HTML");
+/*  $model = $_SESSION['model'];
   header('Content-Type: application/zip');
   header("Content-Transfer-Encoding: binary");
   header("Content-disposition: attachment; filename=\"" . $model . ".zip\"");
-  printf("%s",$output);
+  printf("%s",$output);*/
 } else {
   print("<h1>NO SESSION</h1>");
 }
