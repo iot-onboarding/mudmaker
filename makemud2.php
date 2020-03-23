@@ -752,7 +752,7 @@ if ( $gotin > 0 || $gotout > 0 ) {
   print "<hr>\n";
   print "<div style=\"float: right\"><figure>";
   print "<img src=\"" . 
-  	"https://chart.apis.google.com/chart?cht=qr&chs=200x200&chl=" . 
+  	"https://chart.apis.google.com/chart?cht=qr&chs=100x100&chl=" . 
 	$mudurl . 
 	"&chld=H|0\">";
   print "<figcaption style=\"text-align: center\">Your MUDURL<br></figcaption>";
