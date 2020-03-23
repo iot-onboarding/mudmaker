@@ -34,7 +34,7 @@ if ( session_id() ) {
   $model = $_SESSION['model'];
   header('Content-Type: application/zip');
   header("Content-Transfer-Encoding: Binary");
-  header("Content-disposition: attachment; filename=\"" . $model . ".json\"");
+  header("Content-disposition: attachment; filename=\"" . $model . ".zip\"");
   print $output;
 } else {
   print("<h1>NO SESSION</h1>");
