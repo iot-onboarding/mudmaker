@@ -31,7 +31,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 if ( session_id() ) {
   $output=base64_decode($_SESSION['zipfile']);
-  print("<HTML><BODY>\n"
+  print("<HTML><BODY>\n");
   print("The size of output is " . strlen($output));
   print("</BODY></HTML");
 /*  $model = $_SESSION['model'];
