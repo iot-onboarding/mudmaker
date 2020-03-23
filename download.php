@@ -30,9 +30,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 if ( session_id() ) {
-  $output=$_SESSION['mudfile'];
+  $output=base64_decode($_SESSION['zipfile']);
   $model = $_SESSION['model'];
-  header('Content-Type: application/json+mud');
+  header('Content-Type: application/zip');
   header("Content-Transfer-Encoding: Binary");
   header("Content-disposition: attachment; filename=\"" . $model . ".json\"");
   print $output;

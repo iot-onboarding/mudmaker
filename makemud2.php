@@ -51,8 +51,7 @@ ACL_HEAD;
 $downloadtext=<<< DOWNLOAD
 <form method="POST" action="download.php">
   <input type="submit" value="Download MUD file" formaction="download.php" class="button special">
-  <input type="submit" value="Download demo\nSignature" formaction="downloadsig.php" class="button special">
-   <input type="submit" value="Visualize" formaction="mudvisualizer.php" class="button special">
+  <input type="submit" value="Visualize" formaction="mudvisualizer.php" class="button special">
    
 DOWNLOAD;
   
@@ -697,7 +696,8 @@ if ( $gotin > 0 || $gotout > 0 ) {
  * call cms_sign.  Read in the resultant file, and attach it to a button.
  */
 
-  $mudtmpfile = tempnam(sys_get_temp_dir(),"mud");
+  $mudtmpfile = tempnam(sys_get_temp_dir(),"mud") . ".zip";
+  $ziptmpfile = tempnam(sys_get_temp_dir(),"zip");
   $signcert="/etc/ssl/certs/mudsigner.crt";
   $intcert="/etc/ssl/certs/mudi2.crt";
   $signkey="/etc/ssl/private/mudsigner.key";
@@ -715,15 +715,22 @@ if ( $gotin > 0 || $gotout > 0 ) {
   exec($cmd);
   $sigfp=fopen($sigtmpfile,"rb") or die("Cannot read signature");
   
-  $signature = base64_encode(fread($sigfp,32000));
+  $signature = fread($sigfp,32000);
   fclose($sigfp);
+  $z=new zipArchive();
+  $z->open($ziptmpfile,ZIPARCHIVE::CREATE);
+  $z->addFromString($model_name . ".json", $output);
+  $z->addFromString($model_name . ".p7s", $signature);
+  $z->close();
+  $zfp = $sigfp=fopen($ziptmpfile,"rb") or die("Cannot read signature");
+  $zcontent= base64_encode(fread($zfp,64000));
+  fclose($zfp);
   unlink($mudtmpfile);
   unlink($sigtmpfile);
-  
+  unlink($ziptmpfile);    
   session_unset();
-  $_SESSION['mudfile'] = $output;
+  $_SESSION['zipfile'] = $zcontent;
   $_SESSION['model'] = $model_name;
-  $_SESSION['signature']=$signature;
   print "<!DOCTYPE html>\n<html>\n";
   print  "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n";
   print  "<link rel=\"stylesheet\" href=\"assets/css/main.css\">\n";
