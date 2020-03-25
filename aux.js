@@ -199,7 +199,7 @@ function setVisibility(outer) {
 
 function j2pp(b64) {
     var xhr = new XMLHttpRequest();
-    var url = "/mudrest/mudpp";
+    var url = "/mudrest/mudpp/";
     var jsonText=atob(b64);
     if (document.getElementById("mudframe") != null )
         return;
