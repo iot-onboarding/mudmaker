@@ -1,8 +1,6 @@
 <?php
   session_start();
-?>
 
-<?php
 /* Copyright (c) 2016, Cisco Systems
 All rights reserved.
 
@@ -30,15 +28,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 if ( session_id() ) {
-  $output=$_SESSION['mudfile'];
   $model = $_SESSION['model'];
-  header('Content-Type: application/json+mud');
-  header("Content-Transfer-Encoding: Binary");
-  header("Content-disposition: attachment; filename=\"" . $model . ".json\"");
-  print $output;
+  $output=base64_decode($_SESSION['zipfile']);
+  header('Content-Type: application/zip');
+  header("Content-Transfer-Encoding: binary");
+  header("Content-disposition: attachment; filename=\"" . $model . ".zip\"");
+  print($output);
 } else {
   print("<h1>NO SESSION</h1>");
 }
-
-
 ?>
