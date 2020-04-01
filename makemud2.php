@@ -566,7 +566,7 @@ if ( $gotin > 0 || $gotout > 0 ) {
     $sbom_add =	'"contact-info" : "tel:+' . htmlspecialchars($_POST['sbomcc']) .
     	        htmlspecialchars($_POST['sbomnr']) . '"';
   } else if ( $_POST['sbom'] == '822' ) {
-    $sbom_add = '"contact-info" : "mailto:' . htmlspecialchars($_POST['sb822']) .  '"';
+    $sbom_add = '"contact-info" : "mailto:' . htmlspecialchars($_POST['sbemail']) .  '"';
     }
   if ( isset($_POST['sbomswver']) ) {
     if ( $sbom_add != '' ) {
