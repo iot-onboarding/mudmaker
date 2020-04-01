@@ -183,7 +183,7 @@ function setVisibility(outer) {
     document.getElementById('sbcloud').style.display= 'none';
     document.getElementById('sblocal').style.display= 'none';
     document.getElementById('sbtel').style.display= 'none';
-    document.getElementById('sbemail').style.display= 'none';
+    document.getElementById('sb822').style.display= 'none';
     document.getElementById('sbomcloudurl').value='';
     document.getElementById('sbomlocalurl').value='';
     document.getElementById('sbomcc').value='';
