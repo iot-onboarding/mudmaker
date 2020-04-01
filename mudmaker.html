@@ -11,8 +11,7 @@
     <!--[if lte IE 9]><link rel="stylesheet" href="assets/css/ie9.css" /><![endif]-->
     <script type="text/javascript" src="aux.js" defer="defer"></script>
   </head>
-  <body>
-    <!-- Banner -->
+  <body> <!-- Banner -->
     <section id="banner">
       <div class="inner split">
         <section>
@@ -28,17 +27,15 @@
     </section>
     <!-- One -->
     <!--    <section id="1a" class="wrapper"><strong>NTIA SBOM Prototype Instructions:</strong><br>
-     This is a modified version of the MUDMAKER tool that can include SBOMs.<br>      <ul>        <li>Enter a domain name and a model number on the 1st line, any          manufacturer name on the next line, any URL for documentation, and
-          anything for a description.</li>        <li>Select one of several forms of SBOM locator in the pull down menu          and fill in the information.</li>        <li>The tool right now requires at least a simple access list.&nbsp;
-          Just click on "Access to local networks" and pick a TCP or UDP port.</li>        <li>Choose IPv4 or IPv6 in the pull down</li>        <li>Click "Submit".&nbsp; That will generate a MUD file that includes          relevant SBOM information.</li>
-        <li>TODO: Not require the ACLs.</li>      </ul>    </section> -->
+     This is a modified version of the MUDMAKER tool that can include SBOMs.<br>      <ul>        <li>Enter a domain name and a model number on the 1st line, any          manufacturer name on the next line, any URL for documentation, and          anything for a description.</li>        <li>Select one of several forms of SBOM locator in the pull down menu          and fill in the information.</li>        <li>The tool right now requires at least a simple access list.&nbsp;
+          Just click on "Access to local networks" and pick a TCP or UDP port.</li>        <li>Choose IPv4 or IPv6 in the pull down</li>        <li>Click "Submit".&nbsp; That will generate a MUD file that includes          relevant SBOM information.</li>        <li>TODO: Not require the ACLs.</li>      </ul>    </section> -->
     <section id="two" class="wrapper">
       <form method="POST" action="makemud2.php">
         <p>Please enter host and model the intended MUD-URL for this device: <span
             title="This is the URL that the device will emit to the network.">
             <img src="Circle-question-yellow.png"></span></p>
-        https://<input name="mudhost" maxlength="50" size="40" required="yes">
-        / (model name here-&gt;)<input name="model_name" maxlength="50" size="20"
+        https://<input name="mudhost" maxlength="50" size="40" required="yes"> /
+        (model name here-&gt;)<input name="model_name" maxlength="50" size="20"
           required="yes">
         <p>Manufacturer Name&nbsp; <input name="man_name" maxlength="40" size="40"></p>
         <p>Please provide a URL to documentation about this device:</p>
@@ -49,10 +46,15 @@
         <h3><br>
         </h3>
         <p><strong>How can one get a software bill of materials?</strong></p>
-        <!--        <select id="sbom" name="sbom" onchange="setVisibility(sbom);">
-          <option value="none" selected="selected">Not available</option>          <option value="cloud">Cloud URL</option>
-          <option value="local">Local URL</option>          <option value="tel">On Request</option>
-        </select>        <br> --> <span id="sbomany" style="display: none"><br>
+       <select id="sbom" name="sbom" onchange="setVisibility(sbom);">
+          <option value="none" selected="selected">Not available</option>
+         <option value="cloud">Cloud URL</option>         
+         <option value="local">Local URL</option>          
+         <option value="tel">Call Us First</option>
+         <option value="822">Send EMail</option>
+        </select>        
+        <br> 
+        <span id="sbomany" style="display: none"><br>
           Software version: <input id="sbomswver" name="sbomswver" size="10" maxlength="20">&nbsp;&nbsp;&nbsp;
           <span id="sbcloud" style="display: none"> Static SBOM URL on Internet:
             <input id="sbomcloudurl" name="sbomcloudurl" size="50" maxlength="200"
@@ -61,14 +63,19 @@
             device https://device/<input id="sbomlocalurl" name="sbomlocalurl" size="50"
               maxlength="200"
               pattern="^(?!http(s)?:).*">
-          </span> <span id="sbtel" style="display: none"> Country Code: +<input
+          </span> <span id="sbtel" style="display: none">
+          Country Code: +<input
               id="sbomcc"
               name="sbomcc"
               size="3"
               maxlength="10"
               pattern="[0-9]{1,3}">&nbsp;&nbsp;&nbsp;
             Number <input id="sbomnr" name="sbomnr" size="10" maxlength="20" pattern="[0-9]{5,20}"><br>
-          </span> </span> <br>
+          </span> 
+        <span id="sbemaildiv" style="display: none">
+          Email Address: &nbsp;<input id="sb822" name="sb822" size=15 maxlength=30 type="email">
+          </span>
+        </span> <br>
         <h3>How will this device communicate on the network? </h3>
         <table border="1">
           <tbody>

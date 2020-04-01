@@ -563,10 +563,11 @@ if ( $gotin > 0 || $gotout > 0 ) {
   } else if ( $_POST['sbom'] == 'local' ) {
     $sbom_add = '"sbom-local-frag" : "' . htmlspecialchars($_POST['sbomlocalurl']) . '"';
   } else if ( $_POST['sbom'] == 'tel' ) {
-    $sbom_add =	'"contact-number" : "+' . htmlspecialchars($_POST['sbomcc']) .
+    $sbom_add =	'"contact-info" : "tel:+' . htmlspecialchars($_POST['sbomcc']) .
     	        htmlspecialchars($_POST['sbomnr']) . '"';
-  }
-
+  } else if ( $_POST['sbom'] == '822' ) {
+    $sbom_add = '"contact-info" : "mailto:' . htmlspecialchars($_POST['sb822']) .  '"';
+    }
   if ( isset($_POST['sbomswver']) ) {
     if ( $sbom_add != '' ) {
        $sbom_add = '"extensions" : [ "sbom" ], "sboms" : [ { "software-version": "' . $_POST['sbomswver'] . '", ' . $sbom_add . '} ],' ;
