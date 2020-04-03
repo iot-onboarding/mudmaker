@@ -730,6 +730,7 @@ if ( $gotin > 0 || $gotout > 0 ) {
   session_unset();
   $_SESSION['zipfile'] = $zcontent;
   $_SESSION['model'] = $model_name;
+  $_SESSION['mudfile'] = $output;
   print "<!DOCTYPE html>\n<html>\n";
   print  "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n";
   print  "<link rel=\"stylesheet\" href=\"assets/css/main.css\">\n";
