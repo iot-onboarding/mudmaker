@@ -561,7 +561,7 @@ if ( $gotin > 0 || $gotout > 0 ) {
   if ( $_POST['sbom'] == 'cloud' ) {
     $sbom_add = '"sbom-url" : "' . htmlspecialchars($_POST['sbomcloudurl']) . '"';
   } else if ( $_POST['sbom'] == 'local' ) {
-    $sbom_add = '"sbom-local-frag" : "' . htmlspecialchars($_POST['sbomlocalscheme']) . '"';
+    $sbom_add = '"sbom-local" : "' . htmlspecialchars($_POST['sbomlocalscheme']) . '"';
   } else if ( $_POST['sbom'] == 'tel' ) {
     $sbom_add =	'"contact-info" : "tel:+' . htmlspecialchars($_POST['sbomcc']) .
     	        htmlspecialchars($_POST['sbomnr']) . '"';
