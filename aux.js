@@ -185,7 +185,7 @@ function setVisibility(outer) {
     document.getElementById('sbtel').style.display= 'none';
     document.getElementById('sb822').style.display= 'none';
     document.getElementById('sbomcloudurl').value='';
-    document.getElementById('sbomlocalurl').value='';
+    document.getElementById('sbomlocalscheme').value='';
     document.getElementById('sbomcc').value='';
     document.getElementById('sbomnr').value='';
     document.getElementById('sb822').value='';
