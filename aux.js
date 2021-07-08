@@ -11,7 +11,6 @@ function removeIt(elemId) {
     var elem=document.getElementById(elemId);
     elem.parentNode.removeChild(elem);
 }
-
     
 
 function addInput(divName,sectype,dnsorurl,i){
