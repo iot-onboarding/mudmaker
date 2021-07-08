@@ -444,6 +444,7 @@ if ( isset($_POST['clnames']) || isset($_POST['entnames']) ||
      isset($_POST['myctlnames']) || isset($_POST['locnames']) ||
      isset($_POST['mannames'])) {
      $gotacls=1;
+     print "Gotacls = 1\n";
      } else {
      $gotacls=0;
 }
