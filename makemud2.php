@@ -440,9 +440,9 @@ $doegress="Yes";
 // Not necessary to generate actual ACLs, but we need to know at this
 // point in the code.
 
-if ( isset($_POST['clnames']) || isset($_POST['entnames']) ||
-     isset($_POST['myctlnames']) || isset($_POST['locnames']) ||
-     isset($_POST['mannames'])) {
+if ( isset($_POST['clbox']) || isset($_POST['entbox']) ||
+     isset($_POST['myctlbox']) || isset($_POST['locbox']) ||
+     isset($_POST['manbox']) || isset($_POST['mymanbox'])) {
      $gotacls=1;
      print "Gotacls = 1\n";
      } else {
