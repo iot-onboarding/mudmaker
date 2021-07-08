@@ -195,6 +195,7 @@ function setVisibility(outer) {
     document.getElementById('sbomcc').value='';
     document.getElementById('sbomnr').value='';
     document.getElementById('sbomc2').value='';
+    document.getElementById('sbinfourl').value='';
     if (outer.value != 'none') {
 	var elid='sb' + outer.value;
 	document.getElementById('sbomany').style.display= 'inherit';

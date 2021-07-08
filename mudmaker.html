@@ -11,7 +11,8 @@
     <!--[if lte IE 9]><link rel="stylesheet" href="assets/css/ie9.css" /><![endif]-->
     <script type="text/javascript" src="aux.js" defer="defer"></script>
   </head>
-  <body> <!-- Banner -->
+  <body>
+    <!-- Banner -->
     <section id="banner">
       <div class="inner split">
         <section>
@@ -58,7 +59,8 @@
           <option value="none" selected="selected">Not available</option>
           <option value="cloud">Cloud URL</option>
           <option value="local">Well-known URL on Device</option>
-          <option value="tel">On Request</option>
+          <option value="tel">Telephone</option>
+          <option value="infourl">Get more information URL</option>
           <option value="c2">OpenC2</option>
         </select>
         <br>
@@ -82,7 +84,11 @@
           </span> <span id="sbc2" style="display: none"> OpenC2
             URI:&nbsp;&nbsp;<input id="sbomc2" name="sbomc2" size="50" maxlength="200"
               type="url">
-          </span> </span> <br>
+          </span> <span id="sbinfourl" style="display: none"><input id="infourl"
+              name="infourl"
+              size="50"
+              maxlength="200"></span>
+        </span> <br>
         <h3>How will this device communicate on the network? </h3>
         <table border="1">
           <tbody>
