@@ -190,6 +190,7 @@ function setvulnvis(v) {
 	v.style.display='inherit';
     } else {
 	v.style.display='none';
+	v.value='';
     }
 }
 
