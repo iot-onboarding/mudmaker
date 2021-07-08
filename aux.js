@@ -178,15 +178,24 @@ function toggleANIMA(anid,anspan) {
     }
 }
 
+function togglepubsame(p,d) {
+    if (p.checked == true ) {
+	d.style.display = 'none';
+    } else {
+	d.style.display ='inherit';
+    }
+}
+
 function setVisibility(outer) {
 
     document.getElementById('sbcloud').style.display= 'none';
     document.getElementById('sblocal').style.display= 'none';
     document.getElementById('sbtel').style.display= 'none';
+    document.getElementById('sbc2').style.display= 'none';
     document.getElementById('sbomcloudurl').value='';
-    document.getElementById('sbomlocalurl').value='';
     document.getElementById('sbomcc').value='';
     document.getElementById('sbomnr').value='';
+    document.getElementById('sbomc2').value='';
     if (outer.value != 'none') {
 	var elid='sb' + outer.value;
 	document.getElementById('sbomany').style.display= 'inherit';
