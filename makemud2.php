@@ -580,7 +580,7 @@ if ( $gotin > 0 || $gotout > 0 ) {
     if ( $sbom_add != '' ) {
        $vuln_add = ', ';
     }
-    $vuln_add = $vuln_add . '"vuln-url" :' . htmlspecialchars($_POST['vulninfo']) . '"';
+    $vuln_add = $vuln_add . '"vuln-url" : "' . htmlspecialchars($_POST['vulninfo']) . '"';
   }
   $exts = '"ol"';
   if ( $sbom_add != '' || $vuln_add != '' ) {
