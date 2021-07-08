@@ -569,7 +569,7 @@ if ( $gotin > 0 || $gotout > 0 ) {
     $sbom_add =	'"contact-info" : "tel:+' . htmlspecialchars($_POST['sbomcc']) .
     	        htmlspecialchars($_POST['sbomnr']) . '"';
   } else if ( $_POST['sbom'] == 'infourl' ) {
-    $sbom_add =	'"contact-info" : "https://' . htmlspecialchars($_POST['infourl']) . '"';
+    $sbom_add =	'"contact-info" : "' . htmlspecialchars($_POST['infourl']) . '"';
   } else if ( $_POST['sbom' ] == 'c2' ) {
     $schema =htmlspecialchars($_POST['sbschema'],ENT_QUOTES);
     $sbom_add = '"local-well-known" : "openc2"' ;
