@@ -443,9 +443,9 @@ $doegress="Yes";
 if ( isset($_POST['clnames']) || isset($_POST['entnames']) ||
      isset($_POST['myctlnames']) || isset($_POST['locnames']) ||
      isset($_POST['mannames'])) {
-     gotacls=1;
+     $gotacls=1;
      } else {
-     gotacls=0;
+     $gotacls=0;
 }
 
 if ( $gotacls ) {
