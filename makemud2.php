@@ -444,7 +444,6 @@ if ( isset($_POST['clbox']) || isset($_POST['entbox']) ||
      isset($_POST['myctlbox']) || isset($_POST['locbox']) ||
      isset($_POST['manbox']) || isset($_POST['mymanbox'])) {
      $gotacls=1;
-     print "Gotacls = 1\n";
      } else {
      $gotacls=0;
 }
