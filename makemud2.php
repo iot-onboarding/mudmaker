@@ -564,7 +564,7 @@ if ( $gotin > 0 || $gotout > 0 ) {
                  . '" } ]';
   } else if ( $_POST['sbom'] == 'local' ) {
     $schema =htmlspecialchars($_POST['sbschema'],ENT_QUOTES);
-    $sbom_add = '"local-well-known" : "' . $schema . '"' ;
+    $sbom_add = '"sbom-local-well-known" : "' . $schema . '"' ;
   } else if ( $_POST['sbom'] == 'tel' ) {
     $sbom_add =	'"contact-info" : "tel:+' . htmlspecialchars($_POST['sbomcc']) .
     	        htmlspecialchars($_POST['sbomnr']) . '"';
@@ -575,10 +575,17 @@ if ( $gotin > 0 || $gotout > 0 ) {
     $sbom_add = '"local-well-known" : "openc2"' ;
   }
 
+  $vuln_add='';
+  if ( $_POST['vulntype'] == "url" ) {
+    if ( $sbom_add != '' ) {
+       $vuln_add = ', ';
+    }
+    $vuln_add = $vuln_add . '"vuln-url" :' . htmlspecialchars($_POST['vulninfo'] . '"';
+  }
   $exts = '"ol"';
-  if ( $sbom_add != '' ) {
-    $exts = $exts . ' , ' . '"sbom"' ;
-    $sbom_add = '"sbom" : { ' . $sbom_add . '},' ;
+  if ( $sbom_add != '' || $vuln_add != '' ) {
+    $exts = $exts . ' , ' . '"transparency"' ;
+    $transparency = '"transparency" : { ' . $sbom_add . $vuln_add . '},';
   }
 
   $exts = '"extensions": [ ' . $exts . '],';
@@ -597,7 +604,7 @@ if ( $gotin > 0 || $gotout > 0 ) {
   }
   $olstring = '"ol" : { "owners" : [ "' . $publisher . '" ],' .
   	    '"spdx-tag" : "0BSD" },';
-  $supportInfo = $actxt0 . $exts . $olstring . $sbom_add .
+  $supportInfo = $actxt0 . $exts . $olstring . $transparency .
   	       '"mud-url" : "' . $mudurl . '",
   	       "mud-signature" : "' . $mudsig . '",
   	       "last-update" : "' . $time . '",' . "\n" .

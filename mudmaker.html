@@ -90,6 +90,18 @@
               size="50"
               maxlength="200" type="url"></span>
         </span> <br>
+        <p>
+          <strong>Security advisory information can be found at</strong>
+        </p>
+        <select id="vulntype" name="vulntype" onchange="setvulnvis(vulnview)">
+          <option value="none" default>N/A</option>
+          <option value="url">URL to CSAF/CVRF</option>
+        </select>
+        <br>
+        <span id="vulnview" style="display: none">
+          Enter URL<input name="vulninfo" type="url" size="50" maxlength="200">
+        </span>
+        <br>
         <h3>How will this device communicate on the network? </h3>
         <table border="1">
           <tbody>
