@@ -367,17 +367,6 @@ function buildacegroup(&$target, &$proto, &$portl, &$portarray,
 {
   global $inbound, $outbound, $gotin, $gotout;
 
-//  if ( $gotin > 0 ) {
-//    $inbound = $inbound . ",";
-//  } else {
-//    $gotin=1;
-//  }
-  
-//  if ( $gotout > 0) {
-//    $outbound = $outbound . ",";
-//  } else {
-//    $gotout = 1;
-//  }
 
   // loop through all entries in array
   // we can rely on proto as being set to SOME value...
@@ -448,50 +437,62 @@ $choice=$_POST['ipchoice'];
 /* $doegress=$_POST['bibox']; */
 $doegress="Yes";
 
-if ( $choice != 'ipv4' && $choice != 'ipv6' && $choice != 'both' ) {
-  errorexit("No IP version chosen");
+// Not necessary to generate actual ACLs, but we need to know at this
+// point in the code.
+
+if ( isset($_POST['clbox']) || isset($_POST['entbox']) ||
+     isset($_POST['myctlbox']) || isset($_POST['locbox']) ||
+     isset($_POST['manbox']) || isset($_POST['mymanbox'])) {
+     $gotacls=1;
+     } else {
+     $gotacls=0;
 }
-  
-// We start by processing cloud communications
 
-if ( isset($_POST['clbox'] ) ) {
-  // build based on cloud outbound
+if ( $gotacls ) {
 
-  if (isset($_POST['clport']))  { // distinctly possible user didn't enter ports
-    $clport= $_POST['clport'];
-  } else {
-    $clport= FALSE;
-  }
+   if ( $choice != 'ipv4' && $choice != 'ipv6' && $choice != 'both' ) {
+     errorexit("No IP version chosen");
+   }
   
-  buildacegroup($_POST['clnames'],$_POST['clproto'],$_POST['clportl'],$clport,
+  // We start by processing cloud communications
+
+  if ( isset($_POST['clbox'] ) ) {
+     // build based on cloud outbound
+
+     if (isset($_POST['clport']))  { // distinctly possible user didn't enter ports
+     	$clport= $_POST['clport'];
+      } else {
+        $clport= FALSE;
+     }
+  
+     buildacegroup($_POST['clnames'],$_POST['clproto'],$_POST['clportl'],$clport,
       $_POST['clinit'], "cl",IS_CLOUD);
-
-}
+  }
 
 
 
 // Next controller (enterprise)
 
-if ( isset($_POST['entbox'] )) {
-  // build based on enterprise outbound
+  if ( isset($_POST['entbox'] )) {
+    // build based on enterprise outbound
   
-  if (isset($_POST['entproto']))  {
-    // distinctly possible user didn't enter ports   
-    $entport= $_POST['entport'];
+    if (isset($_POST['entproto']))  {
+      // distinctly possible user didn't enter ports   
+      $entport= $_POST['entport'];
     
-  } else {
-    $entport= FALSE;
-  }
+    } else {
+      $entport= FALSE;
+    }
   
-  buildacegroup($_POST['entnames'],$_POST['entproto'],$_POST['entportl'],$entport,
-      $_POST['entinit'], "ent",IS_CONTROLLER);
+    buildacegroup($_POST['entnames'],$_POST['entproto'],$_POST['entportl'],$entport,
+        $_POST['entinit'], "ent",IS_CONTROLLER);
 
-}
+  }
 
-// my-controller 
+  // my-controller 
 
   if (isset($_POST['myctlport']))  {
-    // distinctly possible user didn't enter ports   
+     // distinctly possible user didn't enter ports   
     $myctlport= $_POST['myctlport'];
     
   } else {
@@ -504,31 +505,31 @@ if ( isset($_POST['entbox'] )) {
       $myctlport, $_POST['myctlinit'], "myctl",IS_MY_CONTROLLER);
   }
 
-// local services
+  // local services
 
-if ( isset($_POST['locbox'])) {
-  // build local outbound services.
+  if ( isset($_POST['locbox'])) {
+    // build local outbound services.
     
-  buildacegroup($_POST['locnames'],$_POST['locproto'],$_POST['locportl'],
-     $_POST['locport'], $_POST['locinit'], "loc",IS_LOCAL);
-}
+    buildacegroup($_POST['locnames'],$_POST['locproto'],$_POST['locportl'],
+       $_POST['locport'], $_POST['locinit'], "loc",IS_LOCAL);
+  }
 
-// manufacturer
+  // manufacturer
 
-if ( isset($_POST['manbox'])) {
-  // build local inbound services.
-  buildacegroup($_POST['mannames'],$_POST['manproto'],$_POST['manportl'],
-     $_POST['manport'], $_POST['maninit'], "man",IS_MFG);
-}
+  if ( isset($_POST['manbox'])) {
+    // build local inbound services.
+    buildacegroup($_POST['mannames'],$_POST['manproto'],$_POST['manportl'],
+       $_POST['manport'], $_POST['maninit'], "man",IS_MFG);
+  }
 
-// my-manufacturer
-if ( isset($_POST['mymanbox'])) {
-  // build local inbound services.
-  buildacegroup($_POST['mymannames'],$_POST['mymanproto'],$_POST['mymanportl'],
+  // my-manufacturer
+  if ( isset($_POST['mymanbox'])) {
+    // build local inbound services.
+    buildacegroup($_POST['mymannames'],$_POST['mymanproto'],$_POST['mymanportl'],
      $_POST['mymanport'], $_POST['mymaninit'], "myman",IS_MYMFG);
 
+  }
 }
-
 
 
 if ( $fail ) {
@@ -536,10 +537,6 @@ if ( $fail ) {
 }
 
 
-
-  
-  
-if ( $gotin > 0 || $gotout > 0 ) {
   $d=new Datetime('NOW');
   $time=$d->format(DATE_RFC3339);
 
@@ -613,9 +610,19 @@ if ( $gotin > 0 || $gotout > 0 ) {
 	       $masa . '"systeminfo": "' . $sysDesc . '",' . "\n" .
 	       $mfg_info .
 	       '"documentation": "' . $doc_url . '",' . "\n" .
-	       '"model-name": "' . $model_name . '",' . "\n";
+	       '"model-name": "' . $model_name . '"';
+  if ( $gotacls ) {
+    $supportInfo = $supportInfo . ',' . "\n";
+  } else {
+    $supportinfo = $supportInfo . "\n";
+  }
+
   $devput = "{\n". $supportInfo . "\n";
 
+if ( ! $gotacls ) {
+  $output = $devput . '} }';
+
+} else {
   $mudname="mud-" . rand(10000,99999) . "-";
   $v4in = $mudname . "v4to";
   $v4out = $mudname . "v4fr";
@@ -711,6 +718,7 @@ if ( $gotin > 0 || $gotout > 0 ) {
   $devput = $devput . $actxt2;
   
   $output = $devput . $aclhead . $output . "]}}";
+}
   $b64in = $output;
   $output= prettyPrint($output);
 
@@ -787,10 +795,6 @@ if ( $gotin > 0 || $gotout > 0 ) {
   print "</figure></div>";
   print "<pre style=\"padding: 1em 1em 1em 1em; font-weight: bold;\">" . htmlentities($output) . "</pre>";
   print "<hr></div>\n";
-} else {
-  
-  print "<h1>No output selected.  Click back and try again</h1>";
-}
   print "</body>\n</html>";
 
 ?>
