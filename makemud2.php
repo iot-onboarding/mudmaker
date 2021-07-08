@@ -549,7 +549,7 @@ if ( $gotin > 0 || $gotout > 0 ) {
       $masa = '"masa-server" : "' . $_POST['masa'] . '",' . "\n";
       }
   }
-
+  
   $sysDesc=htmlspecialchars($_POST['sysDescr'],ENT_QUOTES);
   $doc_url=htmlspecialchars($_POST['doc_url'],ENT_QUOTES);
   $model_name=htmlspecialchars($_POST['model_name'],ENT_QUOTES);
@@ -559,29 +559,44 @@ if ( $gotin > 0 || $gotout > 0 ) {
   '/' . $model_name . ".p7s";
   $sbom_add='';
   if ( $_POST['sbom'] == 'cloud' ) {
-    $sbom_add = '"sbom-url" : "' . htmlspecialchars($_POST['sbomcloudurl']) . '"';
+    $sbom_add = '"sboms" : [ { "version-info" : "' . $_POST['sbomswver'] . '",' .
+                '"sbom-url" :  "' . htmlspecialchars($_POST['sbomcloudurl'])
+                 . '" } ]';
   } else if ( $_POST['sbom'] == 'local' ) {
-    $sbom_add = '"sbom-local" : [ "' . htmlspecialchars($_POST['sbomlocalscheme']) . '" ]';
+    $schema =htmlspecialchars($_POST['sbschema'],ENT_QUOTES);
+    $sbom_add = '"local-well-known" : "' . $schema . '"' ;
   } else if ( $_POST['sbom'] == 'tel' ) {
     $sbom_add =	'"contact-info" : "tel:+' . htmlspecialchars($_POST['sbomcc']) .
     	        htmlspecialchars($_POST['sbomnr']) . '"';
-  } else if ( $_POST['sbom'] == '822' ) {
-    $sbom_add = '"contact-info" : "mailto:' . htmlspecialchars($_POST['sbemail']) .  '"';
-    }
-  if ( isset($_POST['sbomswver']) ) {
-    if ( $sbom_add != '' ) {
-       $sbom_add = '"extensions" : [ "sbom" ], "sboms" : [ { "software-version": "' . $_POST['sbomswver'] . '", ' . $sbom_add . '} ],' ;
-    }
+  } else if ( $_POST['sbom' ] == 'c2' ) {
+    $schema =htmlspecialchars($_POST['sbschema'],ENT_QUOTES);
+    $sbom_add = '"local-well-known" : "openc2"' ;
   }
 
+  $exts = '"ol"';
+  if ( $sbom_add != '' ) {
+    $exts = $exts . ' , ' . '"sbom"' ;
+    $sbom_add = '"sbom" : { ' . $sbom_add . '},' ;
+  }
+
+  $exts = '"extensions": [ ' . $exts . '],';
   if( isset($_POST['man_name']) && strlen(htmlspecialchars($_POST['man_name'],ENT_QUOTES)) > 0) {
     $man_name = htmlspecialchars($_POST['man_name'],ENT_QUOTES);
     $mfg_info = '"mfg-name": "' . $man_name . '",' . "\n";
   } else {
     $mfg_info = '';
   }
-  
-  $supportInfo = $actxt0 . '"mud-url" : "' . $mudurl . '",
+  if ( isset($_POST['pubsame'])) {
+    $d = new DateTime('NOW');
+    $year = $d->format('Y');
+    $publisher = "Copyright (c) " . $man_name . " " . $year . ". All Rights Reserved";
+  } else {
+    $publisher = htmlspecialchars($_POST['pub_name']);
+  }
+  $olstring = '"ol" : { "owners" : [ "' . $publisher . '" ],' .
+  	    '"spdx-tag" : "0BSD" },';
+  $supportInfo = $actxt0 . $exts . $olstring . $sbom_add .
+  	       '"mud-url" : "' . $mudurl . '",
   	       "mud-signature" : "' . $mudsig . '",
   	       "last-update" : "' . $time . '",' . "\n" .
 	       '"cache-validity" : 48,' .
@@ -590,7 +605,6 @@ if ( $gotin > 0 || $gotout > 0 ) {
 	       $mfg_info .
 	       '"documentation": "' . $doc_url . '",' . "\n" .
 	       '"model-name": "' . $model_name . '",' . "\n";
-  $supportInfo = $supportInfo . $sbom_add;
   $devput = "{\n". $supportInfo . "\n";
 
   $mudname="mud-" . rand(10000,99999) . "-";
