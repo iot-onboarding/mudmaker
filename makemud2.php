@@ -611,11 +611,17 @@ if ( $fail ) {
 	       $masa . '"systeminfo": "' . $sysDesc . '",' . "\n" .
 	       $mfg_info .
 	       '"documentation": "' . $doc_url . '",' . "\n" .
-	       '"model-name": "' . $model_name . '",' . "\n";
+	       '"model-name": "' . $model_name;
+  if ( $gotacls ) {
+    $supportInfo = $supportInfo . '",' . "\n";
+  } else {
+    $supportinfo = $supportInfo . "\n";
+  }
+
   $devput = "{\n". $supportInfo . "\n";
 
 if ( ! $gotacls ) {
-  $output = $devput . '}';
+  $output = $devput . '} }';
 
 } else {
   $mudname="mud-" . rand(10000,99999) . "-";
