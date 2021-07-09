@@ -35,9 +35,10 @@
             title="This is the URL that the device will emit to the network.">
             <img src="Circle-question-yellow.png"></span></p>
         https://<input name="mudhost" maxlength="50" size="40" required="yes"> /
-        (model name here-&gt;)<input name="model_name" maxlength="50" size="20"
+        (model name here-&gt;)<input name="model_name" maxlength="50"
+          size="20"
           required="yes">
-        <p>Manufacturer Name&nbsp; <input name="man_name" maxlength="40" size="40"></p>
+        <br><p>Manufacturer Name&nbsp; <input name="man_name" maxlength="40" size="40"></p>
         <p> Publisher same as manufacturer? <input id="pubcheck" name="pubsame"
             checked="checked"
             onchange="togglepubsame(pubcheck,pubnamediv);"
@@ -63,7 +64,7 @@
           <option value="infourl">Get more information URL</option>
           <option value="c2">OpenC2</option>
         </select>
-         <br>
+        <br>
         <span id="sbomany" style="display: none"><br>
           <span id="sbcloud" style="display: none"> Static SBOM URL on Internet:
             Software version: <input id="sbomswver" name="sbomswver" size="10"
@@ -96,7 +97,8 @@
           <option value="none" default="">N/A</option>
           <option value="url">URL to CSAF/CVRF</option>
         </select>
-        <br><br>
+        <br>
+        <br>
         <span id="vulnview" style="display: none"> Enter URL: <input name="vulninfo"
             size="50"
             maxlength="200"
