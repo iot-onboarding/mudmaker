@@ -186,7 +186,7 @@ function togglepubsame(p,d) {
 }
 
 function setvulnvis(v) {
-    if ( v.style.display='none' ) {
+    if ( v.style.display == 'none' ) {
 	v.style.display='inherit';
     } else {
 	v.style.display='none';
