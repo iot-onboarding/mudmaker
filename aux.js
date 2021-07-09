@@ -200,6 +200,7 @@ function setVisibility(outer) {
     document.getElementById('sblocal').style.display= 'none';
     document.getElementById('sbtel').style.display= 'none';
     document.getElementById('sbc2').style.display= 'none';
+    document.getElementById('sbinfourl').style.display= 'none';
     document.getElementById('sbomcloudurl').value='';
     document.getElementById('sbomcc').value='';
     document.getElementById('sbomnr').value='';
