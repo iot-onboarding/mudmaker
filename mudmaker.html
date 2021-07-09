@@ -63,7 +63,7 @@
           <option value="infourl">Get more information URL</option>
           <option value="c2">OpenC2</option>
         </select>
-        <br>
+         <br>
         <span id="sbomany" style="display: none"><br>
           <span id="sbcloud" style="display: none"> Static SBOM URL on Internet:
             Software version: <input id="sbomswver" name="sbomswver" size="10"
@@ -84,24 +84,24 @@
           </span> <span id="sbc2" style="display: none"> OpenC2
             URI:&nbsp;&nbsp;<input id="sbomc2" name="sbomc2" size="50" maxlength="200"
               type="url">
-          </span> <span id="sbinfourl" style="display: none">
-          Enter URL here: <input id="infourl"
+          </span> <span id="sbinfourl" style="display: none"> Enter URL here: <input
+              id="infourl"
               name="infourl"
               size="50"
-              maxlength="200" type="url"></span>
+              maxlength="200"
+              type="url"></span>
         </span> <br>
-        <p>
-          <strong>Security advisory information can be found at</strong>
-        </p>
+        <p> <strong>Security advisory information can be found at</strong> </p>
         <select id="vulntype" name="vulntype" onchange="setvulnvis(vulnview)">
-          <option value="none" default>N/A</option>
+          <option value="none" default="">N/A</option>
           <option value="url">URL to CSAF/CVRF</option>
         </select>
-        <br>
-        <span id="vulnview" style="display: none">
-          Enter URL: <input name="vulninfo" type="url" size="50" maxlength="200">
-        </span>
-        <br>
+        <br><br>
+        <span id="vulnview" style="display: none"> Enter URL: <input name="vulninfo"
+            size="50"
+            maxlength="200"
+            type="url">
+        </span> <br>
         <h3>How will this device communicate on the network? </h3>
         <table border="1">
           <tbody>
