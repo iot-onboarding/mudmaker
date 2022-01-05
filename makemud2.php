@@ -582,7 +582,7 @@ if ( $fail ) {
   $exts = '"ol"';
   if ( $sbom_add != '' || $vuln_add != '' ) {
     $exts = $exts . ' , ' . '"transparency"' ;
-    $transparency = '"ietf-mud-transparency:transparency" : { ' . $sbom_add . $vuln_add . '},';
+    $transparency = '"mudtx:transparency" : { ' . $sbom_add . $vuln_add . '},';
   }
 
   $exts = '"extensions": [ ' . $exts . '],';
