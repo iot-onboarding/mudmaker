@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<!--
+	Prism by TEMPLATED	templated.co @templatedco	Released for free under the Creative Commons Attribution 3.0 license (templated.co/license)-->
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <title>Generate Software Bill of Materials</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--[if lte IE 8]><script src="assets/js/ie/html5shiv.js"></script><![endif]-->
+    <link rel="stylesheet" href="assets/css/main.css">
+    <!--[if lte IE 9]><link rel="stylesheet" href="assets/css/ie9.css" /><![endif]-->
+    <script type="text/javascript" src="sbom.js" defer="defer"></script>
+  </head>
+  <body> <!-- Banner -->
+    <section id="banner">
+      <div class="inner split">
+        <section>
+          <h2>Visualize Your System</h2>
+        </section>
+        <section>
+          <p>MUDMaker: A tool to build your own MUD files</p>
+          <ul class="actions">
+          </ul>
+          <ul class="actions">
+            <li><a href="index.html" class="button special">Back to the Intro</a></li>
+          </ul>
+        </section>
+      </div>
+    </section>
+    <section id="two" class="wrapper style2 alt">
+      <div class="inner">
+        <div class="content">
+          <h3>Let's visualize what software is on your system:</h3>
+          <form method="post" action="get_visual" target="visframe" enctype="multipart/form-data"><br>
+            Upload software bill of materials file from:&nbsp; file&nbsp;<input name="sbomloc"
+              id="sbfile"
+              value="sbomfileselect"
+              type="radio"
+              onchange='sbomselect("urlviewer","fileselector");'>
+							or URL&nbsp; 
+            <input name="sbomloc"
+              id="sburl"
+              value="sbomurl"
+              type="radio"
+              onchange='sbomselect("fileselector","urlviewer");'>
+            <br>
+            <div id="urlviewer" style="display: none"> 
+              URL&nbsp;<input type="url"> </div>
+            <div id="fileselector" style="display: none"> 
+              <input name="sbomfile" id="sbomfile"
+                type="file">
+            </div> <br>
+            <br>
+            <input class="actions" value="Reset" type="reset"> <input class="actions"
+              value="Process SBOM"
+              type="submit">
+          </form>
+        </div>
+            <iframe name="visframe" width="100%" height="512px" title="Results">
+            </iframe>
+      </div>
+    </section>
+    <!-- Footer -->
+    <footer id="footer">
+      <div class="copyright"> © Untitled. All rights reserved. Images: <a href="http://unsplash.com">Unsplash</a>.
+        Design: <a href="http://templated.co">TEMPLATED</a>. </div>
+    </footer>
+    <!-- Scripts -->
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/js/skel.min.js"></script>
+    <script src="assets/js/util.js"></script>
+    <!--[if lte IE 8]><script src="assets/js/ie/respond.min.js"></script><![endif]-->
+    <script src="assets/js/main.js"></script>
+  </body>
+</html>

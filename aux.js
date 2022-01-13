@@ -11,7 +11,6 @@ function removeIt(elemId) {
     var elem=document.getElementById(elemId);
     elem.parentNode.removeChild(elem);
 }
-
     
 
 function addInput(divName,sectype,dnsorurl,i){
@@ -186,16 +185,27 @@ function togglepubsame(p,d) {
     }
 }
 
+function setvulnvis(v) {
+    if ( v.style.display == 'none' ) {
+	v.style.display='inherit';
+    } else {
+	v.style.display='none';
+	v.value='';
+    }
+}
+
 function setVisibility(outer) {
 
     document.getElementById('sbcloud').style.display= 'none';
     document.getElementById('sblocal').style.display= 'none';
     document.getElementById('sbtel').style.display= 'none';
     document.getElementById('sbc2').style.display= 'none';
+    document.getElementById('sbinfourl').style.display= 'none';
     document.getElementById('sbomcloudurl').value='';
     document.getElementById('sbomcc').value='';
     document.getElementById('sbomnr').value='';
     document.getElementById('sbomc2').value='';
+    document.getElementById('sbinfourl').value='';
     if (outer.value != 'none') {
 	var elid='sb' + outer.value;
 	document.getElementById('sbomany').style.display= 'inherit';

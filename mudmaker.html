@@ -27,9 +27,7 @@
       </div>
     </section>
     <!-- One -->
-    <!--    <section id="1a" class="wrapper"><strong>NTIA SBOM Prototype Instructions:</strong><br>
-     This is a modified version of the MUDMAKER tool that can include SBOMs.<br>      <ul>        <li>Enter a domain name and a model number on the 1st line, any          manufacturer name on the next line, any URL for documentation, and          anything for a description.</li>        <li>Select one of several forms of SBOM locator in the pull down menu          and fill in the information.</li>        <li>The tool right now requires at least a simple access list.&nbsp;          Just click on "Access to local networks" and pick a TCP or UDP port.</li>        <li>Choose IPv4 or IPv6 in the pull down</li>        <li>Click "Submit".&nbsp; That will generate a MUD file that includes          relevant SBOM information.</li>        <li>TODO: Not require the ACLs.</li>      </ul>    </section> -->
-    <section id="two" class="wrapper">
+     <section id="two" class="wrapper">
       <form method="POST" action="makemud2.php">
         <p>Please enter host and model the intended MUD-URL for this device: <span
             title="This is the URL that the device will emit to the network.">
@@ -37,6 +35,8 @@
         https://<input name="mudhost" maxlength="50" size="40" required="yes"> /
         (model name here-&gt;)<input name="model_name" maxlength="50" size="20"
           required="yes">
+        <br>
+        <br>
         <p>Manufacturer Name&nbsp; <input name="man_name" maxlength="40" size="40"></p>
         <p> Publisher same as manufacturer? <input id="pubcheck" name="pubsame"
             checked="checked"
@@ -52,14 +52,13 @@
         <br>
         <p>Please enter a short description for this device:</p>
         <input name="sysDescr" maxlength="120" size="40" required="yes" type="text">
-        <h3><br>
-        </h3>
         <p><strong>How can one get a software bill of materials?</strong></p>
         <select id="sbom" name="sbom" onchange="setVisibility(sbom);">
           <option value="none" selected="selected">Not available</option>
           <option value="cloud">Cloud URL</option>
           <option value="local">Well-known URL on Device</option>
-          <option value="tel">On Request</option>
+          <option value="tel">Telephone</option>
+          <option value="infourl">Get more information URL</option>
           <option value="c2">OpenC2</option>
         </select>
         <br>
@@ -83,7 +82,25 @@
           </span> <span id="sbc2" style="display: none"> OpenC2
             URI:&nbsp;&nbsp;<input id="sbomc2" name="sbomc2" size="50" maxlength="200"
               type="url">
-          </span> </span> <br>
+          </span> <span id="sbinfourl" style="display: none"> Enter URL here: <input
+              id="infourl"
+              name="infourl"
+              size="50"
+              maxlength="200"
+              type="url"></span>
+        </span> <br>
+        <p> <strong>Security advisory information can be found at</strong> </p>
+        <select id="vulntype" name="vulntype" onchange="setvulnvis(vulnview)">
+          <option value="none" default="">N/A</option>
+          <option value="url">URL to CSAF/CVRF</option>
+        </select>
+        <br>
+        <br>
+        <span id="vulnview" style="display: none"> Enter URL: <input name="vulninfo"
+            size="50"
+            maxlength="200"
+            type="url">
+        </span> <br>
         <h3>How will this device communicate on the network? </h3>
         <table border="1">
           <tbody>
@@ -148,8 +165,7 @@
         </table>
         <p><br>
           This device speaks
-          <select name="ipchoice" required="">
-            <option value=""></option>
+          <select name="ipchoice">
             <option value="ipv4">IPv4</option>
             <option value="ipv6">IPv6</option>
             <option value="both">Both</option>
@@ -390,5 +406,6 @@
     <script src="assets/js/util.js"></script>
     <!--[if lte IE 8]><script src="assets/js/ie/respond.min.js"></script><![endif]-->
     <script src="assets/js/main.js"></script>
+    
   </body>
 </html>
