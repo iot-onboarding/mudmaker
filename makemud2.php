@@ -1,7 +1,7 @@
 <?php
   session_start();
 
-/* Copyright (c) 2016, Cisco Systems
+/* Copyright (c) 2016-2024, Cisco Systems
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -39,6 +39,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * initiate.  
  */
 
+use chillerlan\QRCode\{QRCode, QROptions};
+require __DIR__ . '/vendor/autoload.php';
 date_default_timezone_set("GMT");
 $aclhead= <<< ACL_HEAD
 "ietf-access-control-list:acls" : {
@@ -787,10 +789,8 @@ if ( ! $gotacls ) {
   print "<div id=\"mudresults\">";
   print "<hr>\n";
   print "<div style=\"float: right\"><figure>";
-  print "<img src=\"" . 
-  	"https://chart.apis.google.com/chart?cht=qr&chs=100x100&chl=" . 
-	$mudurl . 
-	"&chld=H|0\">";
+  $qrc= (new QRcode)->render($mudurl);
+  printf('<img src="%s" alt="QR code"/>',$qrc);
   print "<figcaption style=\"text-align: center\">Your MUDURL<br></figcaption>";
   print "</figure></div>";
   print "<pre style=\"padding: 1em 1em 1em 1em; font-weight: bold;\">" . htmlentities($output) . "</pre>";
