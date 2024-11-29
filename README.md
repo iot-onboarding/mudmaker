@@ -11,6 +11,10 @@ Please feel free to post issues and PRs.
 This package also requires the python mudpp package, also available
 from this project.
 
+## Requirements
+
+This tool has been tested with PHP 8.3, php-zip, as well as composer with chillerlan/php-qrcode, using Apache 2.
+
 ### mud-visualizer submodule
 
 To configure the mud-visualizer submodule properly, follow these steps: 
