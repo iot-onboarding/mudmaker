@@ -741,7 +741,7 @@ if ( ! $gotacls ) {
   //  openssl_cms_sign($mudtmpfile,$sigtmp,$sigtmpfile,
   //   openssl_x509_read($signcert),$signkey,
   // NULL, CMS_DETACHED|CMS_BINARY, OPENSSL_ENCODING_DER);
-  $pinfo = ( "Manufacturer" => $man_name, "Model" => $model_name,
+  $pinfo = array( "Manufacturer" => $man_name, "Model" => $model_name,
              "CountryCode" => "US",
              "MudUrl" => $mudurl, "SerialNumber" => "S12345",
              "Mudfile" => $output, "EmailAddress" => "mudfiles@" . 
