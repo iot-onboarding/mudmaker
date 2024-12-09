@@ -29,11 +29,25 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 if ( session_id() ) {
   $model = $_SESSION['model'];
-  $output=base64_decode($_SESSION['zipfile']);
+  $pinfo=base64_decode($_SESSION['pb64']);
+  $ch = curl_init("http://localhost:8085/mudzip");
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+  curl_setopt($ch, CURLOPT_POST, true);
+  curl_setopt($ch, CURLOPT_POSTFIELDS, $pinfo);
+  curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+    'Content-Type: application/json',
+    'Accept: application/zip',
+    'Content-Length: ' . strlen($pinfo)
+  ));
+  $response = curl_exec($ch);
+  if (curl_errno($ch)) {
+    throw new Exception(curl_error($ch));
+  }
+
   header('Content-Type: application/zip');
   header("Content-Transfer-Encoding: binary");
   header("Content-disposition: attachment; filename=\"" . $model . ".zip\"");
-  print($output);
+  print($response);
 } else {
   print("<h1>NO SESSION</h1>");
 }

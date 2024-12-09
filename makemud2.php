@@ -741,29 +741,37 @@ if ( ! $gotacls ) {
   //  openssl_cms_sign($mudtmpfile,$sigtmp,$sigtmpfile,
   //   openssl_x509_read($signcert),$signkey,
   // NULL, CMS_DETACHED|CMS_BINARY, OPENSSL_ENCODING_DER);
-  $cmd="/usr/bin/openssl cms -sign -binary -signer " . $signcert .
-       " -in " . $mudtmpfile . " -inkey " . $signkey . 
-       " -outform DER -certfile " . $intcert . " -out " . $sigtmpfile;
-  exec($cmd);
-  $sigfp=fopen($sigtmpfile,"rb") or die("Cannot read signature");
+  $pinfo = ( "Manufacturer" => $man_name, "Model" => $model_name,
+             "CountryCode" => "US",
+             "MudUrl" => $mudurl, "SerialNumber" => "S12345",
+             "Mudfile" => $output, "EmailAddress" => "mudfiles@" . 
+             htmlspecialchars($_POST['mudhost'],ENT_QUOTES)
+  );
+  $pb64 = base64_encode(json_encode($pinfo));
+  //  $cmd="/usr/bin/openssl cms -sign -binary -signer " . $signcert .
+  //       " -in " . $mudtmpfile . " -inkey " . $signkey . 
+  //       " -outform DER -certfile " . $intcert . " -out " . $sigtmpfile;
+  //  exec($cmd);
+  //  $sigfp=fopen($sigtmpfile,"rb") or die("Cannot read signature");
   
-  $signature = fread($sigfp,32000);
-  fclose($sigfp);
-  $z=new zipArchive();
-  $z->open($ziptmpfile,ZIPARCHIVE::CREATE);
-  $z->addFromString($model_name . ".json", $output);
-  $z->addFromString($model_name . ".p7s", $signature);
-  $z->close();
-  $zfp = $sigfp=fopen($ziptmpfile,"rb") or die("Cannot read signature");
-  $zcontent= base64_encode(fread($zfp,64000));
-  fclose($zfp);
-  unlink($mudtmpfile);
-  unlink($sigtmpfile);
-  unlink($ziptmpfile);    
+  //  $signature = fread($sigfp,32000);
+  //  fclose($sigfp);
+  //  $z=new zipArchive();
+  //  $z->open($ziptmpfile,ZIPARCHIVE::CREATE);
+  //  $z->addFromString($model_name . ".json", $output);
+  //  $z->addFromString($model_name . ".p7s", $signature);
+  //  $z->close();
+  //  $zfp = $sigfp=fopen($ziptmpfile,"rb") or die("Cannot read signature");
+  //  $zcontent= base64_encode(fread($zfp,64000));
+  //  fclose($zfp);
+  //  unlink($mudtmpfile);
+  //  unlink($sigtmpfile);
+  //  unlink($ziptmpfile);    
   session_unset();
-  $_SESSION['zipfile'] = $zcontent;
+  //  $_SESSION['zipfile'] = $zcontent;
   $_SESSION['model'] = $model_name;
-  $_SESSION['mudfile'] = $output;
+  //  $_SESSION['mudfile'] = $output;
+  $_SESSION['pb64' ] = $pb64
   print "<!DOCTYPE html>\n<html>\n";
   print  "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n";
   print  "<link rel=\"stylesheet\" href=\"assets/css/main.css\">\n";
