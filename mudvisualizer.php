@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <?php
   session_start();
-  $mudfile=preg_replace("/\n/", '\n',$_SESSION['mudfile']);
+  $pinfo=json_decode(base64_decode($_SESSION['pb64']));
+  $mudfile=preg_replace("/\n/", '\n',$pinfo->{'Mudfile'});
 ?>
 <!--
 	Prism by TEMPLATED	templated.co @templatedco	Released for free under the Creative Commons Attribution 3.0 license (templated.co/license)-->
