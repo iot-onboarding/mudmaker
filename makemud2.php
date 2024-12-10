@@ -552,10 +552,11 @@ if ( $fail ) {
   $sysDesc=htmlspecialchars($_POST['sysDescr'],ENT_QUOTES);
   $doc_url=htmlspecialchars($_POST['doc_url'],ENT_QUOTES);
   $model_name=htmlspecialchars($_POST['model_name'],ENT_QUOTES);
+  $mudhost=preg_replace('/\/.*/','',
+     htmlspecialchars($_POST['mudhost'],ENT_QUOTES));
   $mudurl= "https://" . htmlspecialchars($_POST['mudhost'],ENT_QUOTES) .
   '/' . $model_name . ".json";
-  $mudsig= "https://" . htmlspecialchars($_POST['mudhost'],ENT_QUOTES) .
-  '/' . $model_name . ".p7s";
+  $mudsig= "https://" . $mudhost .  '/' . $model_name . ".p7s";
   $sbom_add='';
   if ( $_POST['sbom'] == 'cloud' ) {
     $sbom_add = '"sboms" : [ { "version-info" : "' . $_POST['sbomswver'] . '",' .
@@ -745,8 +746,7 @@ if ( ! $gotacls ) {
              "CountryCode" => "US",
              "MudUrl" => $mudurl, "SerialNumber" => "S12345",
              "Mudfile" => base64_encode($output), "EmailAddress" => "mudfiles@" . 
-             htmlspecialchars($_POST['mudhost'],ENT_QUOTES)
-  );
+	     $mudhost  );
   $pb64 = base64_encode(json_encode($pinfo));
   //  $cmd="/usr/bin/openssl cms -sign -binary -signer " . $signcert .
   //       " -in " . $mudtmpfile . " -inkey " . $signkey . 
