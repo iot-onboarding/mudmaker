@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <?php
   session_start();
-  $pinfo=json_decode$_SESSION['pb64']);
+  $pinfo=json_decode($_SESSION['pb64']);
   $mudfile=preg_replace("/\n/", '\n',base64_decode($pinfo->{'Mudfile'}));
 ?>
 <!--
