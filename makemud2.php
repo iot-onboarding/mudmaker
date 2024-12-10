@@ -552,7 +552,7 @@ if ( $fail ) {
   $sysDesc=htmlspecialchars($_POST['sysDescr'],ENT_QUOTES);
   $doc_url=htmlspecialchars($_POST['doc_url'],ENT_QUOTES);
   $model_name=htmlspecialchars($_POST['model_name'],ENT_QUOTES);
-  $mudmore = htmlspecialchars($_POST['mudhost'],ENT_QUOTES));
+  $mudmore = htmlspecialchars($_POST['mudhost'],ENT_QUOTES);
   $mudhost=preg_replace('/\/.*/','', $mudmore);
   $mudurl= "https://" . $mudmore .  '/' . $model_name . ".json";
   $mudsig= "https://" . $mudmore .  '/' . $model_name . ".p7s";
