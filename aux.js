@@ -73,7 +73,7 @@ function addInput(divName,sectype,dnsorurl,i){
             any = "<option value='any'>Any</option>";
             onchange=
 		 "value='any' onchange=\"tcporudp('" + selname + "','" + portdivname + "');\"";
-	    hidden ="' style='visibility: inherit' ";
+	    hidden ="' style='visibility: hidden' ";
 	    pattern = " ";
 	    fieldinfo = 'readonly="" value="(filled in by local admin)" ';
 	    } else { 
