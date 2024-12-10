@@ -728,15 +728,15 @@ if ( ! $gotacls ) {
  * call cms_sign.  Read in the resultant file, and attach it to a button.
  */
 
-  $mudtmpfile = tempnam(sys_get_temp_dir(),"mud");
-  $ziptmpfile = $mudtmpfile . ".zip";
-  $signcert="/etc/ssl/certs/mudsigner.crt";
-  $intcert="/etc/ssl/certs/mudi2.crt";
-  $signkey="/etc/ssl/private/mudsigner.key";
-  $mudfp=fopen($mudtmpfile, "w") or die("Unable to open file!");
-  fwrite($mudfp, $output) or die ("Unable to write file!");
-  fclose($mudfp);
-  $sigtmpfile = tempnam(sys_get_temp_dir(),"sig");
+//  $mudtmpfile = tempnam(sys_get_temp_dir(),"mud");
+//  $ziptmpfile = $mudtmpfile . ".zip";
+//  $signcert="/etc/ssl/certs/mudsigner.crt";
+//  $intcert="/etc/ssl/certs/mudi2.crt";
+//  $signkey="/etc/ssl/private/mudsigner.key";
+//  $mudfp=fopen($mudtmpfile, "w") or die("Unable to open file!");
+//  fwrite($mudfp, $output) or die ("Unable to write file!");
+//  fclose($mudfp);
+//  $sigtmpfile = tempnam(sys_get_temp_dir(),"sig");
 
   //  openssl_cms_sign($mudtmpfile,$sigtmp,$sigtmpfile,
   //   openssl_x509_read($signcert),$signkey,
@@ -744,7 +744,7 @@ if ( ! $gotacls ) {
   $pinfo = array( "Manufacturer" => $man_name, "Model" => $model_name,
              "CountryCode" => "US",
              "MudUrl" => $mudurl, "SerialNumber" => "S12345",
-             "Mudfile" => $output, "EmailAddress" => "mudfiles@" . 
+             "Mudfile" => base64_encode($output), "EmailAddress" => "mudfiles@" . 
              htmlspecialchars($_POST['mudhost'],ENT_QUOTES)
   );
   $pb64 = base64_encode(json_encode($pinfo));
