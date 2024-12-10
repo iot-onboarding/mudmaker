@@ -62,9 +62,10 @@ function addInput(divName,sectype,dnsorurl,i){
 	selname= divid + counter[i] + 'sel';
 
 	if ( divName == 'loclist' ) {
-	    onchange=' ';
-	    hidden ="' style='visibility: inherit' ";
-	    any = '';
+            hidden="' style='visibility: hidden'";
+            any = "<option value='any'>Any</option>";
+            onchange=
+		 "value='any' onchange=\"tcporudp('" + selname + "','" + portdivname + "');\"";
 	    pattern = " ";
 	    fieldinfo = 'readonly="" value="any" ';
 	} else {
