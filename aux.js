@@ -70,14 +70,17 @@ function addInput(divName,sectype,dnsorurl,i){
 	    fieldinfo = 'readonly="" value="any" ';
 	} else {
 	    if ( divName == 'myctllist' ) {
-	    onchange=' ';
+            any = "<option value='any'>Any</option>";
+            onchange=
+		 "value='any' onchange=\"tcporudp('" + selname + "','" + portdivname + "');\"";
 	    hidden ="' style='visibility: inherit' ";
-	    any = '';
 	    pattern = " ";
 	    fieldinfo = 'readonly="" value="(filled in by local admin)" ';
 	    } else { 
 		if (divName == 'mymanlist' ) {
-		    onchange=' ';
+		    onchange=
+			"value='any' onchange=\"tcporudp('" + selname + "','" + portdivname + "');\"";
+		    any = "<option value='any'>Any</option>";
 		    hidden ="' style='visibility: inherit' ";
 		    any = '';
 		    pattern = " ";
