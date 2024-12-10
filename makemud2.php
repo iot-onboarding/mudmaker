@@ -724,52 +724,14 @@ if ( ! $gotacls ) {
   $b64in = $output;
   $output= prettyPrint($output);
 
-/* and now we sign with a demo signature. store mudfile into file, and then
- * call cms_sign.  Read in the resultant file, and attach it to a button.
- */
-
-//  $mudtmpfile = tempnam(sys_get_temp_dir(),"mud");
-//  $ziptmpfile = $mudtmpfile . ".zip";
-//  $signcert="/etc/ssl/certs/mudsigner.crt";
-//  $intcert="/etc/ssl/certs/mudi2.crt";
-//  $signkey="/etc/ssl/private/mudsigner.key";
-//  $mudfp=fopen($mudtmpfile, "w") or die("Unable to open file!");
-//  fwrite($mudfp, $output) or die ("Unable to write file!");
-//  fclose($mudfp);
-//  $sigtmpfile = tempnam(sys_get_temp_dir(),"sig");
-
-  //  openssl_cms_sign($mudtmpfile,$sigtmp,$sigtmpfile,
-  //   openssl_x509_read($signcert),$signkey,
-  // NULL, CMS_DETACHED|CMS_BINARY, OPENSSL_ENCODING_DER);
   $pinfo = array( "Manufacturer" => $man_name, "Model" => $model_name,
              "CountryCode" => "US",
              "MudUrl" => $mudurl, "SerialNumber" => "S12345",
              "Mudfile" => base64_encode($output), "EmailAddress" => "mudfiles@" . 
 	     $mudhost  );
   $pb64 = base64_encode(json_encode($pinfo));
-  //  $cmd="/usr/bin/openssl cms -sign -binary -signer " . $signcert .
-  //       " -in " . $mudtmpfile . " -inkey " . $signkey . 
-  //       " -outform DER -certfile " . $intcert . " -out " . $sigtmpfile;
-  //  exec($cmd);
-  //  $sigfp=fopen($sigtmpfile,"rb") or die("Cannot read signature");
-  
-  //  $signature = fread($sigfp,32000);
-  //  fclose($sigfp);
-  //  $z=new zipArchive();
-  //  $z->open($ziptmpfile,ZIPARCHIVE::CREATE);
-  //  $z->addFromString($model_name . ".json", $output);
-  //  $z->addFromString($model_name . ".p7s", $signature);
-  //  $z->close();
-  //  $zfp = $sigfp=fopen($ziptmpfile,"rb") or die("Cannot read signature");
-  //  $zcontent= base64_encode(fread($zfp,64000));
-  //  fclose($zfp);
-  //  unlink($mudtmpfile);
-  //  unlink($sigtmpfile);
-  //  unlink($ziptmpfile);    
   session_unset();
-  //  $_SESSION['zipfile'] = $zcontent;
   $_SESSION['model'] = $model_name;
-  //  $_SESSION['mudfile'] = $output;
   $_SESSION['pb64' ] = $pb64;
   print "<!DOCTYPE html>\n<html>\n";
   print  "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n";
