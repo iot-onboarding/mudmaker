@@ -554,7 +554,7 @@ if ( $fail ) {
   $model_name=htmlspecialchars($_POST['model_name'],ENT_QUOTES);
   $mudmore = htmlspecialchars($_POST['mudhost'],ENT_QUOTES);
   $mudhost=preg_replace('/\/.*/','', $mudmore);
-  $email_addr = htmlspecialchars($_POST['mudhost'],ENT_QUOTES);
+  $email_addr = htmlspecialchars($_POST['email_addr'],ENT_QUOTES);
   $mudurl= "https://" . $mudmore .  '/' . $model_name . ".json";
   $mudsig= "https://" . $mudmore .  '/' . $model_name . ".p7s";
   $sbom_add='';
