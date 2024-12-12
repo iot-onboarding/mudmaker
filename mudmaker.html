@@ -42,18 +42,18 @@
         <br>
         <p>Please provide some basic information:
         </p>
-        <p>
-          Manufacturer Name&nbsp; <input name="man_name" maxlength="40" size="40">
-        </p>
-        <p>
-          A short description for this device&nbsp; <input name="sysDescr" maxlength="120" size="40" required="yes">
-        </p>
-        <p>
-          Documentation URL:&nbsp; <input name="doc_url" maxlength="60" size="40" required="yes" type="url">
-        </p>
-        <p>
-          EMail:&nbsp; <input name="email_addr" maxlength="60" size="40" required="yes">
-        </p>
+        <div class="form-group">
+          <label for="man_name">Manufacturer Name</label><input name="man_name" maxlength="40" size="40">
+        </div>
+        <div class="form-group">
+          <label for="sysDescr">A short description for this device</label><input name="sysDescr" maxlength="120" size="40" required="yes">
+        </div>
+        <div class="form-group">
+          <label for="doc_url">Documentation URL</label><input name="doc_url" maxlength="60" size="40" required="yes" type="url">
+        </div>
+        <div class="form-group">
+          <label for="email_addr">EMail</label><input name="email_addr" maxlength="60" size="40" required="yes">
+        </div>
         <p> Publisher same as manufacturer? <input id="pubcheck" name="pubsame"
             checked="checked"
             onchange="togglepubsame(pubcheck,pubnamediv);"
