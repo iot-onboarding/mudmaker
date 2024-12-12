@@ -16,5 +16,5 @@ tr:nth-child(even) {
 .form-group {
     display: flex;
     align-items: center;
-/*    margin-bottom: 5px;*/
+    margin-bottom: 15px;
 }
