@@ -555,6 +555,7 @@ if ( $fail ) {
   $mudmore = htmlspecialchars($_POST['mudhost'],ENT_QUOTES);
   $mudhost=preg_replace('/\/.*/','', $mudmore);
   $email_addr = htmlspecialchars($_POST['email_addr'],ENT_QUOTES);
+  $country = htmlspecialchars($_POST['country'],ENT_QUOTES);
   $mudurl= "https://" . $mudmore .  '/' . $model_name . ".json";
   $mudsig= "https://" . $mudmore .  '/' . $model_name . ".p7s";
   $sbom_add='';
@@ -726,7 +727,7 @@ if ( ! $gotacls ) {
   $output= prettyPrint($output);
 
   $pinfo = array( "Manufacturer" => $man_name, "Model" => $model_name,
-             "CountryCode" => "US",
+             "CountryCode" => $country,
              "MudUrl" => $mudurl, "SerialNumber" => "S12345",
              "Mudfile" => base64_encode($output), 
 	     "EmailAddress" => $email_addr  );
