@@ -29,5 +29,5 @@ echo "[ok]"
 echo "Verifying..."
 
 openssl cms -verify -in $sigfile -inform DER  -content $mudfile -binary \
-                 -CAfile $certdir/root.pem -out /dev/null
+                 -CAfile $certdir/root.pem -purpose any -out /dev/null
 
