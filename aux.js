@@ -255,9 +255,9 @@ $('fieldset.toggleable').each(function() {
 	  //when the legend gets clicked, add an "expanded" class to the parent container fieldset... css will take care of the rest in terms of displaying
 	  $(this).parent().toggleClass('expanded');
 	  if ($(this).parent().toggleClass('expanded') == true) {
-		document.forms[$(this).parent().id] = "set"
+		document.forms[$(this).parent().id] = "set";
 	  } else {
-		document.forms[$(this).parent().id].remove()
+		document.forms[$(this).parent().id].remove();
 	  }
 	});
 	
