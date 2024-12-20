@@ -394,7 +394,7 @@
         <h3>Click on rule types below</h3>
         <fieldset class="toggleable">
           <legend>Internet Hosts: hostnames of services this device should access</legend>
-          <span id="cllist"> <input pattern="[a-zA-Z0-9.-]+\.[a-zA-Z]{2,3}$"
+          <span id="cllist"> <input pattern="^[a-zA-Z][a-zA-Z\d-]{1,22}[a-zA-Z\d]$"
               maxlength="120"
               size="40"
               name="clnames[]"
@@ -544,7 +544,7 @@
         </fieldset>
         <fieldset class="toggleable">
           <legend>By Manufacturer: identified by the domain names in their MUD URL</legend>
-          <span id="manlist"> <input pattern="[a-z0-9.-]+\.[a-z]{2,3}$"
+          <span id="manlist"> <input pattern="^[a-zA-Z][a-zA-Z\d-]{1,22}[a-zA-Z\d]$"
             maxlength="120"
             size="40"
             name="mannames[]"
