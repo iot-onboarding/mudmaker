@@ -3370,3 +3370,49 @@
 			}
 
 		}
+		fieldset.toggleable {
+			height: 8px; /* for IE purposes, this can't be 0 */
+			overflow: hidden;
+		  }
+		  
+		  /* 
+		  <FirefoxHack>
+		  Sometimes I really hate web development... hack below...
+		  For Firefox need to do the below unfortunately as the frameset height was not being honored
+		  see: https://bugzilla.mozilla.org/show_bug.cgi?id=261037
+		  @-moz-document url-prefix() {
+		  fieldset.toggleable {
+				  overflow: -moz-hidden-unscrollable;
+				  padding: 2px;
+			  }
+		  } */
+		  /*
+		  </FirefoxHack>
+		  */
+		  
+		  fieldset.toggleable.expanded {
+			height: auto; /* if it is active then make the height as big as it needs to be */
+		  }
+		  
+		  fieldset.toggleable > legend span:before {
+			content: "+"; /* add a plus sign to indicate that it can be expanded still (since not active) */
+			padding: 10px 10px 10px 10px; 
+			margin: 10px 10px 10px 10px; 
+		  }
+		  
+		  fieldset.toggleable.expanded > legend span:before {
+			content: "-"; /* add a minus sign to indicate that it is already expanded */
+			padding: 10px 10px 10px 0; 
+			margin: 10px 10px 10px 10px; 
+		  }
+		  
+		  
+		  fieldset.toggleable > legend {
+			cursor: pointer;
+		  }
+		  
+		  fieldset.toggleable.expanded > legend{
+			cursor: pointer;
+		  }
+		  
+		  
