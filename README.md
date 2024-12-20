@@ -1,4 +1,4 @@
-# Welcome to Mud Maker
+# Welcome to MudMaker
 
 This package generates and visualizes Manufacturer Usage Description (MUD) files.
 
