@@ -442,9 +442,9 @@ $doegress="Yes";
 // Not necessary to generate actual ACLs, but we need to know at this
 // point in the code.
 
-if ( isset($_POST['clbox']) || isset($_POST['entbox']) ||
-     isset($_POST['myctlbox']) || isset($_POST['locbox']) ||
-     isset($_POST['manbox']) || isset($_POST['mymanbox'])) {
+if ( isset($_POST['cl']) || isset($_POST['ctl']) ||
+     isset($_POST['myctl']) || isset($_POST['loc']) ||
+     isset($_POST['mfg']) || isset($_POST['mymfg'])) {
      $gotacls=1;
      } else {
      $gotacls=0;
@@ -458,7 +458,7 @@ if ( $gotacls ) {
   
   // We start by processing cloud communications
 
-  if ( isset($_POST['clbox'] ) ) {
+  if ( isset($_POST['cl'] ) ) {
      // build based on cloud outbound
 
      if (isset($_POST['clport']))  { // distinctly possible user didn't enter ports
@@ -475,7 +475,7 @@ if ( $gotacls ) {
 
 // Next controller (enterprise)
 
-  if ( isset($_POST['entbox'] )) {
+  if ( isset($_POST['ctl'] )) {
     // build based on enterprise outbound
   
     if (isset($_POST['entproto']))  {
@@ -500,7 +500,7 @@ if ( $gotacls ) {
   } else {
     $myctlport= FALSE;
   }
-  if ( isset($_POST['myctlbox']) ) {
+  if ( isset($_POST['myctl']) ) {
     // build my-controller
       
       buildacegroup($_POST['myctlnames'],$_POST['myctlproto'],$_POST['myctlportl'],
@@ -509,7 +509,7 @@ if ( $gotacls ) {
 
   // local services
 
-  if ( isset($_POST['locbox'])) {
+  if ( isset($_POST['loc'])) {
     // build local outbound services.
     
     buildacegroup($_POST['locnames'],$_POST['locproto'],$_POST['locportl'],
@@ -518,14 +518,14 @@ if ( $gotacls ) {
 
   // manufacturer
 
-  if ( isset($_POST['manbox'])) {
+  if ( isset($_POST['mfg'])) {
     // build local inbound services.
     buildacegroup($_POST['mannames'],$_POST['manproto'],$_POST['manportl'],
        $_POST['manport'], $_POST['maninit'], "man",IS_MFG);
   }
 
   // my-manufacturer
-  if ( isset($_POST['mymanbox'])) {
+  if ( isset($_POST['mymfg'])) {
     // build local inbound services.
     buildacegroup($_POST['mymannames'],$_POST['mymanproto'],$_POST['mymanportl'],
      $_POST['mymanport'], $_POST['mymaninit'], "myman",IS_MYMFG);

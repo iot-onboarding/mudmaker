@@ -392,7 +392,7 @@
           </select>
         </p>
         <h3>Click on rule types below</h3>
-        <fieldset class="toggleable">
+        <fieldset id="cl" class="toggleable">
           <legend>Internet Hosts: hostnames of services this device should access</legend>
           <span id="cllist"> <input pattern="^[a-zA-Z][a-zA-Z\d-]{1,22}[a-zA-Z\d]$"
               maxlength="120"
@@ -430,7 +430,7 @@
             </span> 
           </span>
         </fieldset>
-        <fieldset class="toggleable">
+        <fieldset id="myctl" class="toggleable">
           <legend>My Controller: Access to controllers specific to this device (no need to name
             a class)
           </legend>
@@ -469,7 +469,7 @@
             </span>
           </span>
         </fieldset>
-        <fieldset class="toggleable">
+        <fieldset id="loc" class="toggleable">
           <legend>Local Access: Access to/from <b>any</b> local host for specificservices (like COAP or HTTP)</legend>
           <span id="loclist"> <input value="any" name="locnames[]" disabled="disabled"
               type="hidden">
@@ -504,7 +504,7 @@
             </span> 
           </span>
         </fieldset>
-        <fieldset class="toggleable">
+        <fieldset id="ctl" class="toggleable">
           <legend>Controllers (Enter a URI for the class)</legend>
           Access to <b>classes</b> of devices that are known to be
           controllers.&nbsp; Use this when you want different types of
@@ -542,9 +542,9 @@
             </span>
           </span>          
         </fieldset>
-        <fieldset class="toggleable">
+        <fieldset id="mfg" class="toggleable">
           <legend>By Manufacturer: identified by the domain names in their MUD URL</legend>
-          <span id="manlist"> <input pattern="^[a-zA-Z][a-zA-Z\d-]{1,22}[a-zA-Z\d]$"
+          <span id="manlist"> <input pattern="^[a-zA-Z][-a-zA-Z\d]{1,22}[a-zA-Z\d]$"
             maxlength="120"
             size="40"
             name="mannames[]"
@@ -580,7 +580,7 @@
             </span> 
           </span>
         </fieldset>
-        <fieldset class="toggleable">
+        <fieldset id="mymfg" class="toggleable">
           <legend>Same Manufacturer: Access to devices to/from the same manufacturer based 
             on the domain name in the MUD URL.
           </legend>
