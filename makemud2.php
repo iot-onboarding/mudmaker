@@ -442,9 +442,9 @@ $doegress="Yes";
 // Not necessary to generate actual ACLs, but we need to know at this
 // point in the code.
 
-if ( isset($_POST['clbox']) || isset($_POST['entbox']) ||
+if ( isset($_POST['clbox']) || isset($_POST['ctlbox']) ||
      isset($_POST['myctlbox']) || isset($_POST['locbox']) ||
-     isset($_POST['manbox']) || isset($_POST['mymanbox'])) {
+     isset($_POST['mfgbox']) || isset($_POST['mymfgbox'])) {
      $gotacls=1;
      } else {
      $gotacls=0;
@@ -475,7 +475,7 @@ if ( $gotacls ) {
 
 // Next controller (enterprise)
 
-  if ( isset($_POST['entbox'] )) {
+  if ( isset($_POST['ctlbox'] )) {
     // build based on enterprise outbound
   
     if (isset($_POST['entproto']))  {
@@ -518,14 +518,14 @@ if ( $gotacls ) {
 
   // manufacturer
 
-  if ( isset($_POST['manbox'])) {
+  if ( isset($_POST['mfgbox'])) {
     // build local inbound services.
     buildacegroup($_POST['mannames'],$_POST['manproto'],$_POST['manportl'],
        $_POST['manport'], $_POST['maninit'], "man",IS_MFG);
   }
 
   // my-manufacturer
-  if ( isset($_POST['mymanbox'])) {
+  if ( isset($_POST['mymfgbox'])) {
     // build local inbound services.
     buildacegroup($_POST['mymannames'],$_POST['mymanproto'],$_POST['mymanportl'],
      $_POST['mymanport'], $_POST['mymaninit'], "myman",IS_MYMFG);

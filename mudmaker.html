@@ -35,27 +35,29 @@
         <p>Please enter host and model the intended MUD-URL for this device: <span
             title="This is the URL that the device will emit to the network.">
             <img src="Circle-question-yellow.png"></span></p>
-        https://<input name="mudhost" maxlength="50" size="40" required="yes"> /
+        https://<input name="mudhost" maxlength="50" size="40" required="yes" placeholder="manufacturer.com"> /
         (model name here-&gt;)<input name="model_name" maxlength="50" size="20"
-          required="yes">
+          required="yes" placeholder="Device model">
         <br>
         <br>
-        Please provide some basic information:
-        <div class="form-group">
-          <label for="man_name">Manufacturer Name</label><input name="man_name" maxlength="40" size="40">
-        </div>
-        <div class="form-group">
-          <label for="sysDescr">A short description for this device</label><input name="sysDescr" maxlength="120" size="40" required="yes">
-        </div>
-        <div class="form-group">
-          <label for="doc_url">Documentation URL</label><input name="doc_url" maxlength="60" size="40" required="yes" type="url">
-        </div>
-        <div class="form-group">
-          <label for="email_addr">EMail</label><input name="email_addr" maxlength="60" size="40" required="yes">
-        </div>
+        <fieldset>
+        <legend>Provide some basic information</legend>
+        <label for="man_name">Manufacturer Name</label>
+	<input name="man_name" maxlength="40" size="40"
+	       placeholder="Company, Inc.">
+        <label for="sysDescr">A short description for this device</label>
+	<input name="sysDescr" maxlength="120" size="40" required="yes"
+	       placeholder="This device does..">
+        <label for="doc_url">Documentation URL</label>
+	<input name="doc_url" maxlength="60" size="40" required="yes"
+	       type="url" placeholder="https://documentation...">
+        <label for="email_addr">EMail</label>
+	<input name="email_addr" maxlength="60" size="40" required="yes"
+	       placeholder="someone@example.com">
         <br>
-        <div class="form-group">
+        <div style="margin-top: 15px;">
           <select name="country" id="country">
+>
             <option value="0" label="Select a country for certificate subjects" selected="selected">Select a country ... </option>
             <optgroup id="country-optgroup-Africa" label="Africa">
                 <option value="DZ" label="Algeria">Algeria</option>
@@ -331,7 +333,7 @@
           </p>
         </div>
         <br>
-
+        </fieldset>
         <p><strong>How can one get a software bill of materials?</strong></p>
         <select id="sbom" name="sbom" onchange="setVisibility(sbom);">
           <option value="none" selected="selected">Not available</option>
@@ -382,67 +384,6 @@
             type="url">
         </span> <br>
         <h3>How will this device communicate on the network? </h3>
-        <table border="1">
-          <tbody>
-          </tbody>
-          <thead>
-            <tr>
-              <th>Type of access</th>
-              <th>Allow?</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><b>Internet communication</b><br>
-                Select this type to enter domain names of services that you want
-                this device to access.</td>
-              <td style="width: 40.2px;"><input id="clbox" name="clbox" onclick="javascript:yesnoCheck('bydevice','cl', 0);"
-                  type="checkbox"></td>
-            </tr>
-            <tr>
-              <td>Access to controllers specific to this device (no need to name
-                a class).&nbsp;<span title="Controllers are specified by the local administrator.">&nbsp;
-                  This is "my-controller".</span> </td>
-              <td style="height: 38.4px;"><input name="myctlbox" id="myctlbox" onclick="javascript:yesnoCheck('bydevice','myctl', 0);"
-                  type="checkbox">
-              </td>
-            </tr>
-            <tr>
-              <td>Controller access<br>
-                <small>Access to <b>classes</b> of devices that are known to be
-                  controllers.&nbsp; Use this when you want different types of
-                  devices to access the same controller.</small> <span title="You will be prompted below for a controller class."></span>
-              </td>
-              <td><input id="entbox" name="entbox" onclick="javascript:yesnoCheck('bydevice','ent',0);"
-                  type="checkbox"></td>
-            </tr>
-            <tr>
-              <td>Local communication<br>
-                <small>Access to/from <b>any</b> local host for specific
-                  services (like COAP or HTTP)</small>&nbsp;<span title="Access to all LOCAL hosts (enterprise administrator gets to decide what' local' means)."></span>
-              </td>
-              <td style="height: 38.4px;"><input name="locbox" id="locbox" onclick="javascript:yesnoCheck('bydevice','loc',0);"
-                  type="checkbox">
-              </td>
-            </tr>
-            <tr>
-              <td>Devices to named manufacturers<br>
-                <small>Access to&nbsp; of devices that are identified by the
-                  domain names in their MUD URL</small>s<span title="These are the domain names in MUD URLs you specify."></span>
-              </td>
-              <td><input id="manbox" name="manbox" onclick="javascript:yesnoCheck('bydevice','man',0);"
-                  type="checkbox"></td>
-            </tr>
-            <tr>
-              <td>Access to devices to/from the same manufacturer based on the
-                domain name in the MUD URL.<span title="All devices that emit a MUD URL with the same domain name as this one (what you listed above)."></span>
-              </td>
-              <td style="height: 38.4px;"><input name="mymanbox" id="mymanbox" onclick="javascript:yesnoCheck('bydevice','myman',0);"
-                  type="checkbox">
-              </td>
-            </tr>
-          </tbody>
-        </table>
         <p><br>
           This device speaks
           <select name="ipchoice">
@@ -451,223 +392,246 @@
             <option value="both">Both</option>
           </select>
         </p>
-        <!--      Shall I create ACLs in both directions or just away from the device?
-     <p>      <span style='white-space:nowrap'>      <select id="bidir" name="bibox" default="No">	<option value="No">Away from Device</option>	<option value="Yes"></option>	&nbsp;      </select>      </span>      </p>-->
-        <div id="bydevice" style="display: none">
-          <table border="1">
-            <tbody>
-              <tr>
-                <td>
-                  <h3>Create rules below</h3>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <div id="cl" style="display:none">
-                    <p>Internet Hosts</p>
-                    <span id="cllist"> <input pattern="[a-zA-Z0-9.-]+\.[a-zA-Z]{2,3}$"
-                        maxlength="120"
-                        size="40"
-                        name="clnames[]"
-                        type="text">&nbsp;&nbsp;&nbsp;
-                      Protocol&nbsp;
-                      <select id="clsel" name="clproto[]" value="any" onchange="tcporudp('clsel','clplist');">
-                        <option value="any">Any</option>
-                        <option value="tcp">TCP</option>
-                        <option value="udp">UDP</option>
-                        &nbsp;
-                      </select>
-                      <input value="+" onclick="addInput('cllist','cl','dns',0);"
-                        type="button">
-                      <br>
-                      <span id="clplistl" style="visibility: hidden"> Local
-                        Port&nbsp; <input pattern="([0-9]{1,5}|any)" value="any"
-                          name="clportl[]"
-                          style="width:60px">
-                      </span> <span id="clplist" style="visibility: hidden">
-                        &nbsp;&nbsp;Remote Port&nbsp; <input pattern="([0-9]{1,5}|any)"
-                          value="any"
-                          name="clport[]"
-                          style="width:60px">
-                      </span> <span id="clplistc" style="visibility: hidden">
-                        &nbsp;&nbsp;Initiated by&nbsp;
-                        <select name="clinit[]" id="clinit" value="either" onchange="localcheck('clinit','clplistl');">
-                          <option value="either">Either</option>
-                          <option value="thing">Thing</option>
-                          <option value="remote">Remote</option>
-                        </select>
-                      </span> </span></div>
-                  <div id="myctl" style="display:none">
-                    <p>My Controller</p>
-                    <span id="myctllist"> <input value="(filled in by local admin)"
-                        name="myctlnames[]"
-                        disabled="disabled"
-                        type="hidden">
-                      <input value="(filled in by local admin)" readonly="readonly"
-                        size="40"
-                        name="myctlnames[]"
-                        type="text">&nbsp;&nbsp;&nbsp;&nbsp;Protocol&nbsp;
-                      <select id="myctlsel" name="myctlproto[]" value="any" onchange="tcporudp('myctlsel','myctlplist');">
-                        <option value="any">Any</option>
-                        <option value="tcp">TCP</option>
-                        <option value="udp">UDP</option>
-                      </select>
-                      <input value="+" onclick="addInput('myctllist','myctl','dns',8);"
-                        type="button">
-                      <br>
-                      <span id="myctlplistl" style="visibility: hidden"> Local
-                        Port&nbsp; <input pattern="([0-9]{1,5}|any)" value="any"
-                          name="myctlportl[]"
-                          style="width:60px">
-                      </span> <span id="myctlplist" style="visibility: hidden">
-                        &nbsp;&nbsp;Remote Port&nbsp; <input pattern="([0-9]{1,5}|any)"
-                          value="any"
-                          name="myctlport[]"
-                          style="width:60px">
-                      </span> <span id="myctlplistc" style="visibility: hidden">
-                        &nbsp;&nbsp;Initiated by&nbsp;
-                        <select name="myctlinit[]" id="myctlinit" value="either"
-                          onchange="localcheck('myctlinit','myctlplistl');">
-                          <option value="either">Either</option>
-                          <option value="thing">Thing</option>
-                          <option value="remote">Remote</option>
-                        </select>
-                      </span> </span></div>
-                  <div id="loc" style="display:none">
-                    <p>Local Access</p>
-                    <span id="loclist"> <input value="any" name="locnames[]" disabled="disabled"
-                        type="hidden">
-                      <input value="any" readonly="readonly" size="40" name="locnames[]"
-                        type="text">&nbsp;&nbsp;&nbsp;&nbsp;Protocol&nbsp;
-                      <select id="locsel" name="locproto[]" value="any" onchange="tcporudp('locsel','locplist');">
-                        <option value="any">Any</option>
-                        <option value="tcp">TCP</option>
-                        <option value="udp">UDP</option>
-                      </select>
-                      <input value="+" onclick="addInput('loclist','loc','dns',4);"
-                        type="button">
-                      <br>
-                      <span id="locplistl" style="visibility: hidden"> Local
-                        Port&nbsp; <input pattern="([0-9]{1,5}|any)" value="any"
-                          name="locportl[]"
-                          style="width:60px">
-                      </span> <span id="locplist" style="visibility: hidden">
-                        &nbsp;&nbsp;Remote Port&nbsp; <input pattern="([0-9]{1,5}|any)"
-                          value="any"
-                          name="locport[]"
-                          style="width:60px">
-                      </span> <span id="locplistc" style="visibility: hidden">
-                        &nbsp;&nbsp;Initiated by&nbsp;
-                        <select name="locinit[]" id="locinit" value="either" onchange="localcheck('locinit','locplistl');">
-                          <option value="either">Either</option>
-                          <option value="thing">Thing</option>
-                          <option value="remote">Remote</option>
-                        </select>
-                      </span> </span></div>
-                  <div id="ent" style="display:none">
-                    <p>Controllers (Enter a URI for the class)</p>
-                    <span id="entlist"> <input maxlength="120" size="40" name="entnames[]"
-                        type="url">
-                      &nbsp;&nbsp;&nbsp;Protocol&nbsp;
-                      <select id="entsel" name="entproto[]" value="any" onchange="tcporudp('entsel','entplist');">
-                        <option value="any">Any</option>
-                        <option value="tcp">TCP</option>
-                        <option value="udp">UDP</option>
-                        &nbsp;
-                      </select>
-                      <input value="+" onclick="addInput('entlist','ent','url',1);"
-                        type="button">
-                      <br>
-                      <span id="entplistl" style="visibility: hidden"> Local
-                        Port&nbsp; <input pattern="([0-9]{1,5}|any)" value="any"
-                          name="entportl[]"
-                          style="width:60px">
-                      </span> <span id="entplist" style="visibility: hidden">
-                        &nbsp;&nbsp;Remote Port&nbsp; <input pattern="([0-9]{1,5}|any)"
-                          value="any"
-                          name="entport[]"
-                          style="width:60px">
-                      </span> <span id="entplistc" style="visibility: hidden">
-                        &nbsp;&nbsp;Initiated by&nbsp;
-                        <select name="entinit[]" id="entinit" value="either" onchange="localcheck('entinit','entplistl');">
-                          <option value="either">Either</option>
-                          <option value="thing">Thing</option>
-                          <option value="remote">Remote</option>
-                        </select>
-                      </span> </span></div>
-                  <div id="man" style="display:none">
-                    <p>Device Types</p>
-                    <span id="manlist"> <input pattern="[a-z0-9.-]+\.[a-z]{2,3}$"
-                        maxlength="120"
-                        size="40"
-                        name="mannames[]"
-                        type="text">&nbsp;&nbsp;&nbsp;
-                      Protocol&nbsp;
-                      <select id="mansel" name="manproto[]" value="any" onchange="tcporudp('mansel','manplist');">
-                        <option value="any">Any</option>
-                        <option value="tcp">TCP</option>
-                        <option value="udp">UDP</option>
-                        &nbsp;
-                      </select>
-                      <input value="+" onclick="addInput('manlist','man','dns',6);"
-                        type="button">
-                      <br>
-                      <span id="manplistl" style="visibility: hidden"> Local
-                        Port&nbsp; <input pattern="([0-9]{1,5}|any)" value="any"
-                          name="manportl[]"
-                          style="width:60px">
-                      </span> <span id="manplist" style="visibility: hidden">
-                        &nbsp;&nbsp;Remote Port&nbsp; <input pattern="([0-9]{1,5}|any)"
-                          value="any"
-                          name="manport[]"
-                          style="width:60px">
-                      </span> <span id="manplistc" style="visibility: hidden">
-                        &nbsp;&nbsp;Initiated by&nbsp;
-                        <select name="maninit[]" id="maninit" value="either" onchange="localcheck('maninit','manplistl');">
-                          <option value="either">Either</option>
-                          <option value="thing">Thing</option>
-                          <option value="remote">Remote</option>
-                        </select>
-                      </span> </span></div>
-                  <div id="myman" style="display:none">
-                    <p>Same Manufacturer</p>
-                    <span id="mymanlist"> <input value="(filled in by system)"
-                        readonly="readonly"
-                        name="mymannames[]"
-                        type="text">&nbsp;&nbsp;&nbsp;
-                      Protocol&nbsp;
-                      <select id="mymansel" name="mymanproto[]" value="any" onchange="tcporudp('mymansel','mymanplist');">
-                        <option value="any">Any</option>
-                        <option value="tcp">TCP</option>
-                        <option value="udp">UDP</option>
-                        &nbsp;
-                      </select>
-                      <input value="+" onclick="addInput('mymanlist','myman','dns', 10);"
-                        type="button">
-                      <br>
-                      <span id="mymanplistl" style="visibility: hidden"> Local
-                        Port&nbsp; <input pattern="([0-9]{1,5}|any)" value="any"
-                          name="mymanportl[]"
-                          style="width:60px">
-                      </span> <span id="mymanplist" style="visibility: hidden">
-                        &nbsp;&nbsp;Remote Port&nbsp; <input pattern="([0-9]{1,5}|any)"
-                          value="any"
-                          name="mymanport[]"
-                          style="width:60px">
-                      </span> <span id="mymanplistc" style="visibility: hidden">
-                        &nbsp;&nbsp;Initiated by&nbsp;
-                        <select name="mymaninit[]" id="mymaninit" value="either"
-                          onchange="localcheck('mymaninit','mymanplistl');">
-                          <option value="either">Either</option>
-                          <option value="thing">Thing</option>
-                          <option value="remote">Remote</option>
-                        </select>
-                      </span> </span></div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+	<input type="checkbox" id=clbox name=clbox style="visibility:hidden">
+	<input type="checkbox" id=myctlbox name=myctlbox style="visibility:hidden">
+	<input type="checkbox" id=ctlbox name=ctlbox style="visibility:hidden">
+	<input type="checkbox" id=locbox name=locbox style="visibility:hidden">
+	<input type="checkbox" id=mfgbox name=mfgbox style="visibility:hidden">
+	<input type="checkbox" id=mymfgbox name=mymfgbox style="visibility:hidden">
+
+        <h3>Click on rule types below</h3>
+        <fieldset id="cl" class="toggleable">
+          <legend>Internet Hosts: hostnames of services this device should access</legend>
+          <span id="cllist">
+	    <input pattern="^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[\.A-Za-z0-9])$"
+		   maxlength="120"
+		   size="40"
+		   name="clnames[]"
+		   placeholder="hostname.com"
+		   type="text">&nbsp;&nbsp;&nbsp;
+            Protocol&nbsp;
+            <select id="clsel" name="clproto[]" value="any" onchange="tcporudp('clsel','clplist');">
+              <option value="any">Any</option>
+              <option value="tcp">TCP</option>
+              <option value="udp">UDP</option>
+              &nbsp;
+            </select>
+            <input value="+" onclick="addInput('cllist','cl','dns',0);"
+              type="button">
+            <br>
+            <span id="clplistl" style="visibility: hidden"> Local
+              Port&nbsp; <input pattern="([0-9]{1,5}|any)" value="any"
+                name="clportl[]"
+                style="width:60px">
+            </span>
+            <span id="clplist" style="visibility: hidden">
+              &nbsp;&nbsp;Remote Port&nbsp; <input pattern="([0-9]{1,5}|any)"
+                value="any"
+                name="clport[]"
+                style="width:60px">
+            </span> 
+            <span id="clplistc" style="visibility: hidden">
+              &nbsp;&nbsp;Initiated by&nbsp;
+              <select name="clinit[]" id="clinit" value="either" onchange="localcheck('clinit','clplistl');">
+                <option value="either">Either</option>
+                <option value="thing">Thing</option>
+                <option value="remote">Remote</option>
+              </select>
+            </span> 
+          </span>
+        </fieldset>
+        <fieldset id="myctl" class="toggleable">
+          <legend>My Controller: Access to controllers specific to this device (no need to name
+            a class)
+          </legend>
+          <span id="myctllist">
+            <input value="(filled in by local admin)" readonly="readonly"
+              size="40"
+              name="myctlnames[]"
+              type="text">&nbsp;&nbsp;&nbsp;&nbsp;Protocol&nbsp;
+            <select id="myctlsel" name="myctlproto[]" value="any" onchange="tcporudp('myctlsel','myctlplist');">
+              <option value="any">Any</option>
+              <option value="tcp">TCP</option>
+              <option value="udp">UDP</option>
+            </select>
+            <input value="+" onclick="addInput('myctllist','myctl','dns',8);"
+              type="button">
+            <br>
+            <span id="myctlplistl" style="visibility: hidden"> Local
+              Port&nbsp; <input pattern="([0-9]{1,5}|any)" value="any"
+                name="myctlportl[]"
+                style="width:60px">
+            </span> 
+            <span id="myctlplist" style="visibility: hidden">
+              &nbsp;&nbsp;Remote Port&nbsp; <input pattern="([0-9]{1,5}|any)"
+                value="any"
+                name="myctlport[]"
+                style="width:60px">
+            </span>
+            <span id="myctlplistc" style="visibility: hidden">
+              &nbsp;&nbsp;Initiated by&nbsp;
+              <select name="myctlinit[]" id="myctlinit" value="either"
+                onchange="localcheck('myctlinit','myctlplistl');">
+                <option value="either">Either</option>
+                <option value="thing">Thing</option>
+                <option value="remote">Remote</option>
+              </select>
+            </span>
+          </span>
+        </fieldset>
+        <fieldset id="loc" class="toggleable">
+          <legend>Local Access: Access to/from any local host for specificservices (like COAP or HTTP)</legend>
+          <span id="loclist"> <input value="any" name="locnames[]" disabled="disabled"
+              type="hidden">
+            <input value="any" readonly="readonly" size="40" name="locnames[]"
+              type="text">&nbsp;&nbsp;&nbsp;&nbsp;Protocol&nbsp;
+            <select id="locsel" name="locproto[]" value="any" onchange="tcporudp('locsel','locplist');">
+              <option value="any">Any</option>
+              <option value="tcp">TCP</option>
+              <option value="udp">UDP</option>
+            </select>
+            <input value="+" onclick="addInput('loclist','loc','dns',4);"
+              type="button">
+            <br>
+            <span id="locplistl" style="visibility: hidden"> Local
+              Port&nbsp; <input pattern="([0-9]{1,5}|any)" value="any"
+                name="locportl[]"
+                style="width:60px">
+            </span> 
+            <span id="locplist" style="visibility: hidden">
+              &nbsp;&nbsp;Remote Port&nbsp; <input pattern="([0-9]{1,5}|any)"
+                value="any"
+                name="locport[]"
+                style="width:60px">
+            </span>
+            <span id="locplistc" style="visibility: hidden">
+              &nbsp;&nbsp;Initiated by&nbsp;
+              <select name="locinit[]" id="locinit" value="either" onchange="localcheck('locinit','locplistl');">
+                <option value="either">Either</option>
+                <option value="thing">Thing</option>
+                <option value="remote">Remote</option>
+              </select>
+            </span> 
+          </span>
+        </fieldset>
+        <fieldset id="ctl" class="toggleable">
+          <legend>Controllers (Enter a URI for the class)</legend>
+          Access to <b>classes</b> of devices that are known to be
+          controllers.&nbsp; Use this when you want different types of
+          devices to access the same controller.
+          <span id="entlist"> <input maxlength="120" size="40" name="entnames[]"
+              type="url">
+            &nbsp;&nbsp;&nbsp;Protocol&nbsp;
+            <select id="entsel" name="entproto[]" value="any" onchange="tcporudp('entsel','entplist');">
+              <option value="any">Any</option>
+              <option value="tcp">TCP</option>
+              <option value="udp">UDP</option>
+              &nbsp;
+            </select>
+            <input value="+" onclick="addInput('entlist','ent','url',1);"
+              type="button">
+            <br>
+            <span id="entplistl" style="visibility: hidden"> Local
+              Port&nbsp; <input pattern="([0-9]{1,5}|any)" value="any"
+                name="entportl[]"
+                style="width:60px">
+            </span>
+            <span id="entplist" style="visibility: hidden">
+              &nbsp;&nbsp;Remote Port&nbsp; <input pattern="([0-9]{1,5}|any)"
+                value="any"
+                name="entport[]"
+                style="width:60px">
+            </span>
+            <span id="entplistc" style="visibility: hidden">
+              &nbsp;&nbsp;Initiated by&nbsp;
+              <select name="entinit[]" id="entinit" value="either" onchange="localcheck('entinit','entplistl');">
+                <option value="either">Either</option>
+                <option value="thing">Thing</option>
+                <option value="remote">Remote</option>
+              </select>
+            </span>
+          </span>          
+        </fieldset>
+        <fieldset id="mfg" class="toggleable">
+          <legend>By Manufacturer: identified by the domain names in their MUD URL</legend>
+          <span id="manlist">
+	    <input pattern="^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$"
+		   maxlength="120"
+		   size="40"
+		   name="mannames[]"
+		   placeholder="manufacturer.com"
+		   type="text">&nbsp;&nbsp;&nbsp;
+            Protocol&nbsp;
+            <select id="mansel" name="manproto[]" value="any" onchange="tcporudp('mansel','manplist');">
+              <option value="any">Any</option>
+              <option value="tcp">TCP</option>
+              <option value="udp">UDP</option>
+              &nbsp;
+            </select>
+            <input value="+" onclick="addInput('manlist','man','dns',6);"
+              type="button">
+            <br>
+            <span id="manplistl" style="visibility: hidden"> Local
+              Port&nbsp; <input pattern="([0-9]{1,5}|any)" value="any"
+                name="manportl[]"
+                style="width:60px">
+            </span>
+            <span id="manplist" style="visibility: hidden">
+            &nbsp;&nbsp;Remote Port&nbsp; <input pattern="([0-9]{1,5}|any)"
+              value="any"
+              name="manport[]"
+              style="width:60px">
+            </span>
+            <span id="manplistc" style="visibility: hidden">
+              &nbsp;&nbsp;Initiated by&nbsp;
+              <select name="maninit[]" id="maninit" value="either" onchange="localcheck('maninit','manplistl');">
+                <option value="either">Either</option>
+                <option value="thing">Thing</option>
+                <option value="remote">Remote</option>
+              </select>
+            </span> 
+          </span>
+        </fieldset>
+        <fieldset id="mymfg" class="toggleable">
+          <legend>Same Manufacturer: Access to devices to/from the same manufacturer based 
+            on the domain name in the MUD URL.
+          </legend>
+          <span id="mymanlist"> <input value="(filled in by system)"
+              readonly="readonly"
+              name="mymannames[]"
+              type="text">&nbsp;&nbsp;&nbsp;
+            Protocol&nbsp;
+            <select id="mymansel" name="mymanproto[]" value="any" onchange="tcporudp('mymansel','mymanplist');">
+              <option value="any">Any</option>
+              <option value="tcp">TCP</option>
+              <option value="udp">UDP</option>
+              &nbsp;
+            </select>
+            <input value="+" onclick="addInput('mymanlist','myman','dns', 10);"
+              type="button">
+            <br>
+            <span id="mymanplistl" style="visibility: hidden"> Local
+              Port&nbsp; <input pattern="([0-9]{1,5}|any)" value="any"
+                name="mymanportl[]"
+                style="width:60px">
+            </span>
+            <span id="mymanplist" style="visibility: hidden">
+              &nbsp;&nbsp;Remote Port&nbsp; <input pattern="([0-9]{1,5}|any)"
+                value="any"
+                name="mymanport[]"
+                style="width:60px">
+            </span>
+            <span id="mymanplistc" style="visibility: hidden">
+              &nbsp;&nbsp;Initiated by&nbsp;
+              <select name="mymaninit[]" id="mymaninit" value="either"
+                onchange="localcheck('mymaninit','mymanplistl');">
+                <option value="either">Either</option>
+                <option value="thing">Thing</option>
+                <option value="remote">Remote</option>
+              </select>
+            </span> 
+          </span>
+        </fieldset>
         <p><br>
         </p>
         <br>
