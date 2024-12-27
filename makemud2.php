@@ -763,7 +763,7 @@ if ( ! $gotacls ) {
   printf('<img src="%s" alt="QR code"/>',$qrc);
   print "<figcaption style=\"text-align: center\">Your MUDURL<br></figcaption>";
   print "</figure></div>";
-  print "<pre style=\"padding: 1em 1em 1em 1em; font-weight: bold;\">" . htmlentities($output) . "</pre>";
+  print "<pre style=\"padding: 1em 1em 1em 1em; line-height: 1.2; font-weight: bold;\">" . htmlentities($output) . "</pre>";
   print "<hr></div>\n";
   print "</body>\n</html>";
 
