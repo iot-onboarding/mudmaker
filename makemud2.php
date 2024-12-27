@@ -748,7 +748,7 @@ if ( ! $gotacls ) {
   print "visualize the results.  You can also sign the file and place it in the location that its corresponding ";
   print "MUD URL will find.  You can find instructions on how to sign your " ;
   print "MUD file <a href=\"https://www.mudmaker.org/signing.html\">here.</a>";
-  print "If you download the MUD file, it comes as a ZIP file with an example";
+  print "  If you download the MUD file, it comes as a ZIP file with an example";
   print " set of certificates and a signature for testing purposes.";
   print "<br>";
 
