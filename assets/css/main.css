@@ -1421,8 +1421,11 @@
 	    font-size: 13pt;
 	    font-weight: normal;
 	    line-height: 2;
+	}
+	input, select, textarea {
 	    border: solid 1px;
 	    border-color: #4aaa;
+	    background-color: #f4f4f4;
 	}
 
 	input {
