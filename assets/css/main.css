@@ -2073,6 +2073,11 @@
 		padding-left: 1em;
 	}
 
+	#twocol {
+	    list-style: none;
+	    column-count: 2;
+	}
+
 	ul li {
 	    padding-left: 0.5em;
 	}
@@ -3253,6 +3258,7 @@
 	    content: "+"; /* add a plus sign to indicate that it can be expanded still (since not active) */
 	    padding: 10px 10px 10px 10px; 
 	    margin: 10px 10px 10px 10px; 
+	    color: blue;
 	}
 		  
 	fieldset.toggleable.expanded > legend span:before {

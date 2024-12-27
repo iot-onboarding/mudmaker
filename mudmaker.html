@@ -39,26 +39,26 @@
         (model name here-&gt;)<input name="model_name" maxlength="50" size="20"
           required="yes" placeholder="Device model">
         <br>
-        <br>
         <fieldset>
         <legend>Provide some basic information</legend>
-        <label for="man_name">Manufacturer Name</label>
-	<input name="man_name" maxlength="40" size="40"
-	       placeholder="Company, Inc.">
-        <label for="sysDescr">A short description for this device</label>
-	<input name="sysDescr" maxlength="120" size="40" required="yes"
-	       placeholder="This device does..">
-        <label for="doc_url">Documentation URL</label>
-	<input name="doc_url" maxlength="60" size="40" required="yes"
-	       type="url" placeholder="https://documentation...">
-        <label for="email_addr">EMail</label>
-	<input name="email_addr" maxlength="60" size="40" required="yes"
-	       placeholder="someone@example.com">
-        <br>
-        <div style="margin-top: 15px;">
+	<ul id="twocol"><li>
+            <label for="man_name">Manufacturer Name</label>
+	    <input name="man_name" maxlength="40" size="40"
+		   placeholder="Company, Inc."></li><li>
+            <label for="sysDescr">A short description for this device</label>
+	    <input name="sysDescr" maxlength="120" size="40" required="yes"
+		   placeholder="This device does.."></li><li>
+            <label for="doc_url">Documentation URL</label>
+	    <input name="doc_url" maxlength="60" size="40" required="yes"
+		   type="url" placeholder="https://documentation..."></li><li>
+            <label for="email_addr">EMail</label></li><li>
+	    <input name="email_addr" maxlength="60" size="40" required="yes"
+		   placeholder="someone@example.com">
+	</li></ul>
+	<label for="country">Country for demo CA</label>
           <select name="country" id="country">
 >
-            <option value="0" label="Select a country for certificate subjects" selected="selected">Select a country ... </option>
+            <option value="0"  selected="selected">Select a country ... </option>
             <optgroup id="country-optgroup-Africa" label="Africa">
                 <option value="DZ" label="Algeria">Algeria</option>
                 <option value="AO" label="Angola">Angola</option>
@@ -322,7 +322,6 @@
                 <option value="WF" label="Wallis and Futuna">Wallis and Futuna</option>
             </optgroup>
         </select>
-        </div>
         <p> Publisher same as manufacturer? <input id="pubcheck" name="pubsame"
             checked="checked"
             onchange="togglepubsame(pubcheck,pubnamediv);"
@@ -330,11 +329,9 @@
         </p>
         <div id="pubnamediv" style="display: none">
           <p>Publisher name:&nbsp;<input name="pub_name" maxlength="80" size="40">
-          </p>
         </div>
-        <br>
         </fieldset>
-        <p><strong>How can one get a software bill of materials?</strong></p>
+	<label for="sbom">How can one get a software bill of materials?</label>
         <select id="sbom" name="sbom" onchange="setVisibility(sbom);">
           <option value="none" selected="selected">Not available</option>
           <option value="cloud">Cloud URL</option>
@@ -371,7 +368,7 @@
               maxlength="200"
               type="url"></span>
         </span> <br>
-        <p> <strong>Security advisory information can be found at</strong> </p>
+        <label for=vulntype>Security advisory information can be found at</label>
         <select id="vulntype" name="vulntype" onchange="setvulnvis(vulnview)">
           <option value="none" default="">N/A</option>
           <option value="url">URL to CSAF/CVRF</option>
@@ -382,16 +379,15 @@
             size="50"
             maxlength="200"
             type="url">
-        </span> <br>
+        </span>
         <h3>How will this device communicate on the network? </h3>
-        <p><br>
           This device speaks
           <select name="ipchoice">
             <option value="ipv4">IPv4</option>
             <option value="ipv6">IPv6</option>
             <option value="both">Both</option>
           </select>
-        </p>
+	  <br>
 	<input type="checkbox" id=clbox name=clbox style="visibility:hidden">
 	<input type="checkbox" id=myctlbox name=myctlbox style="visibility:hidden">
 	<input type="checkbox" id=ctlbox name=ctlbox style="visibility:hidden">
@@ -399,9 +395,10 @@
 	<input type="checkbox" id=mfgbox name=mfgbox style="visibility:hidden">
 	<input type="checkbox" id=mymfgbox name=mymfgbox style="visibility:hidden">
 
-        <h3>Click on rule types below</h3>
+        <h3>What systems does this device need to talk to?</h3>
+	Click on one of the following links: <em>(optional)</em>
         <fieldset id="cl" class="toggleable">
-          <legend>Internet Hosts: hostnames of services this device should access</legend>
+          <legend>Internet hosts by name</legend>
           <span id="cllist">
 	    <input pattern="^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[\.A-Za-z0-9])$"
 		   maxlength="120"
@@ -593,8 +590,7 @@
           </span>
         </fieldset>
         <fieldset id="mymfg" class="toggleable">
-          <legend>Same Manufacturer: Access to devices to/from the same manufacturer based 
-            on the domain name in the MUD URL.
+          <legend>Same Manufacturer: Access devices ofnsame manufacturer (based             on the domain name in the MUD URL)
           </legend>
           <span id="mymanlist"> <input value="(filled in by system)"
               readonly="readonly"
