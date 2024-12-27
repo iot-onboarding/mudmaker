@@ -100,7 +100,7 @@ function addInput(divName,sectype,dnsorurl,i){
             " <br><input type=" + typefield + "name='" + names  + "'" + pattern +
 	    " size='40' " + fieldinfo + ">&nbsp;&nbsp;&nbsp;" +
 	    " Protocol&nbsp;&nbsp;<select id='" + selname + "' name='" + proto + "'" +
-	    onchange + ">" +
+		onchange + ">" +
 	    any +
 	    "<option value='tcp'>TCP</option>" +
 	    "<option value='udp'>UDP</option>" +

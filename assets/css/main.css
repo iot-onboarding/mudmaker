@@ -1822,7 +1822,6 @@
 		display: block;
 		font-size: 0.9em;
 		font-weight: bold;
-		/* margin: 0 0 1em 0; */
 	}
 
 	input[type="text"],
@@ -1836,7 +1835,7 @@
 		color: inherit;
 		outline: 0;
 		padding: 0 1em;
-		height: 2.75em;
+		height: 2.5em;
 	}
 
 	input[type="text"]:invalid,
