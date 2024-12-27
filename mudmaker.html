@@ -55,7 +55,15 @@
             <label for="email_addr">EMail</label></li><li>
 	    <input name="email_addr" maxlength="60" size="40" required="yes"
 		   placeholder="someone@example.com">
-	</li></ul>
+	  </li><li>
+	    <label for="ipchoice">This device speaks</label>
+          <select id="ipchoice" name="ipchoice">
+            <option value="ipv4">IPv4</option>
+            <option value="ipv6">IPv6</option>
+            <option value="both">Both</option>
+          </select>
+	  </li>
+	</ul>
 	</fieldset>
 	<label for="country">Country for demo CA</label>
           <select name="country" id="country">
@@ -383,13 +391,6 @@
             type="url">
         </span>
         <h3>How will this device communicate on the network? </h3>
-          This device speaks
-          <select name="ipchoice">
-            <option value="ipv4">IPv4</option>
-            <option value="ipv6">IPv6</option>
-            <option value="both">Both</option>
-          </select>
-	  <br>
 	<input type="checkbox" id=clbox name=clbox style="visibility:hidden">
 	<input type="checkbox" id=myctlbox name=myctlbox style="visibility:hidden">
 	<input type="checkbox" id=ctlbox name=ctlbox style="visibility:hidden">
