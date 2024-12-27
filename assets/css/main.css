@@ -3262,7 +3262,7 @@
 	    border-color: #4A4771;
 	    border-style: solid;
 	    border-width: 2px;
-	    padding: 20px 10px 0px 10px;
+	    padding: 20px 10px 5px 10px;
 	    margin-bottom: 20px;
 	}
 	fieldset.toggleable > legend span:before {
