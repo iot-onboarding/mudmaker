@@ -1438,7 +1438,7 @@
 	}
 
 	@media screen and (min-width: 980px) {
-	    #twocol {
+	    .twocol {
 		list-style: none;
 		column-count: 2;
 	    }
