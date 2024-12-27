@@ -1432,11 +1432,19 @@
 	    body, input, select, textarea {
 		font-size: 13.5pt;
 	    }
+	    #twocol {
+		list-style: none;
+		column-count: 2;
+	}
 	}
 
 	@media screen and (max-width: 1366px) {
 	    body, input, select, textarea {
 		font-size: 12.5pt;
+	    }
+	    #twocol {
+		list-style: none;
+		column-count: 2;
 	    }
 	}
 
@@ -2072,11 +2080,6 @@
 		list-style: disc;
 		margin: 0 0 2em 0;
 		padding-left: 1em;
-	}
-
-	#twocol {
-	    list-style: none;
-	    column-count: 2;
 	}
 
 	ul li {
