@@ -1422,9 +1422,12 @@
 	    font-weight: normal;
 	    line-height: 2;
 	    border: solid 1px;
-	    border-color: #777;
+	    border-color: #4aaa;
 	}
 
+	input {
+	    border-radius: 10px 10px 10px 10px;
+	}
 	@media screen and (max-width: 1680px) {
 	    body, input, select, textarea {
 		font-size: 13.5pt;
@@ -1569,10 +1572,6 @@
 	.align-right {
 		text-align: right;
 	}
-
-/*	input, select, textarea {
-		color: #666;
-	}*/
 
 	a {
 		color: #00BC8A;
@@ -1832,12 +1831,13 @@
 	select,
 	textarea {
 /*		appearance: none;*/
-		border-radius: 0;
-		border: solid 1px;
-		color: inherit;
-		outline: 0;
-		padding: 0 1em;
-		height: 2.5em;
+	    border: solid 1px;
+	    color: inherit;
+	    outline: 0;
+	    padding: 0 1em;
+	    height: 2.5em;
+	    border-color: #4aaa;
+	    border-radius: 10px 10px 10px 10px;
 	}
 
 	input[type="text"]:invalid,
