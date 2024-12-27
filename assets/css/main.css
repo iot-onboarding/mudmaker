@@ -1435,29 +1435,23 @@
 	    body, input, select, textarea {
 		font-size: 13.5pt;
 	    }
+	}
+
+	@media screen and (min-width: 980px) {
 	    #twocol {
 		list-style: none;
 		column-count: 2;
-	}
-	}
+	    }
 
 	@media screen and (max-width: 1366px) {
 	    body, input, select, textarea {
 		font-size: 12.5pt;
-	    }
-	    #twocol {
-		list-style: none;
-		column-count: 2;
 	    }
 	}
 
 	@media screen and (max-width: 980px) {
 	    body, input, select, textarea {
 		font-size: 12pt;
-	    }
-	    #twocol {
-		list-style: none;
-		column-count: 2;
 	    }
 	}
 
