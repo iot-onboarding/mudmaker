@@ -1452,6 +1452,10 @@
 	    body, input, select, textarea {
 		font-size: 12pt;
 	    }
+	    #twocol {
+		list-style: none;
+		column-count: 2;
+	    }
 	}
 
 	@media screen and (max-width: 736px) {
