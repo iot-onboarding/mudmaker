@@ -240,6 +240,16 @@ function j2pp(b64) {
     xhr.send(jsonText);
 }
 
+function setboxes() {
+    var theid;
+    theid=this.id + "box";
+    if ( this.open == true ) {
+	document.getElementById(theid).checked = true;
+    } else {
+	document.getElementById(theid).checked = false;
+    }
+}
+
 //find all fieldsets marked as "toggleAble"
 $('fieldset.toggleable').each(function() {
 	var $fieldSet = $(this);
