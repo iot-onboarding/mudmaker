@@ -1422,7 +1422,7 @@
 	    font-weight: normal;
 	    line-height: 2;
 	}
-	input, select, textarea {
+	input[type="text"], select, textarea {
 	    border: solid 1px;
 	    border-color: #4aaa;
 	    background-color: #f4f4f4;
