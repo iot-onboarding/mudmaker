@@ -240,13 +240,13 @@ function j2pp(b64) {
     xhr.send(jsonText);
 }
 
-function setboxes() {
-    var theid;
-    theid=this.id + "box";
-    if ( this.open == true ) {
-	document.getElementById(theid).checked = true;
+function setboxes(idname) {
+    var idbox = idname + "box";
+    var me = document.getElementById(idname);
+    if ( me.open == false ) {
+	document.getElementById(idbox).checked = true;
     } else {
-	document.getElementById(theid).checked = false;
+	document.getElementById(idbox).checked = false;
     }
 }
 
