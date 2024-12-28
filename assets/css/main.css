@@ -1430,6 +1430,9 @@
 
 	input {
 	    border-radius: 10px 10px 10px 10px;
+	    ::placeholder {
+		color: #bbb;
+	    }
 	}
 	@media screen and (max-width: 1680px) {
 	    body, input, select, textarea {
