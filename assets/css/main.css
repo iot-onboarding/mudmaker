@@ -1430,10 +1430,11 @@
 
 	input {
 	    border-radius: 10px 10px 10px 10px;
-	    ::placeholder {
-		color: #bbb;
-	    }
 	}
+        ::placeholder {
+ 	    color: #bbb;
+	}
+
 	@media screen and (max-width: 1680px) {
 	    body, input, select, textarea {
 		font-size: 13.5pt;
