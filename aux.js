@@ -240,12 +240,12 @@ function j2pp(b64) {
     xhr.send(jsonText);
 }
 
-function setboxes(idname) {
-    var idbox = idname + "box";
-    var me = document.getElementById(idname);
-    if ( me.open == false ) {
-	document.getElementById(idbox).checked = true;
+$('summary').click(function() {
+    var parent = $(this).parent()[0];
+    var pbox = parent.id + 'box';
+    if ( parent.open == false ) {
+	document.getElementById(pbox).checked = true;
     } else {
-	document.getElementById(idbox).checked = false;
+	document.getElementById(pbox).checked = false;
     }
-}
+});
