@@ -1422,15 +1422,14 @@
 	    font-weight: normal;
 	    line-height: 2;
 	}
-	input[type="text"], select, textarea {
+
+	input {
 	    border: solid 1px;
 	    border-color: #4aaa;
 	    background-color: #f4f4f4;
 	    border-radius: 10px 10px 10px 10px;
 	}
 
-/*	input {
-	}*/
         ::placeholder {
  	    color: #bbb;
 	    margin-left: 10px;
