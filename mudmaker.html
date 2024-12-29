@@ -35,292 +35,311 @@
         <p>Please enter host and model the intended MUD-URL for this device: <span
             title="This is the URL that the device will emit to the network.">
             <img src="Circle-question-yellow.png"></span></p>
-        https://<input name="mudhost" maxlength="50" size="40" required="yes"> /
+        https://<input name="mudhost" maxlength="50" size="40" required="yes" placeholder="manufacturer.com"> /
         (model name here-&gt;)<input name="model_name" maxlength="50" size="20"
-          required="yes">
+          required="yes" placeholder="Device model">
         <br>
-        <br>
-        Please provide some basic information:
-        <div class="form-group">
-          <label for="man_name">Manufacturer Name</label><input name="man_name" maxlength="40" size="40">
-        </div>
-        <div class="form-group">
-          <label for="sysDescr">A short description for this device</label><input name="sysDescr" maxlength="120" size="40" required="yes">
-        </div>
-        <div class="form-group">
-          <label for="doc_url">Documentation URL</label><input name="doc_url" maxlength="60" size="40" required="yes" type="url">
-        </div>
-        <div class="form-group">
-          <label for="email_addr">EMail</label><input name="email_addr" maxlength="60" size="40" required="yes">
-        </div>
-        <br>
-        <div class="form-group">
-          <select name="country" id="country">
-            <option value="0" label="Select a country for certificate subjects" selected="selected">Select a country ... </option>
-            <optgroup id="country-optgroup-Africa" label="Africa">
-                <option value="DZ" label="Algeria">Algeria</option>
-                <option value="AO" label="Angola">Angola</option>
-                <option value="BJ" label="Benin">Benin</option>
-                <option value="BW" label="Botswana">Botswana</option>
-                <option value="BF" label="Burkina Faso">Burkina Faso</option>
-                <option value="BI" label="Burundi">Burundi</option>
-                <option value="CM" label="Cameroon">Cameroon</option>
-                <option value="CV" label="Cape Verde">Cape Verde</option>
-                <option value="CF" label="Central African Republic">Central African Republic</option>
-                <option value="TD" label="Chad">Chad</option>
-                <option value="KM" label="Comoros">Comoros</option>
-                <option value="CG" label="Congo - Brazzaville">Congo - Brazzaville</option>
-                <option value="CD" label="Congo - Kinshasa">Congo - Kinshasa</option>
-                <option value="CI" label="Côte d’Ivoire">Côte d’Ivoire</option>
-                <option value="DJ" label="Djibouti">Djibouti</option>
-                <option value="EG" label="Egypt">Egypt</option>
-                <option value="GQ" label="Equatorial Guinea">Equatorial Guinea</option>
-                <option value="ER" label="Eritrea">Eritrea</option>
-                <option value="ET" label="Ethiopia">Ethiopia</option>
-                <option value="GA" label="Gabon">Gabon</option>
-                <option value="GM" label="Gambia">Gambia</option>
-                <option value="GH" label="Ghana">Ghana</option>
-                <option value="GN" label="Guinea">Guinea</option>
-                <option value="GW" label="Guinea-Bissau">Guinea-Bissau</option>
-                <option value="KE" label="Kenya">Kenya</option>
-                <option value="LS" label="Lesotho">Lesotho</option>
-                <option value="LR" label="Liberia">Liberia</option>
-                <option value="LY" label="Libya">Libya</option>
-                <option value="MG" label="Madagascar">Madagascar</option>
-                <option value="MW" label="Malawi">Malawi</option>
-                <option value="ML" label="Mali">Mali</option>
-                <option value="MR" label="Mauritania">Mauritania</option>
-                <option value="MU" label="Mauritius">Mauritius</option>
-                <option value="YT" label="Mayotte">Mayotte</option>
-                <option value="MA" label="Morocco">Morocco</option>
-                <option value="MZ" label="Mozambique">Mozambique</option>
-                <option value="NA" label="Namibia">Namibia</option>
-                <option value="NE" label="Niger">Niger</option>
-                <option value="NG" label="Nigeria">Nigeria</option>
-                <option value="RW" label="Rwanda">Rwanda</option>
-                <option value="RE" label="Réunion">Réunion</option>
-                <option value="SH" label="Saint Helena">Saint Helena</option>
-                <option value="SN" label="Senegal">Senegal</option>
-                <option value="SC" label="Seychelles">Seychelles</option>
-                <option value="SL" label="Sierra Leone">Sierra Leone</option>
-                <option value="SO" label="Somalia">Somalia</option>
-                <option value="ZA" label="South Africa">South Africa</option>
-                <option value="SD" label="Sudan">Sudan</option>
-                <option value="SZ" label="Swaziland">Swaziland</option>
-                <option value="ST" label="São Tomé and Príncipe">São Tomé and Príncipe</option>
-                <option value="TZ" label="Tanzania">Tanzania</option>
-                <option value="TG" label="Togo">Togo</option>
-                <option value="TN" label="Tunisia">Tunisia</option>
-                <option value="UG" label="Uganda">Uganda</option>
-                <option value="EH" label="Western Sahara">Western Sahara</option>
-                <option value="ZM" label="Zambia">Zambia</option>
-                <option value="ZW" label="Zimbabwe">Zimbabwe</option>
-            </optgroup>
-            <optgroup id="country-optgroup-Americas" label="Americas">
-                <option value="AI" label="Anguilla">Anguilla</option>
-                <option value="AG" label="Antigua and Barbuda">Antigua and Barbuda</option>
-                <option value="AR" label="Argentina">Argentina</option>
-                <option value="AW" label="Aruba">Aruba</option>
-                <option value="BS" label="Bahamas">Bahamas</option>
-                <option value="BB" label="Barbados">Barbados</option>
-                <option value="BZ" label="Belize">Belize</option>
-                <option value="BM" label="Bermuda">Bermuda</option>
-                <option value="BO" label="Bolivia">Bolivia</option>
-                <option value="BR" label="Brazil">Brazil</option>
-                <option value="VG" label="British Virgin Islands">British Virgin Islands</option>
-                <option value="CA" label="Canada">Canada</option>
-                <option value="KY" label="Cayman Islands">Cayman Islands</option>
-                <option value="CL" label="Chile">Chile</option>
-                <option value="CO" label="Colombia">Colombia</option>
-                <option value="CR" label="Costa Rica">Costa Rica</option>
-                <option value="CU" label="Cuba">Cuba</option>
-                <option value="DM" label="Dominica">Dominica</option>
-                <option value="DO" label="Dominican Republic">Dominican Republic</option>
-                <option value="EC" label="Ecuador">Ecuador</option>
-                <option value="SV" label="El Salvador">El Salvador</option>
-                <option value="FK" label="Falkland Islands">Falkland Islands</option>
-                <option value="GF" label="French Guiana">French Guiana</option>
-                <option value="GL" label="Greenland">Greenland</option>
-                <option value="GD" label="Grenada">Grenada</option>
-                <option value="GP" label="Guadeloupe">Guadeloupe</option>
-                <option value="GT" label="Guatemala">Guatemala</option>
-                <option value="GY" label="Guyana">Guyana</option>
-                <option value="HT" label="Haiti">Haiti</option>
-                <option value="HN" label="Honduras">Honduras</option>
-                <option value="JM" label="Jamaica">Jamaica</option>
-                <option value="MQ" label="Martinique">Martinique</option>
-                <option value="MX" label="Mexico">Mexico</option>
-                <option value="MS" label="Montserrat">Montserrat</option>
-                <option value="AN" label="Netherlands Antilles">Netherlands Antilles</option>
-                <option value="NI" label="Nicaragua">Nicaragua</option>
-                <option value="PA" label="Panama">Panama</option>
-                <option value="PY" label="Paraguay">Paraguay</option>
-                <option value="PE" label="Peru">Peru</option>
-                <option value="PR" label="Puerto Rico">Puerto Rico</option>
-                <option value="BL" label="Saint Barthélemy">Saint Barthélemy</option>
-                <option value="KN" label="Saint Kitts and Nevis">Saint Kitts and Nevis</option>
-                <option value="LC" label="Saint Lucia">Saint Lucia</option>
-                <option value="MF" label="Saint Martin">Saint Martin</option>
-                <option value="PM" label="Saint Pierre and Miquelon">Saint Pierre and Miquelon</option>
-                <option value="VC" label="Saint Vincent and the Grenadines">Saint Vincent and the Grenadines</option>
-                <option value="SR" label="Suriname">Suriname</option>
-                <option value="TT" label="Trinidad and Tobago">Trinidad and Tobago</option>
-                <option value="TC" label="Turks and Caicos Islands">Turks and Caicos Islands</option>
-                <option value="VI" label="U.S. Virgin Islands">U.S. Virgin Islands</option>
-                <option value="US" label="United States">United States</option>
-                <option value="UY" label="Uruguay">Uruguay</option>
-                <option value="VE" label="Venezuela">Venezuela</option>
-            </optgroup>
-            <optgroup id="country-optgroup-Asia" label="Asia">
-                <option value="AF" label="Afghanistan">Afghanistan</option>
-                <option value="AM" label="Armenia">Armenia</option>
-                <option value="AZ" label="Azerbaijan">Azerbaijan</option>
-                <option value="BH" label="Bahrain">Bahrain</option>
-                <option value="BD" label="Bangladesh">Bangladesh</option>
-                <option value="BT" label="Bhutan">Bhutan</option>
-                <option value="BN" label="Brunei">Brunei</option>
-                <option value="KH" label="Cambodia">Cambodia</option>
-                <option value="CN" label="China">China</option>
-                <option value="GE" label="Georgia">Georgia</option>
-                <option value="HK" label="Hong Kong SAR China">Hong Kong SAR China</option>
-                <option value="IN" label="India">India</option>
-                <option value="ID" label="Indonesia">Indonesia</option>
-                <option value="IR" label="Iran">Iran</option>
-                <option value="IQ" label="Iraq">Iraq</option>
-                <option value="IL" label="Israel">Israel</option>
-                <option value="JP" label="Japan">Japan</option>
-                <option value="JO" label="Jordan">Jordan</option>
-                <option value="KZ" label="Kazakhstan">Kazakhstan</option>
-                <option value="KW" label="Kuwait">Kuwait</option>
-                <option value="KG" label="Kyrgyzstan">Kyrgyzstan</option>
-                <option value="LA" label="Laos">Laos</option>
-                <option value="LB" label="Lebanon">Lebanon</option>
-                <option value="MO" label="Macau SAR China">Macau SAR China</option>
-                <option value="MY" label="Malaysia">Malaysia</option>
-                <option value="MV" label="Maldives">Maldives</option>
-                <option value="MN" label="Mongolia">Mongolia</option>
-                <option value="MM" label="Myanmar [Burma]">Myanmar [Burma]</option>
-                <option value="NP" label="Nepal">Nepal</option>
-                <option value="NT" label="Neutral Zone">Neutral Zone</option>
-                <option value="KP" label="North Korea">North Korea</option>
-                <option value="OM" label="Oman">Oman</option>
-                <option value="PK" label="Pakistan">Pakistan</option>
-                <option value="PS" label="Palestinian Territories">Palestinian Territories</option>
-                <option value="YD" label="People's Democratic Republic of Yemen">People's Democratic Republic of Yemen</option>
-                <option value="PH" label="Philippines">Philippines</option>
-                <option value="QA" label="Qatar">Qatar</option>
-                <option value="SA" label="Saudi Arabia">Saudi Arabia</option>
-                <option value="SG" label="Singapore">Singapore</option>
-                <option value="KR" label="South Korea">South Korea</option>
-                <option value="LK" label="Sri Lanka">Sri Lanka</option>
-                <option value="SY" label="Syria">Syria</option>
-                <option value="TW" label="Taiwan">Taiwan</option>
-                <option value="TJ" label="Tajikistan">Tajikistan</option>
-                <option value="TH" label="Thailand">Thailand</option>
-                <option value="TL" label="Timor-Leste">Timor-Leste</option>
-                <option value="TR" label="Turkey">Turkey</option>
-                <option value="TM" label="Turkmenistan">Turkmenistan</option>
-                <option value="AE" label="United Arab Emirates">United Arab Emirates</option>
-                <option value="UZ" label="Uzbekistan">Uzbekistan</option>
-                <option value="VN" label="Vietnam">Vietnam</option>
-                <option value="YE" label="Yemen">Yemen</option>
-            </optgroup>
-            <optgroup id="country-optgroup-Europe" label="Europe">
-                <option value="AL" label="Albania">Albania</option>
-                <option value="AD" label="Andorra">Andorra</option>
-                <option value="AT" label="Austria">Austria</option>
-                <option value="BY" label="Belarus">Belarus</option>
-                <option value="BE" label="Belgium">Belgium</option>
-                <option value="BA" label="Bosnia and Herzegovina">Bosnia and Herzegovina</option>
-                <option value="BG" label="Bulgaria">Bulgaria</option>
-                <option value="HR" label="Croatia">Croatia</option>
-                <option value="CY" label="Cyprus">Cyprus</option>
-                <option value="CZ" label="Czech Republic">Czech Republic</option>
-                <option value="DK" label="Denmark">Denmark</option>
-                <option value="DD" label="East Germany">East Germany</option>
-                <option value="EE" label="Estonia">Estonia</option>
-                <option value="FO" label="Faroe Islands">Faroe Islands</option>
-                <option value="FI" label="Finland">Finland</option>
-                <option value="FR" label="France">France</option>
-                <option value="DE" label="Germany">Germany</option>
-                <option value="GI" label="Gibraltar">Gibraltar</option>
-                <option value="GR" label="Greece">Greece</option>
-                <option value="GG" label="Guernsey">Guernsey</option>
-                <option value="HU" label="Hungary">Hungary</option>
-                <option value="IS" label="Iceland">Iceland</option>
-                <option value="IE" label="Ireland">Ireland</option>
-                <option value="IM" label="Isle of Man">Isle of Man</option>
-                <option value="IT" label="Italy">Italy</option>
-                <option value="JE" label="Jersey">Jersey</option>
-                <option value="LV" label="Latvia">Latvia</option>
-                <option value="LI" label="Liechtenstein">Liechtenstein</option>
-                <option value="LT" label="Lithuania">Lithuania</option>
-                <option value="LU" label="Luxembourg">Luxembourg</option>
-                <option value="MK" label="Macedonia">Macedonia</option>
-                <option value="MT" label="Malta">Malta</option>
-                <option value="FX" label="Metropolitan France">Metropolitan France</option>
-                <option value="MD" label="Moldova">Moldova</option>
-                <option value="MC" label="Monaco">Monaco</option>
-                <option value="ME" label="Montenegro">Montenegro</option>
-                <option value="NL" label="Netherlands">Netherlands</option>
-                <option value="NO" label="Norway">Norway</option>
-                <option value="PL" label="Poland">Poland</option>
-                <option value="PT" label="Portugal">Portugal</option>
-                <option value="RO" label="Romania">Romania</option>
-                <option value="RU" label="Russia">Russia</option>
-                <option value="SM" label="San Marino">San Marino</option>
-                <option value="RS" label="Serbia">Serbia</option>
-                <option value="CS" label="Serbia and Montenegro">Serbia and Montenegro</option>
-                <option value="SK" label="Slovakia">Slovakia</option>
-                <option value="SI" label="Slovenia">Slovenia</option>
-                <option value="ES" label="Spain">Spain</option>
-                <option value="SJ" label="Svalbard and Jan Mayen">Svalbard and Jan Mayen</option>
-                <option value="SE" label="Sweden">Sweden</option>
-                <option value="CH" label="Switzerland">Switzerland</option>
-                <option value="UA" label="Ukraine">Ukraine</option>
-                <option value="SU" label="Union of Soviet Socialist Republics">Union of Soviet Socialist Republics</option>
-                <option value="GB" label="United Kingdom">United Kingdom</option>
-                <option value="VA" label="Vatican City">Vatican City</option>
-                <option value="AX" label="Åland Islands">Åland Islands</option>
-            </optgroup>
-            <optgroup id="country-optgroup-Oceania" label="Oceania">
-                <option value="AS" label="American Samoa">American Samoa</option>
-                <option value="AQ" label="Antarctica">Antarctica</option>
-                <option value="AU" label="Australia">Australia</option>
-                <option value="BV" label="Bouvet Island">Bouvet Island</option>
-                <option value="IO" label="British Indian Ocean Territory">British Indian Ocean Territory</option>
-                <option value="CX" label="Christmas Island">Christmas Island</option>
-                <option value="CC" label="Cocos [Keeling] Islands">Cocos [Keeling] Islands</option>
-                <option value="CK" label="Cook Islands">Cook Islands</option>
-                <option value="FJ" label="Fiji">Fiji</option>
-                <option value="PF" label="French Polynesia">French Polynesia</option>
-                <option value="TF" label="French Southern Territories">French Southern Territories</option>
-                <option value="GU" label="Guam">Guam</option>
-                <option value="HM" label="Heard Island and McDonald Islands">Heard Island and McDonald Islands</option>
-                <option value="KI" label="Kiribati">Kiribati</option>
-                <option value="MH" label="Marshall Islands">Marshall Islands</option>
-                <option value="FM" label="Micronesia">Micronesia</option>
-                <option value="NR" label="Nauru">Nauru</option>
-                <option value="NC" label="New Caledonia">New Caledonia</option>
-                <option value="NZ" label="New Zealand">New Zealand</option>
-                <option value="NU" label="Niue">Niue</option>
-                <option value="NF" label="Norfolk Island">Norfolk Island</option>
-                <option value="MP" label="Northern Mariana Islands">Northern Mariana Islands</option>
-                <option value="PW" label="Palau">Palau</option>
-                <option value="PG" label="Papua New Guinea">Papua New Guinea</option>
-                <option value="PN" label="Pitcairn Islands">Pitcairn Islands</option>
-                <option value="WS" label="Samoa">Samoa</option>
-                <option value="SB" label="Solomon Islands">Solomon Islands</option>
-                <option value="GS" label="South Georgia and the South Sandwich Islands">South Georgia and the South Sandwich Islands</option>
-                <option value="TK" label="Tokelau">Tokelau</option>
-                <option value="TO" label="Tonga">Tonga</option>
-                <option value="TV" label="Tuvalu">Tuvalu</option>
-                <option value="UM" label="U.S. Minor Outlying Islands">U.S. Minor Outlying Islands</option>
-                <option value="VU" label="Vanuatu">Vanuatu</option>
-                <option value="WF" label="Wallis and Futuna">Wallis and Futuna</option>
-            </optgroup>
-        </select>
-        </div>
+	<br>
+        <fieldset>
+          <legend>Basic Information:</legend>
+	  <ul class="twocol">
+	    <li>
+              <label for="man_name">Manufacturer Name</label>
+	      <input name="man_name" maxlength="40" size="40"
+		   placeholder="Company, Inc."></li><li>
+              <label for="sysDescr">A short description for this device</label>
+	      <input name="sysDescr" maxlength="120" size="40" required="yes"
+		     placeholder="This device does..">
+	    </li>
+	    <li>
+              <label for="doc_url">Documentation URL</label>
+	      <input name="doc_url" maxlength="60" size="40" required="yes"
+		     type="url"
+		     placeholder="https://documentation...">
+	    </li>
+	    <li>
+              <label for="email_addr">EMail</label></li><li>
+	      <input name="email_addr" maxlength="60" size="40" required="yes"
+		     placeholder="someone@example.com">
+	    </li>
+	    <li>
+	      <label for="country">Country for demo CA</label>
+              <select name="country" id="country">
+		<option value="0"  selected="selected">Select a country ... </option>
+		<optgroup id="country-optgroup-Africa" label="Africa">
+                  <option value="DZ" label="Algeria">Algeria</option>
+                  <option value="AO" label="Angola">Angola</option>
+                  <option value="BJ" label="Benin">Benin</option>
+                  <option value="BW" label="Botswana">Botswana</option>
+                  <option value="BF" label="Burkina Faso">Burkina Faso</option>
+                  <option value="BI" label="Burundi">Burundi</option>
+                  <option value="CM" label="Cameroon">Cameroon</option>
+                  <option value="CV" label="Cape Verde">Cape Verde</option>
+                  <option value="CF" label="Central African Republic">Central African Republic</option>
+                  <option value="TD" label="Chad">Chad</option>
+                  <option value="KM" label="Comoros">Comoros</option>
+                  <option value="CG" label="Congo - Brazzaville">Congo - Brazzaville</option>
+                  <option value="CD" label="Congo - Kinshasa">Congo - Kinshasa</option>
+                  <option value="CI" label="Côte d’Ivoire">Côte d’Ivoire</option>
+                  <option value="DJ" label="Djibouti">Djibouti</option>
+                  <option value="EG" label="Egypt">Egypt</option>
+                  <option value="GQ" label="Equatorial Guinea">Equatorial Guinea</option>
+                  <option value="ER" label="Eritrea">Eritrea</option>
+                  <option value="ET" label="Ethiopia">Ethiopia</option>
+                  <option value="GA" label="Gabon">Gabon</option>
+                  <option value="GM" label="Gambia">Gambia</option>
+                  <option value="GH" label="Ghana">Ghana</option>
+                  <option value="GN" label="Guinea">Guinea</option>
+                  <option value="GW" label="Guinea-Bissau">Guinea-Bissau</option>
+                  <option value="KE" label="Kenya">Kenya</option>
+                  <option value="LS" label="Lesotho">Lesotho</option>
+                  <option value="LR" label="Liberia">Liberia</option>
+                  <option value="LY" label="Libya">Libya</option>
+                  <option value="MG" label="Madagascar">Madagascar</option>
+                  <option value="MW" label="Malawi">Malawi</option>
+                  <option value="ML" label="Mali">Mali</option>
+                  <option value="MR" label="Mauritania">Mauritania</option>
+                  <option value="MU" label="Mauritius">Mauritius</option>
+                  <option value="YT" label="Mayotte">Mayotte</option>
+                  <option value="MA" label="Morocco">Morocco</option>
+                  <option value="MZ" label="Mozambique">Mozambique</option>
+                  <option value="NA" label="Namibia">Namibia</option>
+                  <option value="NE" label="Niger">Niger</option>
+                  <option value="NG" label="Nigeria">Nigeria</option>
+                  <option value="RW" label="Rwanda">Rwanda</option>
+                  <option value="RE" label="Réunion">Réunion</option>
+                  <option value="SH" label="Saint Helena">Saint Helena</option>
+                  <option value="SN" label="Senegal">Senegal</option>
+                  <option value="SC" label="Seychelles">Seychelles</option>
+                  <option value="SL" label="Sierra Leone">Sierra Leone</option>
+                  <option value="SO" label="Somalia">Somalia</option>
+                  <option value="ZA" label="South Africa">South Africa</option>
+                  <option value="SD" label="Sudan">Sudan</option>
+                  <option value="SZ" label="Swaziland">Swaziland</option>
+                  <option value="ST" label="São Tomé and Príncipe">São Tomé and Príncipe</option>
+                  <option value="TZ" label="Tanzania">Tanzania</option>
+                  <option value="TG" label="Togo">Togo</option>
+                  <option value="TN" label="Tunisia">Tunisia</option>
+                  <option value="UG" label="Uganda">Uganda</option>
+                  <option value="EH" label="Western Sahara">Western Sahara</option>
+                  <option value="ZM" label="Zambia">Zambia</option>
+                  <option value="ZW" label="Zimbabwe">Zimbabwe</option>
+		</optgroup>
+		<optgroup id="country-optgroup-Americas" label="Americas">
+		  <option value="AI" label="Anguilla">Anguilla</option>
+		  <option value="AG" label="Antigua and Barbuda">Antigua and Barbuda</option>
+                  <option value="AR" label="Argentina">Argentina</option>
+                  <option value="AW" label="Aruba">Aruba</option>
+                  <option value="BS" label="Bahamas">Bahamas</option>
+                  <option value="BB" label="Barbados">Barbados</option>
+                  <option value="BZ" label="Belize">Belize</option>
+                  <option value="BM" label="Bermuda">Bermuda</option>
+                  <option value="BO" label="Bolivia">Bolivia</option>
+                  <option value="BR" label="Brazil">Brazil</option>
+                  <option value="VG" label="British Virgin Islands">British Virgin Islands</option>
+                  <option value="CA" label="Canada">Canada</option>
+                  <option value="KY" label="Cayman Islands">Cayman Islands</option>
+                  <option value="CL" label="Chile">Chile</option>
+                  <option value="CO" label="Colombia">Colombia</option>
+                  <option value="CR" label="Costa Rica">Costa Rica</option>
+                  <option value="CU" label="Cuba">Cuba</option>
+                  <option value="DM" label="Dominica">Dominica</option>
+                  <option value="DO" label="Dominican Republic">Dominican Republic</option>
+                  <option value="EC" label="Ecuador">Ecuador</option>
+                  <option value="SV" label="El Salvador">El Salvador</option>
+                  <option value="FK" label="Falkland Islands">Falkland Islands</option>
+                  <option value="GF" label="French Guiana">French Guiana</option>
+                  <option value="GL" label="Greenland">Greenland</option>
+                  <option value="GD" label="Grenada">Grenada</option>
+                  <option value="GP" label="Guadeloupe">Guadeloupe</option>
+                  <option value="GT" label="Guatemala">Guatemala</option>
+                  <option value="GY" label="Guyana">Guyana</option>
+                  <option value="HT" label="Haiti">Haiti</option>
+                  <option value="HN" label="Honduras">Honduras</option>
+                  <option value="JM" label="Jamaica">Jamaica</option>
+                  <option value="MQ" label="Martinique">Martinique</option>
+                  <option value="MX" label="Mexico">Mexico</option>
+                  <option value="MS" label="Montserrat">Montserrat</option>
+                  <option value="AN" label="Netherlands Antilles">Netherlands Antilles</option>
+                  <option value="NI" label="Nicaragua">Nicaragua</option>
+                  <option value="PA" label="Panama">Panama</option>
+                  <option value="PY" label="Paraguay">Paraguay</option>
+                  <option value="PE" label="Peru">Peru</option>
+                  <option value="PR" label="Puerto Rico">Puerto Rico</option>
+                  <option value="BL" label="Saint Barthélemy">Saint Barthélemy</option>
+                  <option value="KN" label="Saint Kitts and Nevis">Saint Kitts and Nevis</option>
+                  <option value="LC" label="Saint Lucia">Saint Lucia</option>
+                  <option value="MF" label="Saint Martin">Saint Martin</option>
+                  <option value="PM" label="Saint Pierre and Miquelon">Saint Pierre and Miquelon</option>
+                  <option value="VC" label="Saint Vincent and the Grenadines">Saint Vincent and the Grenadines</option>
+                  <option value="SR" label="Suriname">Suriname</option>
+                  <option value="TT" label="Trinidad and Tobago">Trinidad and Tobago</option>
+                  <option value="TC" label="Turks and Caicos Islands">Turks and Caicos Islands</option>
+                  <option value="VI" label="U.S. Virgin Islands">U.S. Virgin Islands</option>
+                  <option value="US" label="United States">United States</option>
+                  <option value="UY" label="Uruguay">Uruguay</option>
+                  <option value="VE" label="Venezuela">Venezuela</option>
+		</optgroup>
+		<optgroup id="country-optgroup-Asia" label="Asia">
+                  <option value="AF" label="Afghanistan">Afghanistan</option>
+                  <option value="AM" label="Armenia">Armenia</option>
+                  <option value="AZ" label="Azerbaijan">Azerbaijan</option>
+                  <option value="BH" label="Bahrain">Bahrain</option>
+                  <option value="BD" label="Bangladesh">Bangladesh</option>
+                  <option value="BT" label="Bhutan">Bhutan</option>
+                  <option value="BN" label="Brunei">Brunei</option>
+                  <option value="KH" label="Cambodia">Cambodia</option>
+                  <option value="CN" label="China">China</option>
+                  <option value="GE" label="Georgia">Georgia</option>
+                  <option value="HK" label="Hong Kong SAR China">Hong Kong SAR China</option>
+                  <option value="IN" label="India">India</option>
+                  <option value="ID" label="Indonesia">Indonesia</option>
+                  <option value="IR" label="Iran">Iran</option>
+                  <option value="IQ" label="Iraq">Iraq</option>
+                  <option value="IL" label="Israel">Israel</option>
+                  <option value="JP" label="Japan">Japan</option>
+                  <option value="JO" label="Jordan">Jordan</option>
+                  <option value="KZ" label="Kazakhstan">Kazakhstan</option>
+                  <option value="KW" label="Kuwait">Kuwait</option>
+                  <option value="KG" label="Kyrgyzstan">Kyrgyzstan</option>
+                  <option value="LA" label="Laos">Laos</option>
+                  <option value="LB" label="Lebanon">Lebanon</option>
+                  <option value="MO" label="Macau SAR China">Macau SAR China</option>
+                  <option value="MY" label="Malaysia">Malaysia</option>
+                  <option value="MV" label="Maldives">Maldives</option>
+                  <option value="MN" label="Mongolia">Mongolia</option>
+                  <option value="MM" label="Myanmar [Burma]">Myanmar [Burma]</option>
+                  <option value="NP" label="Nepal">Nepal</option>
+                  <option value="NT" label="Neutral Zone">Neutral Zone</option>
+                  <option value="KP" label="North Korea">North Korea</option>
+                  <option value="OM" label="Oman">Oman</option>
+                  <option value="PK" label="Pakistan">Pakistan</option>
+                  <option value="PS" label="Palestinian Territories">Palestinian Territories</option>
+                  <option value="YD" label="People's Democratic Republic of Yemen">People's Democratic Republic of Yemen</option>
+                  <option value="PH" label="Philippines">Philippines</option>
+                  <option value="QA" label="Qatar">Qatar</option>
+                  <option value="SA" label="Saudi Arabia">Saudi Arabia</option>
+                  <option value="SG" label="Singapore">Singapore</option>
+                  <option value="KR" label="South Korea">South Korea</option>
+                  <option value="LK" label="Sri Lanka">Sri Lanka</option>
+                  <option value="SY" label="Syria">Syria</option>
+                  <option value="TW" label="Taiwan">Taiwan</option>
+                  <option value="TJ" label="Tajikistan">Tajikistan</option>
+                  <option value="TH" label="Thailand">Thailand</option>
+                  <option value="TL" label="Timor-Leste">Timor-Leste</option>
+                  <option value="TR" label="Turkey">Turkey</option>
+                  <option value="TM" label="Turkmenistan">Turkmenistan</option>
+                  <option value="AE" label="United Arab Emirates">United Arab Emirates</option>
+                  <option value="UZ" label="Uzbekistan">Uzbekistan</option>
+                  <option value="VN" label="Vietnam">Vietnam</option>
+                  <option value="YE" label="Yemen">Yemen</option>
+		</optgroup>
+		<optgroup id="country-optgroup-Europe" label="Europe">
+		  <option value="AL" label="Albania">Albania</option>
+		  <option value="AD" label="Andorra">Andorra</option>
+                  <option value="AT" label="Austria">Austria</option>
+                  <option value="BY" label="Belarus">Belarus</option>
+                  <option value="BE" label="Belgium">Belgium</option>
+                  <option value="BA" label="Bosnia and Herzegovina">Bosnia and Herzegovina</option>
+                  <option value="BG" label="Bulgaria">Bulgaria</option>
+                  <option value="HR" label="Croatia">Croatia</option>
+                  <option value="CY" label="Cyprus">Cyprus</option>
+                  <option value="CZ" label="Czech Republic">Czech Republic</option>
+                  <option value="DK" label="Denmark">Denmark</option>
+                  <option value="DD" label="East Germany">East Germany</option>
+                  <option value="EE" label="Estonia">Estonia</option>
+                  <option value="FO" label="Faroe Islands">Faroe Islands</option>
+                  <option value="FI" label="Finland">Finland</option>
+                  <option value="FR" label="France">France</option>
+                  <option value="DE" label="Germany">Germany</option>
+                  <option value="GI" label="Gibraltar">Gibraltar</option>
+                  <option value="GR" label="Greece">Greece</option>
+                  <option value="GG" label="Guernsey">Guernsey</option>
+                  <option value="HU" label="Hungary">Hungary</option>
+                  <option value="IS" label="Iceland">Iceland</option>
+                  <option value="IE" label="Ireland">Ireland</option>
+                  <option value="IM" label="Isle of Man">Isle of Man</option>
+                  <option value="IT" label="Italy">Italy</option>
+                  <option value="JE" label="Jersey">Jersey</option>
+                  <option value="LV" label="Latvia">Latvia</option>
+                  <option value="LI" label="Liechtenstein">Liechtenstein</option>
+                  <option value="LT" label="Lithuania">Lithuania</option>
+                  <option value="LU" label="Luxembourg">Luxembourg</option>
+                  <option value="MK" label="Macedonia">Macedonia</option>
+                  <option value="MT" label="Malta">Malta</option>
+                  <option value="FX" label="Metropolitan France">Metropolitan France</option>
+                  <option value="MD" label="Moldova">Moldova</option>
+                  <option value="MC" label="Monaco">Monaco</option>
+                  <option value="ME" label="Montenegro">Montenegro</option>
+                  <option value="NL" label="Netherlands">Netherlands</option>
+                  <option value="NO" label="Norway">Norway</option>
+                  <option value="PL" label="Poland">Poland</option>
+                  <option value="PT" label="Portugal">Portugal</option>
+                  <option value="RO" label="Romania">Romania</option>
+                  <option value="RU" label="Russia">Russia</option>
+                  <option value="SM" label="San Marino">San Marino</option>
+                  <option value="RS" label="Serbia">Serbia</option>
+                  <option value="CS" label="Serbia and Montenegro">Serbia and Montenegro</option>
+                  <option value="SK" label="Slovakia">Slovakia</option>
+                  <option value="SI" label="Slovenia">Slovenia</option>
+                  <option value="ES" label="Spain">Spain</option>
+                  <option value="SJ" label="Svalbard and Jan Mayen">Svalbard and Jan Mayen</option>
+                  <option value="SE" label="Sweden">Sweden</option>
+                  <option value="CH" label="Switzerland">Switzerland</option>
+                  <option value="UA" label="Ukraine">Ukraine</option>
+                  <option value="SU" label="Union of Soviet Socialist Republics">Union of Soviet Socialist Republics</option>
+                  <option value="GB" label="United Kingdom">United Kingdom</option>
+                  <option value="VA" label="Vatican City">Vatican City</option>
+                  <option value="AX" label="Åland Islands">Åland Islands</option>
+		</optgroup>
+		<optgroup id="country-optgroup-Oceania" label="Oceania">
+		  <option value="AS" label="American Samoa">American Samoa</option>
+                  <option value="AQ" label="Antarctica">Antarctica</option>
+                  <option value="AU" label="Australia">Australia</option>
+                  <option value="BV" label="Bouvet Island">Bouvet Island</option>
+                  <option value="IO" label="British Indian Ocean Territory">British Indian Ocean Territory</option>
+                  <option value="CX" label="Christmas Island">Christmas Island</option>
+                  <option value="CC" label="Cocos [Keeling] Islands">Cocos [Keeling] Islands</option>
+                  <option value="CK" label="Cook Islands">Cook Islands</option>
+                  <option value="FJ" label="Fiji">Fiji</option>
+                  <option value="PF" label="French Polynesia">French Polynesia</option>
+                  <option value="TF" label="French Southern Territories">French Southern Territories</option>
+                  <option value="GU" label="Guam">Guam</option>
+                  <option value="HM" label="Heard Island and McDonald Islands">Heard Island and McDonald Islands</option>
+                  <option value="KI" label="Kiribati">Kiribati</option>
+                  <option value="MH" label="Marshall Islands">Marshall Islands</option>
+                  <option value="FM" label="Micronesia">Micronesia</option>
+                  <option value="NR" label="Nauru">Nauru</option>
+                  <option value="NC" label="New Caledonia">New Caledonia</option>
+                  <option value="NZ" label="New Zealand">New Zealand</option>
+                  <option value="NU" label="Niue">Niue</option>
+                  <option value="NF" label="Norfolk Island">Norfolk Island</option>
+                  <option value="MP" label="Northern Mariana Islands">Northern Mariana Islands</option>
+                  <option value="PW" label="Palau">Palau</option>
+                  <option value="PG" label="Papua New Guinea">Papua New Guinea</option>
+                  <option value="PN" label="Pitcairn Islands">Pitcairn Islands</option>
+                  <option value="WS" label="Samoa">Samoa</option>
+                  <option value="SB" label="Solomon Islands">Solomon Islands</option>
+                  <option value="GS" label="South Georgia and the South Sandwich Islands">South Georgia and the South Sandwich Islands</option>
+                  <option value="TK" label="Tokelau">Tokelau</option>
+                  <option value="TO" label="Tonga">Tonga</option>
+                  <option value="TV" label="Tuvalu">Tuvalu</option>
+                  <option value="UM" label="U.S. Minor Outlying Islands">U.S. Minor Outlying Islands</option>
+                  <option value="VU" label="Vanuatu">Vanuatu</option>
+                  <option value="WF" label="Wallis and Futuna">Wallis and Futuna</option>
+		</optgroup>
+              </select>
+	    </li>
+	    <li>
+	      <label for="ipchoice">This device speaks</label>
+              <select id="ipchoice" name="ipchoice">
+		<option value="ipv4">IPv4</option>
+		<option value="ipv6">IPv6</option>
+		<option value="both">Both</option>
+              </select>
+	    </li>
+	</ul>
+	</fieldset>
         <p> Publisher same as manufacturer? <input id="pubcheck" name="pubsame"
             checked="checked"
             onchange="togglepubsame(pubcheck,pubnamediv);"
@@ -328,13 +347,12 @@
         </p>
         <div id="pubnamediv" style="display: none">
           <p>Publisher name:&nbsp;<input name="pub_name" maxlength="80" size="40">
-          </p>
         </div>
-        <br>
-
-        <p><strong>How can one get a software bill of materials?</strong></p>
+        </fieldset>
+	<label for="sbom">How can one get a software bill of materials?</label>
         <select id="sbom" name="sbom" onchange="setVisibility(sbom);">
-          <option value="none" selected="selected">Not available</option>
+	  <option value="none" selected="selected">Choose...</option>
+          <option value="none">Not available</option>
           <option value="cloud">Cloud URL</option>
           <option value="local">Well-known URL on Device</option>
           <option value="tel">Telephone</option>
@@ -369,9 +387,10 @@
               maxlength="200"
               type="url"></span>
         </span> <br>
-        <p> <strong>Security advisory information can be found at</strong> </p>
+        <label for=vulntype>Security advisory information can be found at</label>
         <select id="vulntype" name="vulntype" onchange="setvulnvis(vulnview)">
-          <option value="none" default="">N/A</option>
+	  <option value="none" default="">Choose...</option>
+          <option value="none">N/A</option>
           <option value="url">URL to CSAF/CVRF</option>
         </select>
         <br>
@@ -380,296 +399,248 @@
             size="50"
             maxlength="200"
             type="url">
-        </span> <br>
-        <h3>How will this device communicate on the network? </h3>
-        <table border="1">
-          <tbody>
-          </tbody>
-          <thead>
-            <tr>
-              <th>Type of access</th>
-              <th>Allow?</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><b>Internet communication</b><br>
-                Select this type to enter domain names of services that you want
-                this device to access.</td>
-              <td style="width: 40.2px;"><input id="clbox" name="clbox" onclick="javascript:yesnoCheck('bydevice','cl', 0);"
-                  type="checkbox"></td>
-            </tr>
-            <tr>
-              <td>Access to controllers specific to this device (no need to name
-                a class).&nbsp;<span title="Controllers are specified by the local administrator.">&nbsp;
-                  This is "my-controller".</span> </td>
-              <td style="height: 38.4px;"><input name="myctlbox" id="myctlbox" onclick="javascript:yesnoCheck('bydevice','myctl', 0);"
-                  type="checkbox">
-              </td>
-            </tr>
-            <tr>
-              <td>Controller access<br>
-                <small>Access to <b>classes</b> of devices that are known to be
-                  controllers.&nbsp; Use this when you want different types of
-                  devices to access the same controller.</small> <span title="You will be prompted below for a controller class."></span>
-              </td>
-              <td><input id="entbox" name="entbox" onclick="javascript:yesnoCheck('bydevice','ent',0);"
-                  type="checkbox"></td>
-            </tr>
-            <tr>
-              <td>Local communication<br>
-                <small>Access to/from <b>any</b> local host for specific
-                  services (like COAP or HTTP)</small>&nbsp;<span title="Access to all LOCAL hosts (enterprise administrator gets to decide what' local' means)."></span>
-              </td>
-              <td style="height: 38.4px;"><input name="locbox" id="locbox" onclick="javascript:yesnoCheck('bydevice','loc',0);"
-                  type="checkbox">
-              </td>
-            </tr>
-            <tr>
-              <td>Devices to named manufacturers<br>
-                <small>Access to&nbsp; of devices that are identified by the
-                  domain names in their MUD URL</small>s<span title="These are the domain names in MUD URLs you specify."></span>
-              </td>
-              <td><input id="manbox" name="manbox" onclick="javascript:yesnoCheck('bydevice','man',0);"
-                  type="checkbox"></td>
-            </tr>
-            <tr>
-              <td>Access to devices to/from the same manufacturer based on the
-                domain name in the MUD URL.<span title="All devices that emit a MUD URL with the same domain name as this one (what you listed above)."></span>
-              </td>
-              <td style="height: 38.4px;"><input name="mymanbox" id="mymanbox" onclick="javascript:yesnoCheck('bydevice','myman',0);"
-                  type="checkbox">
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <p><br>
-          This device speaks
-          <select name="ipchoice">
-            <option value="ipv4">IPv4</option>
-            <option value="ipv6">IPv6</option>
-            <option value="both">Both</option>
-          </select>
-        </p>
-        <!--      Shall I create ACLs in both directions or just away from the device?
-     <p>      <span style='white-space:nowrap'>      <select id="bidir" name="bibox" default="No">	<option value="No">Away from Device</option>	<option value="Yes"></option>	&nbsp;      </select>      </span>      </p>-->
-        <div id="bydevice" style="display: none">
-          <table border="1">
-            <tbody>
-              <tr>
-                <td>
-                  <h3>Create rules below</h3>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <div id="cl" style="display:none">
-                    <p>Internet Hosts</p>
-                    <span id="cllist"> <input pattern="[a-zA-Z0-9.-]+\.[a-zA-Z]{2,3}$"
-                        maxlength="120"
-                        size="40"
-                        name="clnames[]"
-                        type="text">&nbsp;&nbsp;&nbsp;
-                      Protocol&nbsp;
-                      <select id="clsel" name="clproto[]" value="any" onchange="tcporudp('clsel','clplist');">
-                        <option value="any">Any</option>
-                        <option value="tcp">TCP</option>
-                        <option value="udp">UDP</option>
-                        &nbsp;
-                      </select>
-                      <input value="+" onclick="addInput('cllist','cl','dns',0);"
-                        type="button">
-                      <br>
-                      <span id="clplistl" style="visibility: hidden"> Local
-                        Port&nbsp; <input pattern="([0-9]{1,5}|any)" value="any"
-                          name="clportl[]"
-                          style="width:60px">
-                      </span> <span id="clplist" style="visibility: hidden">
-                        &nbsp;&nbsp;Remote Port&nbsp; <input pattern="([0-9]{1,5}|any)"
-                          value="any"
-                          name="clport[]"
-                          style="width:60px">
-                      </span> <span id="clplistc" style="visibility: hidden">
-                        &nbsp;&nbsp;Initiated by&nbsp;
-                        <select name="clinit[]" id="clinit" value="either" onchange="localcheck('clinit','clplistl');">
-                          <option value="either">Either</option>
-                          <option value="thing">Thing</option>
-                          <option value="remote">Remote</option>
-                        </select>
-                      </span> </span></div>
-                  <div id="myctl" style="display:none">
-                    <p>My Controller</p>
-                    <span id="myctllist"> <input value="(filled in by local admin)"
-                        name="myctlnames[]"
-                        disabled="disabled"
-                        type="hidden">
-                      <input value="(filled in by local admin)" readonly="readonly"
-                        size="40"
-                        name="myctlnames[]"
-                        type="text">&nbsp;&nbsp;&nbsp;&nbsp;Protocol&nbsp;
-                      <select id="myctlsel" name="myctlproto[]" value="any" onchange="tcporudp('myctlsel','myctlplist');">
-                        <option value="any">Any</option>
-                        <option value="tcp">TCP</option>
-                        <option value="udp">UDP</option>
-                      </select>
-                      <input value="+" onclick="addInput('myctllist','myctl','dns',8);"
-                        type="button">
-                      <br>
-                      <span id="myctlplistl" style="visibility: hidden"> Local
-                        Port&nbsp; <input pattern="([0-9]{1,5}|any)" value="any"
-                          name="myctlportl[]"
-                          style="width:60px">
-                      </span> <span id="myctlplist" style="visibility: hidden">
-                        &nbsp;&nbsp;Remote Port&nbsp; <input pattern="([0-9]{1,5}|any)"
-                          value="any"
-                          name="myctlport[]"
-                          style="width:60px">
-                      </span> <span id="myctlplistc" style="visibility: hidden">
-                        &nbsp;&nbsp;Initiated by&nbsp;
-                        <select name="myctlinit[]" id="myctlinit" value="either"
-                          onchange="localcheck('myctlinit','myctlplistl');">
-                          <option value="either">Either</option>
-                          <option value="thing">Thing</option>
-                          <option value="remote">Remote</option>
-                        </select>
-                      </span> </span></div>
-                  <div id="loc" style="display:none">
-                    <p>Local Access</p>
-                    <span id="loclist"> <input value="any" name="locnames[]" disabled="disabled"
-                        type="hidden">
-                      <input value="any" readonly="readonly" size="40" name="locnames[]"
-                        type="text">&nbsp;&nbsp;&nbsp;&nbsp;Protocol&nbsp;
-                      <select id="locsel" name="locproto[]" value="any" onchange="tcporudp('locsel','locplist');">
-                        <option value="any">Any</option>
-                        <option value="tcp">TCP</option>
-                        <option value="udp">UDP</option>
-                      </select>
-                      <input value="+" onclick="addInput('loclist','loc','dns',4);"
-                        type="button">
-                      <br>
-                      <span id="locplistl" style="visibility: hidden"> Local
-                        Port&nbsp; <input pattern="([0-9]{1,5}|any)" value="any"
-                          name="locportl[]"
-                          style="width:60px">
-                      </span> <span id="locplist" style="visibility: hidden">
-                        &nbsp;&nbsp;Remote Port&nbsp; <input pattern="([0-9]{1,5}|any)"
-                          value="any"
-                          name="locport[]"
-                          style="width:60px">
-                      </span> <span id="locplistc" style="visibility: hidden">
-                        &nbsp;&nbsp;Initiated by&nbsp;
-                        <select name="locinit[]" id="locinit" value="either" onchange="localcheck('locinit','locplistl');">
-                          <option value="either">Either</option>
-                          <option value="thing">Thing</option>
-                          <option value="remote">Remote</option>
-                        </select>
-                      </span> </span></div>
-                  <div id="ent" style="display:none">
-                    <p>Controllers (Enter a URI for the class)</p>
-                    <span id="entlist"> <input maxlength="120" size="40" name="entnames[]"
-                        type="url">
-                      &nbsp;&nbsp;&nbsp;Protocol&nbsp;
-                      <select id="entsel" name="entproto[]" value="any" onchange="tcporudp('entsel','entplist');">
-                        <option value="any">Any</option>
-                        <option value="tcp">TCP</option>
-                        <option value="udp">UDP</option>
-                        &nbsp;
-                      </select>
-                      <input value="+" onclick="addInput('entlist','ent','url',1);"
-                        type="button">
-                      <br>
-                      <span id="entplistl" style="visibility: hidden"> Local
-                        Port&nbsp; <input pattern="([0-9]{1,5}|any)" value="any"
-                          name="entportl[]"
-                          style="width:60px">
-                      </span> <span id="entplist" style="visibility: hidden">
-                        &nbsp;&nbsp;Remote Port&nbsp; <input pattern="([0-9]{1,5}|any)"
-                          value="any"
-                          name="entport[]"
-                          style="width:60px">
-                      </span> <span id="entplistc" style="visibility: hidden">
-                        &nbsp;&nbsp;Initiated by&nbsp;
-                        <select name="entinit[]" id="entinit" value="either" onchange="localcheck('entinit','entplistl');">
-                          <option value="either">Either</option>
-                          <option value="thing">Thing</option>
-                          <option value="remote">Remote</option>
-                        </select>
-                      </span> </span></div>
-                  <div id="man" style="display:none">
-                    <p>Device Types</p>
-                    <span id="manlist"> <input pattern="[a-z0-9.-]+\.[a-z]{2,3}$"
-                        maxlength="120"
-                        size="40"
-                        name="mannames[]"
-                        type="text">&nbsp;&nbsp;&nbsp;
-                      Protocol&nbsp;
-                      <select id="mansel" name="manproto[]" value="any" onchange="tcporudp('mansel','manplist');">
-                        <option value="any">Any</option>
-                        <option value="tcp">TCP</option>
-                        <option value="udp">UDP</option>
-                        &nbsp;
-                      </select>
-                      <input value="+" onclick="addInput('manlist','man','dns',6);"
-                        type="button">
-                      <br>
-                      <span id="manplistl" style="visibility: hidden"> Local
-                        Port&nbsp; <input pattern="([0-9]{1,5}|any)" value="any"
-                          name="manportl[]"
-                          style="width:60px">
-                      </span> <span id="manplist" style="visibility: hidden">
-                        &nbsp;&nbsp;Remote Port&nbsp; <input pattern="([0-9]{1,5}|any)"
-                          value="any"
-                          name="manport[]"
-                          style="width:60px">
-                      </span> <span id="manplistc" style="visibility: hidden">
-                        &nbsp;&nbsp;Initiated by&nbsp;
-                        <select name="maninit[]" id="maninit" value="either" onchange="localcheck('maninit','manplistl');">
-                          <option value="either">Either</option>
-                          <option value="thing">Thing</option>
-                          <option value="remote">Remote</option>
-                        </select>
-                      </span> </span></div>
-                  <div id="myman" style="display:none">
-                    <p>Same Manufacturer</p>
-                    <span id="mymanlist"> <input value="(filled in by system)"
-                        readonly="readonly"
-                        name="mymannames[]"
-                        type="text">&nbsp;&nbsp;&nbsp;
-                      Protocol&nbsp;
-                      <select id="mymansel" name="mymanproto[]" value="any" onchange="tcporudp('mymansel','mymanplist');">
-                        <option value="any">Any</option>
-                        <option value="tcp">TCP</option>
-                        <option value="udp">UDP</option>
-                        &nbsp;
-                      </select>
-                      <input value="+" onclick="addInput('mymanlist','myman','dns', 10);"
-                        type="button">
-                      <br>
-                      <span id="mymanplistl" style="visibility: hidden"> Local
-                        Port&nbsp; <input pattern="([0-9]{1,5}|any)" value="any"
-                          name="mymanportl[]"
-                          style="width:60px">
-                      </span> <span id="mymanplist" style="visibility: hidden">
-                        &nbsp;&nbsp;Remote Port&nbsp; <input pattern="([0-9]{1,5}|any)"
-                          value="any"
-                          name="mymanport[]"
-                          style="width:60px">
-                      </span> <span id="mymanplistc" style="visibility: hidden">
-                        &nbsp;&nbsp;Initiated by&nbsp;
-                        <select name="mymaninit[]" id="mymaninit" value="either"
-                          onchange="localcheck('mymaninit','mymanplistl');">
-                          <option value="either">Either</option>
-                          <option value="thing">Thing</option>
-                          <option value="remote">Remote</option>
-                        </select>
-                      </span> </span></div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <p><br>
-        </p>
+        </span>
+	<input type="checkbox" id=clbox name=clbox style="visibility:hidden">
+	<input type="checkbox" id=myctlbox name=myctlbox style="visibility:hidden">
+	<input type="checkbox" id=ctlbox name=ctlbox style="visibility:hidden">
+	<input type="checkbox" id=locbox name=locbox style="visibility:hidden">
+	<input type="checkbox" id=mfgbox name=mfgbox style="visibility:hidden">
+	<input type="checkbox" id=mymfgbox name=mymfgbox style="visibility:hidden">
+
+        <h3>What systems does this device need to talk to?</h3>
+	Select all that apply: <em>(optional)</em>
+        <details id="cl"> 
+          <summary>Internet hosts by name</summary>
+          <span id="cllist">
+	    <input pattern="^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[\.A-Za-z0-9])$"
+		   maxlength="120"
+		   size="40"
+		   name="clnames[]"
+		   placeholder="hostname.com"
+		   type="text">&nbsp;&nbsp;&nbsp;
+            Protocol&nbsp;
+            <select id="clsel" name="clproto[]" value="any" onchange="tcporudp('clsel','clplist');">
+              <option value="any">Any</option>
+              <option value="tcp">TCP</option>
+              <option value="udp">UDP</option>
+              &nbsp;
+            </select>
+            <input value="+" onclick="addInput('cllist','cl','dns',0);"
+              type="button">
+            <br>
+            <span id="clplistl" style="visibility: hidden"> Local
+              Port&nbsp; <input pattern="([0-9]{1,5}|any)" value="any"
+                name="clportl[]"
+                style="width:60px">
+            </span>
+            <span id="clplist" style="visibility: hidden">
+              &nbsp;&nbsp;Remote Port&nbsp; <input pattern="([0-9]{1,5}|any)"
+                value="any"
+                name="clport[]"
+                style="width:60px">
+            </span> 
+            <span id="clplistc" style="visibility: hidden">
+              &nbsp;&nbsp;Initiated by&nbsp;
+              <select name="clinit[]" id="clinit" value="either" onchange="localcheck('clinit','clplistl');">
+                <option value="either">Either</option>
+                <option value="thing">Thing</option>
+                <option value="remote">Remote</option>
+              </select>
+            </span> 
+          </span>
+        </details>
+        <details id="myctl" >
+          <summary>My Controller: Access to controllers specific to this device (no need to name
+            a class)
+          </summary>
+          <span id="myctllist">
+            <input value="(filled in by local admin)" readonly="readonly"
+              size="40"
+              name="myctlnames[]"
+              type="text">&nbsp;&nbsp;&nbsp;&nbsp;Protocol&nbsp;
+            <select id="myctlsel" name="myctlproto[]" value="any" onchange="tcporudp('myctlsel','myctlplist');">
+              <option value="any">Any</option>
+              <option value="tcp">TCP</option>
+              <option value="udp">UDP</option>
+            </select>
+            <input value="+" onclick="addInput('myctllist','myctl','dns',8);"
+              type="button">
+            <br>
+            <span id="myctlplistl" style="visibility: hidden"> Local
+              Port&nbsp; <input pattern="([0-9]{1,5}|any)" value="any"
+                name="myctlportl[]"
+                style="width:60px">
+            </span> 
+            <span id="myctlplist" style="visibility: hidden">
+              &nbsp;&nbsp;Remote Port&nbsp; <input pattern="([0-9]{1,5}|any)"
+                value="any"
+                name="myctlport[]"
+                style="width:60px">
+            </span>
+            <span id="myctlplistc" style="visibility: hidden">
+              &nbsp;&nbsp;Initiated by&nbsp;
+              <select name="myctlinit[]" id="myctlinit" value="either"
+                onchange="localcheck('myctlinit','myctlplistl');">
+                <option value="either">Either</option>
+                <option value="thing">Thing</option>
+                <option value="remote">Remote</option>
+              </select>
+            </span>
+          </span>
+        </details>
+        <details id="loc" >
+          <summary>Local Access: Access to/from any local host for
+          specific services (like COAP or HTTP)</summary>
+          <span id="loclist"> <input value="any" name="locnames[]" disabled="disabled"
+              type="hidden">
+            <input value="any" readonly="readonly" size="40" name="locnames[]"
+              type="text">&nbsp;&nbsp;&nbsp;&nbsp;Protocol&nbsp;
+            <select id="locsel" name="locproto[]" value="any" onchange="tcporudp('locsel','locplist');">
+              <option value="any">Any</option>
+              <option value="tcp">TCP</option>
+              <option value="udp">UDP</option>
+            </select>
+            <input value="+" onclick="addInput('loclist','loc','dns',4);"
+              type="button">
+            <br>
+            <span id="locplistl" style="visibility: hidden"> Local
+              Port&nbsp; <input pattern="([0-9]{1,5}|any)" value="any"
+                name="locportl[]"
+                style="width:60px">
+            </span> 
+            <span id="locplist" style="visibility: hidden">
+              &nbsp;&nbsp;Remote Port&nbsp; <input pattern="([0-9]{1,5}|any)"
+                value="any"
+                name="locport[]"
+                style="width:60px">
+            </span>
+            <span id="locplistc" style="visibility: hidden">
+              &nbsp;&nbsp;Initiated by&nbsp;
+              <select name="locinit[]" id="locinit" value="either" onchange="localcheck('locinit','locplistl');">
+                <option value="either">Either</option>
+                <option value="thing">Thing</option>
+                <option value="remote">Remote</option>
+              </select>
+            </span> 
+          </span>
+        </details>
+        <details id="ctl">
+          <summary>Controllers (Enter a URI for the class)</summary>
+          Access to <b>classes</b> of devices that are known to be
+          controllers.&nbsp; Use this when you want different types of
+          devices to access the same controller.
+          <div id="entlist"> <input maxlength="120" size="40" name="entnames[]"
+              type="url">
+            &nbsp;&nbsp;&nbsp;Protocol&nbsp;
+            <select id="entsel" name="entproto[]" value="any" onchange="tcporudp('entsel','entplist');">
+              <option value="any">Any</option>
+              <option value="tcp">TCP</option>
+              <option value="udp">UDP</option>
+              &nbsp;
+            </select>
+            <input value="+" onclick="addInput('entlist','ent','url',1);"
+              type="button">
+            <br>
+            <span id="entplistl" style="visibility: hidden"> Local
+              Port&nbsp; <input pattern="([0-9]{1,5}|any)" value="any"
+                name="entportl[]"
+                style="width:60px">
+            </span>
+            <span id="entplist" style="visibility: hidden">
+              &nbsp;&nbsp;Remote Port&nbsp; <input pattern="([0-9]{1,5}|any)"
+                value="any"
+                name="entport[]"
+                style="width:60px">
+            </span>
+            <span id="entplistc" style="visibility: hidden">
+              &nbsp;&nbsp;Initiated by&nbsp;
+              <select name="entinit[]" id="entinit" value="either" onchange="localcheck('entinit','entplistl');">
+                <option value="either">Either</option>
+                <option value="thing">Thing</option>
+                <option value="remote">Remote</option>
+              </select>
+            </span>
+          </div>          
+        </details>
+        <details id="mfg">
+          <summary>By Manufacturer: identified by the domain names in their MUD URL</summary>
+          <span id="manlist">
+	    <input pattern="^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$"
+		   maxlength="120"
+		   size="40"
+		   name="mannames[]"
+		   placeholder="manufacturer.com"
+		   type="text">&nbsp;&nbsp;&nbsp;
+            Protocol&nbsp;
+            <select id="mansel" name="manproto[]" value="any" onchange="tcporudp('mansel','manplist');">
+              <option value="any">Any</option>
+              <option value="tcp">TCP</option>
+              <option value="udp">UDP</option>
+              &nbsp;
+            </select>
+            <input value="+" onclick="addInput('manlist','man','dns',6);"
+              type="button">
+            <br>
+            <span id="manplistl" style="visibility: hidden"> Local
+              Port&nbsp; <input pattern="([0-9]{1,5}|any)" value="any"
+                name="manportl[]"
+                style="width:60px">
+            </span>
+            <span id="manplist" style="visibility: hidden">
+            &nbsp;&nbsp;Remote Port&nbsp; <input pattern="([0-9]{1,5}|any)"
+              value="any"
+              name="manport[]"
+              style="width:60px">
+            </span>
+            <span id="manplistc" style="visibility: hidden">
+              &nbsp;&nbsp;Initiated by&nbsp;
+              <select name="maninit[]" id="maninit" value="either" onchange="localcheck('maninit','manplistl');">
+                <option value="either">Either</option>
+                <option value="thing">Thing</option>
+                <option value="remote">Remote</option>
+              </select>
+            </span> 
+          </span>
+        </details>
+        <details id="mymfg">
+          <summary>Same Manufacturer: Access devices of the same manufacturer (based on the domain name in the MUD URL)
+          </summary>
+          <span id="mymanlist"> <input value="(filled in by system)"
+              readonly="readonly"
+              name="mymannames[]"
+              type="text">&nbsp;&nbsp;&nbsp;
+            Protocol&nbsp;
+            <select id="mymansel" name="mymanproto[]" value="any" onchange="tcporudp('mymansel','mymanplist');">
+              <option value="any">Any</option>
+              <option value="tcp">TCP</option>
+              <option value="udp">UDP</option>
+              &nbsp;
+            </select>
+            <input value="+" onclick="addInput('mymanlist','myman','dns', 10);"
+              type="button">
+            <br>
+            <span id="mymanplistl" style="visibility: hidden"> Local
+              Port&nbsp; <input pattern="([0-9]{1,5}|any)" value="any"
+                name="mymanportl[]"
+                style="width:60px">
+            </span>
+            <span id="mymanplist" style="visibility: hidden">
+              &nbsp;&nbsp;Remote Port&nbsp; <input pattern="([0-9]{1,5}|any)"
+                value="any"
+                name="mymanport[]"
+                style="width:60px">
+            </span>
+            <span id="mymanplistc" style="visibility: hidden">
+              &nbsp;&nbsp;Initiated by&nbsp;
+              <select name="mymaninit[]" id="mymaninit" value="either"
+                onchange="localcheck('mymaninit','mymanplistl');">
+                <option value="either">Either</option>
+                <option value="thing">Thing</option>
+                <option value="remote">Remote</option>
+              </select>
+            </span> 
+          </span>
+        </details>
         <br>
         <input value="Submit" type="submit"> <input name="Reset" type="reset">
       </form>

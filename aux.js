@@ -100,7 +100,7 @@ function addInput(divName,sectype,dnsorurl,i){
             " <br><input type=" + typefield + "name='" + names  + "'" + pattern +
 	    " size='40' " + fieldinfo + ">&nbsp;&nbsp;&nbsp;" +
 	    " Protocol&nbsp;&nbsp;<select id='" + selname + "' name='" + proto + "'" +
-	    onchange + ">" +
+		onchange + ">" +
 	    any +
 	    "<option value='tcp'>TCP</option>" +
 	    "<option value='udp'>UDP</option>" +
@@ -240,3 +240,12 @@ function j2pp(b64) {
     xhr.send(jsonText);
 }
 
+$('summary').click(function() {
+    var parent = $(this).parent()[0];
+    var pbox = parent.id + 'box';
+    if ( parent.open == false ) {
+	document.getElementById(pbox).checked = true;
+    } else {
+	document.getElementById(pbox).checked = false;
+    }
+});

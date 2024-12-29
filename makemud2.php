@@ -442,9 +442,9 @@ $doegress="Yes";
 // Not necessary to generate actual ACLs, but we need to know at this
 // point in the code.
 
-if ( isset($_POST['clbox']) || isset($_POST['entbox']) ||
+if ( isset($_POST['clbox']) || isset($_POST['ctlbox']) ||
      isset($_POST['myctlbox']) || isset($_POST['locbox']) ||
-     isset($_POST['manbox']) || isset($_POST['mymanbox'])) {
+     isset($_POST['mfgbox']) || isset($_POST['mymfgbox'])) {
      $gotacls=1;
      } else {
      $gotacls=0;
@@ -475,7 +475,7 @@ if ( $gotacls ) {
 
 // Next controller (enterprise)
 
-  if ( isset($_POST['entbox'] )) {
+  if ( isset($_POST['ctlbox'] )) {
     // build based on enterprise outbound
   
     if (isset($_POST['entproto']))  {
@@ -518,14 +518,14 @@ if ( $gotacls ) {
 
   // manufacturer
 
-  if ( isset($_POST['manbox'])) {
+  if ( isset($_POST['mfgbox'])) {
     // build local inbound services.
     buildacegroup($_POST['mannames'],$_POST['manproto'],$_POST['manportl'],
        $_POST['manport'], $_POST['maninit'], "man",IS_MFG);
   }
 
   // my-manufacturer
-  if ( isset($_POST['mymanbox'])) {
+  if ( isset($_POST['mymfgbox'])) {
     // build local inbound services.
     buildacegroup($_POST['mymannames'],$_POST['mymanproto'],$_POST['mymanportl'],
      $_POST['mymanport'], $_POST['mymaninit'], "myman",IS_MYMFG);
@@ -748,9 +748,8 @@ if ( ! $gotacls ) {
   print "visualize the results.  You can also sign the file and place it in the location that its corresponding ";
   print "MUD URL will find.  You can find instructions on how to sign your " ;
   print "MUD file <a href=\"https://www.mudmaker.org/signing.html\">here.</a>";
-  print "If you download the MUD file, it comes as a ZIP file with an example";
-  print "signature for testing purposes.  You can validate that signature using ";
-  print "<a href=\"mudmakerCA.crt\">this demonstration CA root.</a>";
+  print "  If you download the MUD file, it comes as a ZIP file with an example";
+  print " set of certificates and a signature for testing purposes.";
   print "<br>";
 
   print $downloadtext;
@@ -764,7 +763,7 @@ if ( ! $gotacls ) {
   printf('<img src="%s" alt="QR code"/>',$qrc);
   print "<figcaption style=\"text-align: center\">Your MUDURL<br></figcaption>";
   print "</figure></div>";
-  print "<pre style=\"padding: 1em 1em 1em 1em; font-weight: bold;\">" . htmlentities($output) . "</pre>";
+  print "<pre style=\"padding: 1em 1em 1em 1em; line-height: 1.2; font-weight: bold;\">" . htmlentities($output) . "</pre>";
   print "<hr></div>\n";
   print "</body>\n</html>";
 
