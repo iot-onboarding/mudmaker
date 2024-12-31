@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!--
 	Prism by TEMPLATED	templated.co @templatedco	Released for free under the Creative Commons Attribution 3.0 license (templated.co/license)-->
-<html>
+<html lang="en">
   <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
     <title>Build a MUD file</title>
@@ -34,7 +34,7 @@
   
         <p>Please enter host and model the intended MUD-URL for this device: <span
             title="This is the URL that the device will emit to the network.">
-            <img src="Circle-question-yellow.png"></span></p>
+            <img src="Circle-question-yellow.png" alt="helptext: This is the URL that the device will emit to the network."></span></p>
         https://<input name="mudhost" maxlength="50" size="40" required="yes" placeholder="hostname.manufacturer.com"> /
         (model name here-&gt;)<input name="model_name" maxlength="50" size="20"
           required="yes" placeholder="Device model">
@@ -340,7 +340,8 @@
 	    </li>
 	</ul>
 	</fieldset>
-        <p> Publisher same as manufacturer? <input id="pubcheck" name="pubsame"
+        <label for=pubcheck>Publisher same as manufacturer?</label>
+	<input id="pubcheck" name="pubsame"
             checked="checked"
             onchange="togglepubsame(pubcheck,pubnamediv);"
             type="checkbox">

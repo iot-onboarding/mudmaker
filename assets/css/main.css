@@ -24,7 +24,7 @@
 	body {
 		line-height: 1;
 		background: #fff;
-		color: #777;
+		color: #504E4E;
 	}
 
 	ol, ul {
@@ -1413,7 +1413,7 @@
 
 /*	body {
 		background-color: #fff;
-		color: #777;
+		color: #504E4E;
 	}*/
 
 	body, input, select, textarea {
@@ -1961,7 +1961,7 @@
 
 	input[type="checkbox"] + label,
 	input[type="radio"] + label {
-	    color: #777;
+	    color: #504E4E;
 	}
 
 	input[type="checkbox"] + label:before,
@@ -2840,7 +2840,7 @@
 
 	.wrapper.style2 {
 	    background-color: #fafafa;
-	    color: #777;
+	    color: #504E4E;
 	}
 
 	.wrapper.style2 input,
@@ -2979,7 +2979,7 @@
 
 	.wrapper.style2 input[type="checkbox"] + label,
 	.wrapper.style2 input[type="radio"] + label {
-	    color: #777;
+	    color: #504E4E;
 	}
 
 	.wrapper.style2 input[type="checkbox"] + label:before,
@@ -3200,7 +3200,7 @@
 	#footer {
 	    background-color: #fafafa;
 	    border-top: solid 2px rgba(144, 144, 144, 0.25);
-	    color: #777;
+	    color: #504E4E;
 	}
 
 	#footer .copyright {
