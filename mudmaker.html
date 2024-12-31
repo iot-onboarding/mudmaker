@@ -562,46 +562,6 @@
             </span>
           </div>          
         </details>
-        <details id="mfg">
-          <summary>By Manufacturer: identified by the domain names in their MUD URL</summary>
-          <span id="manlist">
-	    <input pattern="^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$"
-		   maxlength="120"
-		   size="40"
-		   name="mannames[]"
-		   placeholder="manufacturer.com"
-		   type="text">&nbsp;&nbsp;&nbsp;
-            Protocol&nbsp;
-            <select id="mansel" name="manproto[]" value="any" onchange="tcporudp('mansel','manplist');">
-              <option value="any">Any</option>
-              <option value="tcp">TCP</option>
-              <option value="udp">UDP</option>
-              &nbsp;
-            </select>
-            <input value="+" onclick="addInput('manlist','man','dns',6);"
-              type="button">
-            <br>
-            <span id="manplistl" style="visibility: hidden"> Local
-              Port&nbsp; <input pattern="([0-9]{1,5}|any)" value="any"
-                name="manportl[]"
-                style="width:60px">
-            </span>
-            <span id="manplist" style="visibility: hidden">
-            &nbsp;&nbsp;Remote Port&nbsp; <input pattern="([0-9]{1,5}|any)"
-              value="any"
-              name="manport[]"
-              style="width:60px">
-            </span>
-            <span id="manplistc" style="visibility: hidden">
-              &nbsp;&nbsp;Initiated by&nbsp;
-              <select name="maninit[]" id="maninit" value="either" onchange="localcheck('maninit','manplistl');">
-                <option value="either">Either</option>
-                <option value="thing">Thing</option>
-                <option value="remote">Remote</option>
-              </select>
-            </span> 
-          </span>
-        </details>
         <details id="mymfg">
           <summary>Same Manufacturer: Access devices of the same manufacturer (based on the domain name in the MUD URL)
           </summary>
@@ -634,6 +594,46 @@
               &nbsp;&nbsp;Initiated by&nbsp;
               <select name="mymaninit[]" id="mymaninit" value="either"
                 onchange="localcheck('mymaninit','mymanplistl');">
+                <option value="either">Either</option>
+                <option value="thing">Thing</option>
+                <option value="remote">Remote</option>
+              </select>
+            </span> 
+          </span>
+        </details>
+        <details id="mfg">
+          <summary>By Manufacturer: identified by the domain names in their MUD URL</summary>
+          <span id="manlist">
+	    <input pattern="^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$"
+		   maxlength="120"
+		   size="40"
+		   name="mannames[]"
+		   placeholder="hostname.manufacturer.com"
+		   type="text">&nbsp;&nbsp;&nbsp;
+            Protocol&nbsp;
+            <select id="mansel" name="manproto[]" value="any" onchange="tcporudp('mansel','manplist');">
+              <option value="any">Any</option>
+              <option value="tcp">TCP</option>
+              <option value="udp">UDP</option>
+              &nbsp;
+            </select>
+            <input value="+" onclick="addInput('manlist','man','dns',6);"
+              type="button">
+            <br>
+            <span id="manplistl" style="visibility: hidden"> Local
+              Port&nbsp; <input pattern="([0-9]{1,5}|any)" value="any"
+                name="manportl[]"
+                style="width:60px">
+            </span>
+            <span id="manplist" style="visibility: hidden">
+            &nbsp;&nbsp;Remote Port&nbsp; <input pattern="([0-9]{1,5}|any)"
+              value="any"
+              name="manport[]"
+              style="width:60px">
+            </span>
+            <span id="manplistc" style="visibility: hidden">
+              &nbsp;&nbsp;Initiated by&nbsp;
+              <select name="maninit[]" id="maninit" value="either" onchange="localcheck('maninit','manplistl');">
                 <option value="either">Either</option>
                 <option value="thing">Thing</option>
                 <option value="remote">Remote</option>
