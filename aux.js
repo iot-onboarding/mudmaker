@@ -194,7 +194,8 @@ function togglepubsame(p,d) {
 }
 
 function setvulnvis(v) {
-    if ( v.style.display == 'none' ) {
+    me=document.getElementById('vulntype');
+    if ( me.value != 'none' ) {
 	v.style.display='inherit';
     } else {
 	v.style.display='none';
