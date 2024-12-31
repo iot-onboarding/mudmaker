@@ -351,6 +351,9 @@
           <p>Publisher name:&nbsp;<input name="pub_name" maxlength="80" size="40">
         </div>
         </fieldset>
+	<fieldset>
+	  <ul class=twocol>
+	    <li>
 	<label for="sbom">How can one get a software bill of materials?</label>
         <select id="sbom" name="sbom" onchange="setVisibility(sbom);">
 	  <option value="none" selected="selected">Choose...</option>
@@ -361,7 +364,8 @@
           <option value="infourl">Get more information URL</option>
           <option value="c2">OpenC2</option>
         </select>
-        <br>
+	</li>
+	<li>
         <span id="sbomany" style="display: none"><br>
           <span id="sbcloud" style="display: none"> Static SBOM URL on Internet:
             Software version: <input id="sbomswver" name="sbomswver" size="10"
@@ -389,20 +393,23 @@
               size="50"
               maxlength="200"
               type="url"></span>
-        </span> <br>
+        </span></li>
+	<li>
         <label for=vulntype>Security advisory information can be found at</label>
         <select id="vulntype" name="vulntype" onchange="setvulnvis(vulnview)">
 	  <option value="none" default="">Choose...</option>
           <option value="none">N/A</option>
           <option value="url">URL to CSAF/CVRF</option>
         </select>
-        <br>
-        <br>
+	</li>
+	<li>
         <span id="vulnview" style="display: none"> Enter URL: <input name="vulninfo"
             size="50"
             maxlength="200"
             type="url">
         </span>
+	</li>
+	</ul>
 	<input type="checkbox" id=clbox name=clbox style="visibility:hidden">
 	<input type="checkbox" id=myctlbox name=myctlbox style="visibility:hidden">
 	<input type="checkbox" id=ctlbox name=ctlbox style="visibility:hidden">
