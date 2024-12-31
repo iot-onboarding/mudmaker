@@ -35,7 +35,7 @@
         <p>Please enter host and model the intended MUD-URL for this device: <span
             title="This is the URL that the device will emit to the network.">
             <img src="Circle-question-yellow.png"></span></p>
-        https://<input name="mudhost" maxlength="50" size="40" required="yes" placeholder="manufacturer.com"> /
+        https://<input name="mudhost" maxlength="50" size="40" required="yes" placeholder="hostname.manufacturer.com"> /
         (model name here-&gt;)<input name="model_name" maxlength="50" size="20"
           required="yes" placeholder="Device model">
         <br>
@@ -363,9 +363,10 @@
         <span id="sbomany" style="display: none"><br>
           <span id="sbcloud" style="display: none"> Static SBOM URL on Internet:
             Software version: <input id="sbomswver" name="sbomswver" size="10"
-              maxlength="20">&nbsp;&nbsp;&nbsp;
+              maxlength="20" placeholder="sw version #">&nbsp;&nbsp;&nbsp;
             <input id="sbomcloudurl" name="sbomcloudurl" size="50" maxlength="200"
-              type="url">
+              type="url"
+              placeholder="https://your-sbom-host/location-here..">
           </span> <span id="sblocal" style="display: none">
             <select id="sbschema" name="sbschema">
               <option value="https">https</option>
@@ -416,7 +417,7 @@
 		   maxlength="120"
 		   size="40"
 		   name="clnames[]"
-		   placeholder="hostname.com"
+		   placeholder="hostname.manufacturer.com"
 		   type="text">&nbsp;&nbsp;&nbsp;
             Protocol&nbsp;
             <select id="clsel" name="clproto[]" value="any" onchange="tcporudp('clsel','clplist');">
@@ -530,7 +531,7 @@
           controllers.&nbsp; Use this when you want different types of
           devices to access the same controller.
           <div id="entlist"> <input maxlength="120" size="40" name="entnames[]"
-              type="url">
+              type="url" placeholder="https://class name...">
             &nbsp;&nbsp;&nbsp;Protocol&nbsp;
             <select id="entsel" name="entproto[]" value="any" onchange="tcporudp('entsel','entplist');">
               <option value="any">Any</option>
@@ -561,46 +562,6 @@
               </select>
             </span>
           </div>          
-        </details>
-        <details id="mfg">
-          <summary>By Manufacturer: identified by the domain names in their MUD URL</summary>
-          <span id="manlist">
-	    <input pattern="^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$"
-		   maxlength="120"
-		   size="40"
-		   name="mannames[]"
-		   placeholder="manufacturer.com"
-		   type="text">&nbsp;&nbsp;&nbsp;
-            Protocol&nbsp;
-            <select id="mansel" name="manproto[]" value="any" onchange="tcporudp('mansel','manplist');">
-              <option value="any">Any</option>
-              <option value="tcp">TCP</option>
-              <option value="udp">UDP</option>
-              &nbsp;
-            </select>
-            <input value="+" onclick="addInput('manlist','man','dns',6);"
-              type="button">
-            <br>
-            <span id="manplistl" style="visibility: hidden"> Local
-              Port&nbsp; <input pattern="([0-9]{1,5}|any)" value="any"
-                name="manportl[]"
-                style="width:60px">
-            </span>
-            <span id="manplist" style="visibility: hidden">
-            &nbsp;&nbsp;Remote Port&nbsp; <input pattern="([0-9]{1,5}|any)"
-              value="any"
-              name="manport[]"
-              style="width:60px">
-            </span>
-            <span id="manplistc" style="visibility: hidden">
-              &nbsp;&nbsp;Initiated by&nbsp;
-              <select name="maninit[]" id="maninit" value="either" onchange="localcheck('maninit','manplistl');">
-                <option value="either">Either</option>
-                <option value="thing">Thing</option>
-                <option value="remote">Remote</option>
-              </select>
-            </span> 
-          </span>
         </details>
         <details id="mymfg">
           <summary>Same Manufacturer: Access devices of the same manufacturer (based on the domain name in the MUD URL)
@@ -634,6 +595,46 @@
               &nbsp;&nbsp;Initiated by&nbsp;
               <select name="mymaninit[]" id="mymaninit" value="either"
                 onchange="localcheck('mymaninit','mymanplistl');">
+                <option value="either">Either</option>
+                <option value="thing">Thing</option>
+                <option value="remote">Remote</option>
+              </select>
+            </span> 
+          </span>
+        </details>
+        <details id="mfg">
+          <summary>By Manufacturer: identified by the domain names in their MUD URL</summary>
+          <span id="manlist">
+	    <input pattern="^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$"
+		   maxlength="120"
+		   size="40"
+		   name="mannames[]"
+		   placeholder="hostname.manufacturer.com"
+		   type="text">&nbsp;&nbsp;&nbsp;
+            Protocol&nbsp;
+            <select id="mansel" name="manproto[]" value="any" onchange="tcporudp('mansel','manplist');">
+              <option value="any">Any</option>
+              <option value="tcp">TCP</option>
+              <option value="udp">UDP</option>
+              &nbsp;
+            </select>
+            <input value="+" onclick="addInput('manlist','man','dns',6);"
+              type="button">
+            <br>
+            <span id="manplistl" style="visibility: hidden"> Local
+              Port&nbsp; <input pattern="([0-9]{1,5}|any)" value="any"
+                name="manportl[]"
+                style="width:60px">
+            </span>
+            <span id="manplist" style="visibility: hidden">
+            &nbsp;&nbsp;Remote Port&nbsp; <input pattern="([0-9]{1,5}|any)"
+              value="any"
+              name="manport[]"
+              style="width:60px">
+            </span>
+            <span id="manplistc" style="visibility: hidden">
+              &nbsp;&nbsp;Initiated by&nbsp;
+              <select name="maninit[]" id="maninit" value="either" onchange="localcheck('maninit','manplistl');">
                 <option value="either">Either</option>
                 <option value="thing">Thing</option>
                 <option value="remote">Remote</option>

@@ -35,6 +35,7 @@ function addInput(divName,sectype,dnsorurl,i){
 	var onchange;
 	var hidden;
 	var any;
+	var placeholder;
 	var fieldinfo;
 	var divid;
 
@@ -45,13 +46,16 @@ function addInput(divName,sectype,dnsorurl,i){
 	    typefield="'text'";
 	    pattern = " pattern='[a-z0-9.-]+\.[a-z]{2,3}$'";
 	    readonly=0;
+	    placeholder=" placeholder='hostname.manufacturer.com'";
 	} else if ( dnsorurl == 'url' ) {
 	    typefield="'url'";
 	    pattern = "";
+	    placeholder=" placeholder='https://class name..'";
 	    readonly=0;
 	} else {
 	    typefield="'text'";
 	    pattern="";
+	    placeholder="";
 	    readonly=1;
 	}
 
@@ -98,7 +102,7 @@ function addInput(divName,sectype,dnsorurl,i){
 
         newdiv.innerHTML = 
             " <br><input type=" + typefield + "name='" + names  + "'" + pattern +
-	    " size='40' " + fieldinfo + ">&nbsp;&nbsp;&nbsp;" +
+	    " size='40' " + placeholder + fieldinfo + ">&nbsp;&nbsp;&nbsp;" +
 	    " Protocol&nbsp;&nbsp;<select id='" + selname + "' name='" + proto + "'" +
 		onchange + ">" +
 	    any +
@@ -190,7 +194,8 @@ function togglepubsame(p,d) {
 }
 
 function setvulnvis(v) {
-    if ( v.style.display == 'none' ) {
+    me=document.getElementById('vulntype');
+    if ( me.value != 'none' ) {
 	v.style.display='inherit';
     } else {
 	v.style.display='none';
