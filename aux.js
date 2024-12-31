@@ -187,9 +187,9 @@ function toggleANIMA(anid,anspan) {
 
 function togglepubsame(p,d) {
     if (p.checked == true ) {
-	d.style.display = 'none';
+	d.style.visibility = 'hidden';
     } else {
-	d.style.display ='inherit';
+	d.style.visibility ='inherit';
     }
 }
 
