@@ -1445,6 +1445,9 @@
 	    .twocol {
 		list-style: none;
 		column-count: 2;
+		li {
+		    break-inside: avoid-column;
+		}
 	    }
 	}
 
