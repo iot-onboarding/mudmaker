@@ -46,7 +46,7 @@ function addInput(divName,sectype,dnsorurl,i){
 	    typefield="'text'";
 	    pattern = " pattern='[a-z0-9.-]+\.[a-z]{2,3}$'";
 	    readonly=0;
-	    placeholder=" placeholder='manufacturer-domain.com'";
+	    placeholder=" placeholder='hostname.manufacturer.com'";
 	} else if ( dnsorurl == 'url' ) {
 	    typefield="'url'";
 	    pattern = "";
