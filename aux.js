@@ -188,7 +188,7 @@ function toggleANIMA(anid,anspan) {
 function fillpub() {
     p=document.getElementById('pub_name').value;
     if (p != '') {
-	p = document.getElementById('man_name');
+	p = document.getElementById('man_name').value;
     }
 }
 
