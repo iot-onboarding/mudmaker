@@ -81,11 +81,11 @@
           <div class="content">
             <h3>Building your MUD file</h3>
             <p>Each MUD file contains access control lists that use various
-              classes.&nbsp; When you click on the carot next to the class in MUD maker,
-              additional information will appear below that you can then
+              classes.&nbsp; When you click on the tic marks in MUD maker,
+              additional information will appear below that you can
               fill out.&nbsp; Just choose which classes are appropriate for your
               devices.&nbsp; If you need more entries per class, hit the +
-              button at the top of each class.</p>
+              button at the first entry of each class.</p>
             <ul class="actions">
               <li><a href="classes.html" class="button alt">More on MUD ACLs</a>
                 <a href="examples.html" class="button alt">Example MUD files</a></li>
