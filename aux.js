@@ -185,12 +185,8 @@ function toggleANIMA(anid,anspan) {
     }
 }
 
-function togglepubsame(p,d) {
-    if (p.checked == true ) {
-	d.style.visibility = 'hidden';
-    } else {
-	d.style.visibility ='inherit';
-    }
+function fillpub() {
+    document.getElementById('pub_name').value = document.getElementById('man_name');
 }
 
 function setvulnvis(v) {

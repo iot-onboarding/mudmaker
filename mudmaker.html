@@ -50,7 +50,9 @@
 	    <li>
               <label for="man_name">Manufacturer Name</label>
 	      <input name="man_name" maxlength="40" size="40"
-		   placeholder="Company, Inc."></li><li>
+		     placeholder="Company, Inc."
+		     onchange='fillpub();'></li>
+	    <li>
               <label for="sysDescr">A short description for this device</label>
 	      <input name="sysDescr" maxlength="120" size="40" required="yes"
 		     placeholder="This device does..">
@@ -354,8 +356,9 @@
             onchange="togglepubsame(pubcheck,pubnamediv);"
                type="checkbox">
 	</label>
-        <div id="pubnamediv" style="visibility: hidden">
-          <p>Publisher name:&nbsp;<input name="pub_name" maxlength="80" size="40">
+        <label>Publisher name
+	  <input name="pub_name" maxlength="80" size="40" required=true>
+	</label>
         </div>
         </fieldset>
 	<fieldset>
