@@ -74,8 +74,9 @@
 	    <ul class="twocol">
 	    <li>
 	      <label for="country">Country for demo CA</label>
-              <select name="country" id="country">
-		<option value="0"  selected="selected">Select a country ... </option>
+              <select name="country" id="country" style='width: 300px;'>
+		<option value="0"  selected="selected">
+		  Select a country ... </option>
 		<optgroup id="country-optgroup-Africa" label="Africa">
                   <option value="DZ" label="Algeria">Algeria</option>
                   <option value="AO" label="Angola">Angola</option>
@@ -351,11 +352,13 @@
 	</ul>
             <ul class="twocol">
 	      <li>
-            <label for='pub_name'>Publisher name</label>
-	    <input id= "pub_name" name="pub_name" maxlength="80"
-		   size="40" required=true>
+            <label for='pub_name'>MUD File Publisher Name</label>
+	    <input id="pub_name" name="pub_name" maxlength="80"
+		   size="40" required=true
+		   placeholder="Your Name">
 	    </li>
 	</ul>
+	<br>
         </fieldset>
 	<fieldset>
 	  <ul class=twocol>
