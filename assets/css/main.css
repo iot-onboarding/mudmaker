@@ -1448,6 +1448,9 @@
 		li {
 		    break-inside: avoid-column;
 		}
+		ul {
+		    margin-bottom: 0 0 0 0;
+		}
 	    }
 	}
 
