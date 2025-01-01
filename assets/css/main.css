@@ -1448,9 +1448,6 @@
 		li {
 		    break-inside: avoid-column;
 		}
-		ul {
-		    margin: 0 0 0 0;
-		}
 	    }
 	}
 
@@ -2092,6 +2089,10 @@
 		list-style: disc;
 		margin: 0 0 2em 0;
 		padding-left: 1em;
+	}
+
+        ul.twocol {
+	    margin: 0 0 0em 0;
 	}
 
 	ul li {
