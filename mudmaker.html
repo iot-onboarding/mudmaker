@@ -35,11 +35,13 @@
         <p>Please enter host and model the intended MUD-URL for this device: <span
             title="This is the URL that the device will emit to the network.">
             <img src="Circle-question-yellow.png" alt="helptext: This is the URL that the device will emit to the network."></span></p>
-        <label style="display: inline;">https://<input name="mudhost"
- maxlength="50" size="40" required="yes"
-					     placeholder="hostname.manufacturer.com"></label>
-	<label style="display: inline;">(model name here-&gt;)<input name="model_name" maxlength="50" size="20"
-          required="yes" placeholder="Device model"></label>
+        <label style="display: inline;">https://
+	  <input name="mudhost"  maxlength="50" size="40" required="yes"
+		 tabindex=1 placeholder="hostname.manufacturer.com"></label>
+	<label style="display: inline;">(model name here-&gt;)
+	  <input name="model_name" maxlength="50" size="20"
+		 required="yes" placeholder="Device model" tabindex=2>
+	</label>
         <br>
 	<br>
         <fieldset>
@@ -47,22 +49,22 @@
 	  <ul class="twocol">
 	    <li>
               <label for="man_name">Manufacturer Name</label>
-	      <input name="man_name" maxlength="40" size="40"
+	      <input name="man_name" maxlength="40" size="40" tabindex=3
 		   placeholder="Company, Inc."></li><li>
               <label for="sysDescr">A short description for this device</label>
 	      <input name="sysDescr" maxlength="120" size="40" required="yes"
-		     placeholder="This device does..">
+		     placeholder="This device does.." tabindex=4>
 	    </li>
 	    <li>
               <label for="doc_url">Documentation URL</label>
 	      <input name="doc_url" maxlength="60" size="40" required="yes"
-		     type="url"
+		     type="url" tabindex=5
 		     placeholder="https://documentation...">
 	    </li>
 	    <li>
               <label for="email_addr">EMail</label></li><li>
 	      <input name="email_addr" maxlength="60" size="40" required="yes"
-		     placeholder="someone@example.com">
+		     tabindex=6 placeholder="someone@example.com">
 	    </li>
 	    <li>
 	      <label for="country">Country for demo CA</label>
