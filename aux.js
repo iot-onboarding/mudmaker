@@ -186,7 +186,10 @@ function toggleANIMA(anid,anspan) {
 }
 
 function fillpub() {
-    document.getElementById('pub_name').value = document.getElementById('man_name');
+    p=document.getElementById('pub_name').value;
+    if (p != '') {
+	p = document.getElementById('man_name');
+    }
 }
 
 function setvulnvis(v) {
