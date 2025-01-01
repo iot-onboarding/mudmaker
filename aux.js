@@ -186,9 +186,9 @@ function toggleANIMA(anid,anspan) {
 }
 
 function fillpub() {
-    p=document.getElementById('pub_name').value;
-    if (p == '') {
-	p = document.getElementById('man_name').value;
+    p=document.getElementById('pub_name');
+    if (p.value == '') {
+	p.value = document.getElementById('man_name').value;
     }
 }
 
