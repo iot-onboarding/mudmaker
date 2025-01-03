@@ -195,9 +195,8 @@ function fillpub() {
 function controller_hint() {
     p=document.getElementById('entname1');
     mh=document.getElementById('mudhost');
-    modelname=document.getElementById('model_name');
-    if (mh.value != '' && modelname.value != '') {
-	p.placeholder = 'https://' + mh.value + '/' + modelname.value + '-class';
+    if (mh.value != '') {
+	p.placeholder = 'https://' + mh.value + '/controllers';
     }
 }
 
