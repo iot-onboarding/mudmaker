@@ -197,7 +197,7 @@ function controller_hint() {
     mh=document.getElementById('mudhost');
     modelname=document.getElementById('model_name');
     if (mh.value != '' && modelname.value != '') {
-	p.placeholder = 'https://' + mhvalue + '/' + modelname.value + '-class';
+	p.placeholder = 'https://' + mh.value + '/' + modelname.value + '-class';
     }
 }
 
