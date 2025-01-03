@@ -35,11 +35,13 @@
           <legend>Please enter the host and model to build a MUD-URL for this device:</legend>
         <label style="display: inline;">https://
           <input name="mudhost"  maxlength="50" size="40" required="yes"
-                 placeholder="hostname.manufacturer.com">
+                 placeholder="hostname.manufacturer.com"
+		 onchange='controller_hint();'>
         </label>
         <label style="display: inline;">(model name here-&gt;)
           <input name="model_name" maxlength="50" size="20"
-          required="yes" placeholder="Device model">
+		 required="yes" placeholder="Device model"
+		 onchange='controller_hint();'>
         </label>
       </fieldset>
         <br>
@@ -561,7 +563,7 @@
           controllers.&nbsp; Use this when you want different types of
           devices to access the same controller.
           <div id="entlist"> <input maxlength="120" size="40" name="entnames[]"
-              type="url" placeholder="https://class name...">
+              type="url" id=entname1 placeholder="https://class name...">
             &nbsp;&nbsp;&nbsp;Protocol&nbsp;
             <select id="entsel" name="entproto[]" value="any" onchange="tcporudp('entsel','entplist');">
               <option value="any">Any</option>

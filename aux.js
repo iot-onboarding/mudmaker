@@ -192,6 +192,15 @@ function fillpub() {
     }
 }
 
+function controller_hint() {
+    p=document.getElementById('entname1');
+    mh=document.getElementById('mudhost');
+    modelname=document.getElementById('model_name');
+    if (mh.value != '' && modelname.value != '') {
+	p.placeholder = 'https://' + mhvalue + '/' + modelname.value + '-class';
+    }
+}
+
 function setvulnvis(v) {
     me=document.getElementById('vulntype');
     if ( me.value != 'none' ) {
