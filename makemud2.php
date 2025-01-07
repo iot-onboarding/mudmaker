@@ -52,7 +52,7 @@ $downloadtext=<<< DOWNLOAD
 <form method="POST" action="download.php">
   <input type="submit" value="Download MUD file" formaction="download.php" class="button special">
   <input type="submit" value="Visualize" formaction="mudvisualizer.php" class="button special">
-   
+  <input type="submit" value="Post to Github" formaction="togithub.php" class="button special"> 
 DOWNLOAD;
   
 $actxt0=<<< ACTXT0
@@ -748,8 +748,9 @@ if ( ! $gotacls ) {
   print "visualize the results.  You can also sign the file and place it in the location that its corresponding ";
   print "MUD URL will find.  You can find instructions on how to sign your " ;
   print "MUD file <a href=\"https://www.mudmaker.org/signing.html\">here.</a>";
-  print "  If you download the MUD file, it comes as a ZIP file with an example";
-  print " set of certificates and a signature for testing purposes.";
+  print "If you download the MUD file, it comes as a ZIP file with an example";
+  print "set of certificates and a signature for testing purposes.  You may also";
+  print "post the resulting MUD file to GitHub (some fields will be adjusted).";
   print "<br>";
 
   print $downloadtext;
