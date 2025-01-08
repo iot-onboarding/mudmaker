@@ -55,7 +55,7 @@ session_start();
 <!DOCTYPE html>
 <html lang="en">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href=\"assets/css/main.css">
+<link rel="stylesheet" href="assets/css/main.css">
 <script type="text/javascript" src="aux.js" defer="defer"></script>
 <body>
 <section id="banner_makemud">
@@ -758,7 +758,7 @@ if ( ! $gotacls ) {
 
   print $pretext;
   print "<button type=\"button\" class=\"button special\" onclick=\"j2pp('" . base64_encode($b64in) . "')\">ACL Text</button>";
-  print "</form>";
+  print "</form></p>";
   print "</section>";
   print "<div id=\"mudresults\">";
   print "<hr>\n";
