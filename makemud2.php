@@ -117,6 +117,15 @@ define("IS_MYMFG", 6);
 
   
 
+// cache for 300 seconds
+header("Cache-Control: s-maxage=300, public, max-age=300");
+
+// expire in 10 seconds
+//$expire_time = new DateTime('UTC');
+//$expire_time->add(new DateInterval('PT10S')); // add 10 seconds
+//$expire_time = $expire_time->format(DateTimeInterface::RFC7231);
+// header("Expires: $expire_time");
+
 /* Rather than try to pretty print the json throughout, I have 
  * borrowed some code from Kendall Hopkins and George Garchagudashvili
  * from stackoverflow at the following URL:
