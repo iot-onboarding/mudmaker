@@ -48,7 +48,23 @@ $aclhead= <<< ACL_HEAD
   
 ACL_HEAD;
   
-$downloadtext=<<< DOWNLOAD
+$pretext=<<< DOWNLOAD
+<!DOCTYPE html>
+<html lang="en">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="assets/css/main.css">
+<script type="text/javascript" src="aux.js" defer="defer"></script>
+<body>
+<section id="banner_makemud">
+<h1>Your MUD file is ready!</h1>
+<p>Congratulations!  You've just created a MUD file.  Simply
+download the file after reviewing it below.  Next you can
+visualize the results.  You can also sign the file and place it in the location
+that its corresponding MUD URL will find.  You can find instructions on how to sign your
+MUD file <a href="https://www.mudmaker.org/signing.html">here.</a>
+If you download the MUD file, it comes as a ZIP file with an example
+set of certificates and a signature for testing purposes.
+</p><p>
 <form method="POST" action="download.php">
   <input type="submit" value="Download MUD file" formaction="download.php" class="button special">
   <input type="submit" value="Visualize" formaction="mudvisualizer.php" class="button special">
@@ -100,6 +116,15 @@ define("IS_MY_CONTROLLER", 5);
 define("IS_MYMFG", 6);
 
   
+
+// cache for 300 seconds
+header("Cache-Control: s-maxage=300, public, max-age=300");
+
+// expire in 10 seconds
+//$expire_time = new DateTime('UTC');
+//$expire_time->add(new DateInterval('PT10S')); // add 10 seconds
+//$expire_time = $expire_time->format(DateTimeInterface::RFC7231);
+// header("Expires: $expire_time");
 
 /* Rather than try to pretty print the json throughout, I have 
  * borrowed some code from Kendall Hopkins and George Garchagudashvili
@@ -735,26 +760,11 @@ if ( ! $gotacls ) {
   session_unset();
   $_SESSION['model'] = $model_name;
   $_SESSION['pb64' ] = $pb64;
-  print "<!DOCTYPE html>\n<html>\n";
-  print  "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n";
-  print  "<link rel=\"stylesheet\" href=\"assets/css/main.css\">\n";
-  print  "<script type=\"text/javascript\" src=\"aux.js\" defer=\"defer\"></script> ";
- 
-  print "<body>\n";
-  print "<section id=\"banner_makemud\">\n";
-  print "<h1>Your MUD file is ready!</h1>";
-  print "<p>Congratulations!  You've just created a MUD file.  Simply ";
-  print "download the file after reviewing it below.  Next you can\n";
-  print "visualize the results.  You can also sign the file and place it in the location that its corresponding ";
-  print "MUD URL will find.  You can find instructions on how to sign your " ;
-  print "MUD file <a href=\"https://www.mudmaker.org/signing.html\">here.</a>";
-  print "  If you download the MUD file, it comes as a ZIP file with an example";
-  print " set of certificates and a signature for testing purposes.";
-  print "<br>";
 
-  print $downloadtext;
+
+  print $pretext;
   print "<button type=\"button\" class=\"button special\" onclick=\"j2pp('" . base64_encode($b64in) . "')\">ACL Text</button>";
-  print "</form>";
+  print "</form></p>";
   print "</section>";
   print "<div id=\"mudresults\">";
   print "<hr>\n";
