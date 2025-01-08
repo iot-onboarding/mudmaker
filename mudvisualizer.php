@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <?php
   session_start();
+
+// cache for 300 seconds
+  header("Cache-Control: s-maxage=300, public, max-age=300");
   $pinfo=json_decode(base64_decode($_SESSION['pb64']));
   $mudfile=preg_replace("/\n/", '\n',base64_decode($pinfo->{'Mudfile'}));
 ?>
