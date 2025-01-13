@@ -225,7 +225,7 @@ $(document).on('click','.delete',function() {
 	parent.remove()
 });
 
-$(document).on('click','.addItem',function(){
-	var parent = $(this).parentElement();
+$(document).on('addable','.addItem',function(e){
+	var parent = e.parentElement();
 	addEntry(parent);
 })
