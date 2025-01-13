@@ -16,12 +16,19 @@ function addEntry(entry){
     var newdiv= document.createElement('span');
 	var typefield;
 	var pattern;
-	var onchange;
 	var hidden;
 	var any;
 	var placeholder;
 	var fieldinfo;
+	var dnsorurl='';
 	var entryType = entry.id;
+
+	if (entry.id == 'cl' || entry.id == 'mfg') {
+		dnsorurl = 'dns';
+	} else if (entry.id == 'ctl') {
+		dnsorurl = 'url';
+	}
+
 
 	if ( dnsorurl == 'dns' ) {
 	    typefield="'text'";
