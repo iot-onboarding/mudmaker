@@ -226,6 +226,6 @@ $(document).on('click','.delete',function() {
 });
 
 $(document).on('click','.addItem',function(e){
-	var parent = e.currentTarget.parentElement();
-	addEntry(parent);
+	var grandparent = e.currentTarget.parentElement.parentElement;
+	addEntry(grandparent);
 })
