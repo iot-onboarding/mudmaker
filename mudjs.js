@@ -12,7 +12,7 @@ function removeIt(elemId) {
 }
     
 
-function addEntry(entryType){
+function addEntry(entry){
     var newdiv= document.createElement('span');
 	var typefield;
 	var pattern;
@@ -21,6 +21,7 @@ function addEntry(entryType){
 	var any;
 	var placeholder;
 	var fieldinfo;
+	var entryType = entry.id;
 
 	if ( dnsorurl == 'dns' ) {
 	    typefield="'text'";
@@ -42,15 +43,11 @@ function addEntry(entryType){
 	if ( entryType == 'loc' ) {
             hidden="' style='visibility: hidden'";
             any = "<option value='any'>Any</option>";
-            onchange=
-		 "value='any' onchange=\"tcporudp('" + selname + "','" + portdivname + "');\"";
 	    pattern = " ";
 	    fieldinfo = 'readonly="" value="any" ';
 	} else {
 	    if ( entryType == 'myctl' ) {
             any = "<option value='any'>Any</option>";
-            onchange=
-		 "value='any' onchange=\"tcporudp('" + selname + "','" + portdivname + "');\"";
 	    hidden ="' style='visibility: hidden' ";
 	    pattern = " ";
 	    fieldinfo = 'readonly="" value="(filled in by local admin)" ';
@@ -67,8 +64,6 @@ function addEntry(entryType){
 		 else {
 		     hidden="' style='visibility: hidden'";
 		     any = "<option value='any'>Any</option>";
-		     onchange=
-			 "value='any' onchange=\"tcporudp('" + selname + "','" + portdivname + "');\"";
 		     fieldinfo="maxlength='120'";
 		 }
 	    }
@@ -77,13 +72,11 @@ function addEntry(entryType){
         newdiv.innerHTML = 
             " <br><input type=" + typefield + "name='" + entryType  + "name'" + pattern +
 	    " size='40' " + placeholder + fieldinfo + ">&nbsp;&nbsp;&nbsp;" +
-	    " Protocol&nbsp;&nbsp;<select id='" + selname + "' name='" + proto + "'" +
-		onchange + ">" +
+	    " Protocol&nbsp;&nbsp;<select name='" + entrytype + "sel'" + ">" +
 	    any +
 	    "<option value='tcp'>TCP</option>" +
 	    "<option value='udp'>UDP</option>" +
-	    "</select>" + "&nbsp;<input type='button' class='delete' value='-' " +
-	    "onclick=\"removeIt('" + divid + "');\">" +
+	    "</select>" + "&nbsp;<input type='button' class='delete' value='-'>" +
 	    "<span id='" + portldivname + hidden + ">"
 	    + "&nbsp;&nbsp;&nbsp;" + 
 	    "<br>Local Port&nbsp; <input pattern='([0-9]{1,5}|any)' value='any' " +
@@ -231,3 +224,8 @@ $(document).on('click','.delete',function() {
 	var parent = $(this).parentElement();
 	parent.remove()
 });
+
+$(document).on('click','.addItem',function(){
+	var parent = $(this).parentElement();
+	addEntry(parent);
+})
