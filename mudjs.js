@@ -221,15 +221,17 @@ $('summary').click(function() {
     }
 });
 
-$(document).on('click','.delete',function(e) {
-	var parent = e.currentTarget.parentElement;
-	parent.remove()
-});
-
-$(document).on('click','.addItem',function(e){
-	var grandparent = e.currentTarget.parentElement.parentElement;
-	addEntry(grandparent);
+$(document).on('click','.clentry',function(e){
+	var cur=e.currentTarget;
+	if ( cur.class == 'delete' ) {
+		var parent = cur.parentElement;
+		parent.remove()
+	} else if ( cur.class == 'addItem' ) {	
+		var grandparent = cur.parentElement.parentElement;
+		addEntry(grandparent);
+	}
 })
+
 
 $(document).on('change','.proto',function(e){
 	var parent = e.currentTarget.parentElement;
