@@ -161,11 +161,19 @@ function fillpub() {
     }
 }
 
-function controller_hint() {
+function saveMUD() {
+	window.sessionStorage.setItem('mudfile',JSON.stringify(document.mudFile));
+}
+function makemudurl() {
     p=document.getElementById('entname1');
     mh=document.getElementById('mudhost');
+	mm=document.getElementById('model_name');
     if (mh.value != '') {
-	p.placeholder = 'https://' + mh.value + '/controllers';
+		p.placeholder = 'https://' + mh.value + '/controllers';
+		if mm.value != '' {
+			document.mudFile['ietf-mud:mud']['mud-url'] = 'https://' + mh.value + '/' + mm.value;
+			saveMUD();
+		}
     }
 }
 
