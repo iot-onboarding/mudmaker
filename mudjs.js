@@ -162,6 +162,8 @@ function fillpub() {
 }
 
 function saveMUD() {
+	d = new Date();
+	document.mudFile['ietf-mud:mud']["last-change"] = d.toISOString();
 	window.sessionStorage.setItem('mudfile',JSON.stringify(document.mudFile));
 }
 
@@ -172,7 +174,9 @@ function makemudurl() {
     if (mh.value != '') {
 		p.placeholder = 'https://' + mh.value + '/controllers';
 		if (mm.value != '') {
-			document.mudFile['ietf-mud:mud']['mud-url'] = 'https://' + mh.value + '/' + mm.value;
+			var mudurlbits = 'https://' + mh.value + '/' + mm.value;
+			document.mudFile['ietf-mud:mud']['mud-url'] = mudurlbits + '.json';
+			document.mudFile['ietf-mud:mud']['mud-signature'] = mudurlbits + '.json';
 			saveMUD();
 		}
     }
