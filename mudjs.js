@@ -222,8 +222,8 @@ $('summary').click(function() {
     }
 });
 
-$(document).on('click','.delete',function() {
-	var parent = $(this).parentElement;
+$(document).on('click','.delete',function(e) {
+	var parent = e.currentTarget.parentElement;
 	parent.remove()
 });
 
