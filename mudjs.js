@@ -6,10 +6,12 @@ var nref = [ 0, 0, 0, 0 ];
 
 var limit = 50;
 
-document.mudFile=window.sessionStorage.getItem("mudfile");
+document.mudFile=window.sessionStorage.getItem("mudFile");
 if ( document.mudFile == null ) {
 	document.mudFile = JSON.parse('{"ietf-mud:mud" : {"mud-version" : 1, "extensions" : [ "ol"], "ol" : { "spdx-tag" : "0BSD"}}}');
-	window.sessionStorage.setItem('mudfile',document.mudFile);
+	window.sessionStorage.setItem('mudfile',JSON.stringify(document.mudFile));
+} else {
+	document.mudFile=JSON.parse(document.mudFile);
 }
 
 function removeIt(elemId) {
