@@ -160,7 +160,7 @@ function fillpub(cur) {
     p=document.getElementById('pub_name');
     if (p.value == '') {
 		p.value = cur.value;
-		document.mudFile['ol']['owners'] = [ cur.value ];
+		document.mudFile['ietf-mud:mud']['ol']['owners'] = [ cur.value ];
     }
 }
 
