@@ -222,7 +222,7 @@ $('summary').click(function() {
 });
 
 $(document).on('click','.clentry',function(e){
-	var cur=e.currentTarget;
+	var cur=e.delegateTarget;
 	if ( cur.class == 'delete' ) {
 		var parent = cur.parentElement;
 		parent.remove()
