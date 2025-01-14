@@ -222,11 +222,11 @@ $('summary').click(function() {
 });
 
 $(document).on('click','.clentry',function(e){
-	var cur=e.delegateTarget;
-	if ( cur.class == 'delete' ) {
+	var cur=e.delegateTarget.activeElement;
+	if ( cur.className == 'delete' ) {
 		var parent = cur.parentElement;
 		parent.remove()
-	} else if ( cur.class == 'addItem' ) {	
+	} else if ( cur.className == 'addItem' ) {	
 		var grandparent = cur.parentElement.parentElement;
 		addEntry(grandparent);
 	}
