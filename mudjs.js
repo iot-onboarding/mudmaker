@@ -160,6 +160,7 @@ function fillpub(cur) {
     p=document.getElementById('pub_name');
     if (p.value == '') {
 		p.value = cur.value;
+		document.mudFile['ol']['owners'] = [ cur.value ];
     }
 }
 
@@ -272,8 +273,8 @@ $(document).on('change','.addable',function(e){
 $(document).on('change','.addbasics',function(e){
 	var cur=e.currentTarget;
 	document.mudFile['ietf-mud:mud'][cur.name] = cur.value;
-	saveMUD();
 	if (cur.name == 'mfg-name') {
 		fillpub(cur);
 	}
+	saveMUD();
 })
