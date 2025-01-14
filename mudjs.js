@@ -93,9 +93,7 @@ function addEntry(entry){
 	    "class='rport' style='width:60px'></span>" +
 	    "<span class='coninit' style='visibility: hidden'>"
 	    + "&nbsp;&nbsp;&nbsp;" + 
-	    "Initiated by&nbsp; <select "  + "id='" + checkid + "' " +
-             "value='any'" +
-	    'class="coninit">' +
+	    "Initiated by&nbsp; <select "  + 'name="direction" value="any">' +
 	    "<option value='either'>Either</option>" +
 	    "<option value='thing'>Thing</option>" +
 	    "<option value='remote'>Remote</option>" +
