@@ -6,6 +6,12 @@ var nref = [ 0, 0, 0, 0 ];
 
 var limit = 50;
 
+document.mudFile=window.sessionStorage.getItem("mudfile");
+if ( document.mudFile == null ) {
+	document.mudFile = JSON.parse('{"ietf-mud:mud" : {"mud-version" : 1, "extensions" : [ "ol"], "ol" : { "spdx-tag" : "0BSD"}}}');
+	window.sessionStorage.setItem('mudfile',document.mudFile);
+}
+
 function removeIt(elemId) {
     var elem=document.getElementById(elemId);
     elem.parentNode.removeChild(elem);
