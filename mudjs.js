@@ -8,7 +8,8 @@ var limit = 50;
 
 document.mudFile=window.sessionStorage.getItem("mudFile");
 if ( document.mudFile == null ) {
-	document.mudFile = JSON.parse('{"ietf-mud:mud" : {"mud-version" : 1, "extensions" : [ "ol"], "ol" : { "spdx-tag" : "0BSD"}}}');
+	document.mudFile = JSON.parse('{"ietf-mud:mud" : {"mud-version" : 1, "extensions" : [ "ol"], "ol" : { "spdx-tag" : "0BSD"}, "cache-validity": 48, "is-supported" : true}}');
+	document.mudFile["last-change"] = Date().toISOString();
 	window.sessionStorage.setItem('mudfile',JSON.stringify(document.mudFile));
 } else {
 	document.mudFile=JSON.parse(document.mudFile);
