@@ -102,21 +102,20 @@ function addEntry(entry){
         entry.appendChild(newdiv);
 }
 
-function tcporudp(selectid,portid) {
-    var lport = portid + "l";
-    var check = portid + "c";
-    if (document.getElementById(selectid).value == 'any') {
-	document.getElementById(portid).style.visibility='hidden';
-	document.getElementById(lport).style.visibility='hidden';
-	document.getElementById(check).style.visibility='hidden';
+function tcporudp(papa,val) {
+	var ports=papa.children[4];
+	var dir=papa.chidlren[5];
+    if (val == 'any') {
+	ports.style.visibility='hidden';
+	dir.style.visibility='hidden';
     } else {
-	document.getElementById(portid).style.visibility='inherit';
-	if (document.getElementById(selectid).value == 'udp' ) {
-	    document.getElementById(lport).style.visibility='inherit';
-	    document.getElementById(check).style.visibility='hidden';
+	ports.style.visibility='inherit';
+	if (val == 'udp' ) {
+	    ports.style.visibility='inherit';
+	    dir.style.visibility='hidden';
 	} else {
-	    document.getElementById(check).style.visibility='inherit';
-	    document.getElementById(lport).style.visibility='inherit';
+	   dir.style.visibility='inherit';
+	   ports.style.visibility='inherit';
 	}
     }
 }
@@ -231,3 +230,10 @@ $(document).on('click','.addItem',function(e){
 	var grandparent = e.currentTarget.parentElement.parentElement;
 	addEntry(grandparent);
 })
+
+$(document).on('change','.proto',function(e){
+	var parent = e.currentTarget.parentElement;
+	var val = e.currentTarget.value;
+	tcporudp(parent,val);
+}
+)
