@@ -223,7 +223,7 @@ $('summary').click(function() {
 });
 
 $(document).on('click','.delete',function() {
-	var parent = $(this).parentElement();
+	var parent = $(this).parentElement;
 	parent.remove()
 });
 
