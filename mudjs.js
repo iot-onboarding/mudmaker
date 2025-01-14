@@ -176,7 +176,7 @@ function makemudurl() {
 		if (mm.value != '') {
 			var mudurlbits = 'https://' + mh.value + '/' + mm.value;
 			document.mudFile['ietf-mud:mud']['mud-url'] = mudurlbits + '.json';
-			document.mudFile['ietf-mud:mud']['mud-signature'] = mudurlbits + '.json';
+			document.mudFile['ietf-mud:mud']['mud-signature'] = mudurlbits + '.p7s';
 			saveMUD();
 		}
     }
