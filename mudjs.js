@@ -155,10 +155,11 @@ function yesnoCheck(outer,inner,refind) {
     }
 }
 
-function fillpub() {
+// js update
+function fillpub(cur) {
     p=document.getElementById('pub_name');
     if (p.value == '') {
-	p.value = document.getElementById('man_name').value;
+		p.value = cur.value;
     }
 }
 
@@ -270,8 +271,9 @@ $(document).on('change','.addable',function(e){
 
 $(document).on('change','.addbasics',function(e){
 	var cur=e.currentTarget;
-	if ( cur.name != 'email_addr') {
-		document.mudFile['ietf-mud:mud'][cur.name] = cur.value;
-		saveMUD();
+	document.mudFile['ietf-mud:mud'][cur.name] = cur.value;
+	saveMUD();
+	if (cur.name == 'mfg-name') {
+		fillpub(cur);
 	}
 })
