@@ -87,15 +87,15 @@ function addEntry(entry){
 	    "<span class='portinfo' style='visibility: hidden'>"
 	    + "&nbsp;&nbsp;&nbsp;" + 
 	    "<br>Local Port&nbsp; <input pattern='([0-9]{1,5}|any)' value='any' " +
-	    "name='" + lport + "' style='width:60px'>" +
+	    "class='lport' style='width:60px'>" +
 	    + "&nbsp;&nbsp;&nbsp;" + 
 	    "Remote Port&nbsp; <input pattern='([0-9]{1,5}|any)' value='any' " +
-	    "name='" + port + "' style='width:60px'></span>" +
-	    "<span class='clinit' style='visibility: hidden'>"
+	    "class='rport' style='width:60px'></span>" +
+	    "<span class='coninit' style='visibility: hidden'>"
 	    + "&nbsp;&nbsp;&nbsp;" + 
 	    "Initiated by&nbsp; <select "  + "id='" + checkid + "' " +
              "value='any'" +
-	    "name='" + init + "'>" +
+	    'class="coninit">' +
 	    "<option value='either'>Either</option>" +
 	    "<option value='thing'>Thing</option>" +
 	    "<option value='remote'>Remote</option>" +
