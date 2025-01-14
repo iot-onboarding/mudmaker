@@ -22,7 +22,7 @@ function addEntry(entry){
 	var fieldinfo;
 	var dnsorurl='';
 	var entryType = entry.id;
-
+	
 	if (entry.id == 'cl' || entry.id == 'mfg') {
 		dnsorurl = 'dns';
 	} else if (entry.id == 'ctl') {
@@ -84,27 +84,24 @@ function addEntry(entry){
 	    "<option value='tcp'>TCP</option>" +
 	    "<option value='udp'>UDP</option>" +
 	    "</select>" + "&nbsp;<input type='button' class='delete' value='-'>" +
-	    "<span id='" + portldivname + hidden + ">"
+	    "<span class='portinfo' style='visibility: hidden'>"
 	    + "&nbsp;&nbsp;&nbsp;" + 
 	    "<br>Local Port&nbsp; <input pattern='([0-9]{1,5}|any)' value='any' " +
-	    "name='" + lport + "' style='width:60px'></span>" +
-	    "<span id='" + portdivname + hidden + ">"
+	    "name='" + lport + "' style='width:60px'>" +
 	    + "&nbsp;&nbsp;&nbsp;" + 
 	    "Remote Port&nbsp; <input pattern='([0-9]{1,5}|any)' value='any' " +
 	    "name='" + port + "' style='width:60px'></span>" +
-	    "<span id='" + checkdivname + hidden + ">"
+	    "<span class='clinit' style='visibility: hidden'>"
 	    + "&nbsp;&nbsp;&nbsp;" + 
 	    "Initiated by&nbsp; <select "  + "id='" + checkid + "' " +
-             "value='any' onclick=\"localcheck('" + checkid + "','" + portldivname + "');\"" +
+             "value='any'" +
 	    "name='" + init + "'>" +
 	    "<option value='either'>Either</option>" +
 	    "<option value='thing'>Thing</option>" +
 	    "<option value='remote'>Remote</option>" +
 	    "</select></span>";
-	    
 
-        document.getElementById(divName).appendChild(newdiv);
-        counter[i]++;
+        entry.appendChild(newdiv);
 }
 
 function tcporudp(selectid,portid) {
