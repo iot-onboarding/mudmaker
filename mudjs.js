@@ -269,7 +269,7 @@ $(document).on('change','.addable',function(e){
 })
 
 $(document).on('change','.addbasics',function(e){
-	var cur=e.currentTarget.activeElement;
+	var cur=e.currentTarget;
 	if ( cur.name != 'email_addr') {
 		document.mudFile['ietf-mud:mud'][cur.name] = cur.value;
 		saveMUD();
