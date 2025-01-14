@@ -21,7 +21,7 @@ function removeIt(elemId) {
     elem.parentNode.removeChild(elem);
 }
     
-
+// js update
 function addEntry(entry){
     var newdiv= document.createElement('span');
 	var typefield;
@@ -112,6 +112,7 @@ function addEntry(entry){
         entry.appendChild(newdiv);
 }
 
+// js update
 function tcporudp(papa,val) {
 	var ports=papa.children[4];
 	var dir=papa.children[5];
@@ -161,12 +162,14 @@ function fillpub() {
     }
 }
 
+// js update
 function saveMUD() {
 	d = new Date();
 	document.mudFile['ietf-mud:mud']["last-change"] = d.toISOString();
 	window.sessionStorage.setItem('mudfile',JSON.stringify(document.mudFile));
 }
 
+// js update
 function makemudurl() {
     p=document.getElementById('entname1');
     mh=document.getElementById('mudhost');
@@ -262,5 +265,13 @@ $(document).on('change','.addable',function(e){
 		var parent = cur.parentElement;
 		var val = cur.value;
 		tcporudp(parent,val);
+	}
+})
+
+$(document).on('change','.addbasics',function(e){
+	var cur=e.delegateTarget.activeElement;
+	if ( cur.name != 'email_addr') {
+		document.mudFile['ietf-mud:mud'][cur.name] = cur.value;
+		saveMUD();
 	}
 })
