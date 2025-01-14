@@ -104,7 +104,7 @@ function addEntry(entry){
 
 function tcporudp(papa,val) {
 	var ports=papa.children[4];
-	var dir=papa.chidlren[5];
+	var dir=papa.children[5];
     if (val == 'any') {
 	ports.style.visibility='hidden';
 	dir.style.visibility='hidden';
