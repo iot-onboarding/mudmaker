@@ -79,7 +79,7 @@ function addEntry(entry){
         newdiv.innerHTML = 
             " <br><input type=" + typefield + "name='" + entryType  + "name'" + pattern +
 	    " size='40' " + placeholder + fieldinfo + ">&nbsp;&nbsp;&nbsp;" +
-	    " Protocol&nbsp;&nbsp;<select name='" + entrytype + "sel'" + ">" +
+	    " Protocol&nbsp;&nbsp;<select name='" + entryType + "sel'" + ">" +
 	    any +
 	    "<option value='tcp'>TCP</option>" +
 	    "<option value='udp'>UDP</option>" +
