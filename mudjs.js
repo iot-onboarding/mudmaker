@@ -233,9 +233,12 @@ $(document).on('click','.addable',function(e){
 })
 
 
-$(document).on('change','.proto',function(e){
-	var parent = e.currentTarget.parentElement;
-	var val = e.currentTarget.value;
-	tcporudp(parent,val);
+$(document).on('change','.addable',function(e){
+	var cur=e.delegateTarget.activeElement;
+	if (cur.className == 'proto') {
+		var parent = cur.parentElement;
+		var val = cur.value;
+		tcporudp(parent,val);
+	}
 }
 )
