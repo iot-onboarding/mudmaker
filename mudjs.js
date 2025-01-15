@@ -270,7 +270,7 @@ $(document).on('change','.addable',function(e){
 })
 
 $(document).on('change','.addbasics',function(e){
-	var cur=e.currentTarget;
+	var cur=e.delegateTarget.activeElement;
 	document.mudFile['ietf-mud:mud'][cur.name] = cur.value;
 	if (cur.name == 'mfg-name') {
 		fillpub(cur);
