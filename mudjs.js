@@ -279,7 +279,7 @@ $(document).on('change','.addbasics',function(e){
 })
 
 $(document).on('change','.sbomstuff',function(e){
-	var cur = e.currentTarget;
+	var cur = e.delegateTarget.activeElement;
 	var whichsbom = document.getElementById("sbom").value;
 
 	if (whichsbom == "none" ) {
