@@ -282,13 +282,17 @@ $(document).on('change','.sbomstuff',function(e){
 	var cur = e.delegateTarget.activeElement;
 	var whichsbom = document.getElementById("sbom").value;
 
+
+	mf = document.mudFile['ietf-mud:mud'];
+	delete mf['mudtx:transparency'];
+
 	if (whichsbom == "none" ) {
 		return;
 	}
-	mf = document.mudFile['ietf-mud:mud'];
+
 	if (typeof mf['mudtx:transparency'] == 'undefined') {
 		mf['mudtx:transparency'] = {};
-		mf['extensions'] = '[ "ol", "transparency" ] ';
+		mf['extensions'] = [ "ol", "transparency" ];
 	}
 	tx=mf['mudtx:transparency'];
 	if (whichsbom == 'local' || whichsbom == 'info' ) {
@@ -306,8 +310,8 @@ $(document).on('change','.sbomstuff',function(e){
 			}
 		];
 	} else {
-		var cc = document.getElementById('sbomcc');
-		var nr = document.getElementById('sbomnr');
+		var cc = document.getElementById('sbomcc').value;
+		var nr = document.getElementById('sbomnr').value	;
 		if ( cc == '' || nr == '' ) {
 			return;
 		}
