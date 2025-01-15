@@ -294,7 +294,7 @@ $(document).on('change','.sbomstuff',function(e){
 	if (whichsbom == 'local' || whichsbom == 'info' ) {
 		tx[cur.name] = cur.value;
 	} else if ( whichsbom == 'cloud' ) {
-		var clurl = document.getElementById('sbcloudurl').value;
+		var clurl = document.getElementById('sbomcloudurl').value;
 		var clver = document.getElementById('sbomswver').value;
 		if ( clurl == '' || clver == '' ) {
 			return;
