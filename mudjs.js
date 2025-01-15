@@ -202,12 +202,10 @@ function setVisibility(outer) {
     document.getElementById('sbcloud').style.display= 'none';
     document.getElementById('sblocal').style.display= 'none';
     document.getElementById('sbtel').style.display= 'none';
-    document.getElementById('sbc2').style.display= 'none';
     document.getElementById('sbinfourl').style.display= 'none';
     document.getElementById('sbomcloudurl').value='';
     document.getElementById('sbomcc').value='';
     document.getElementById('sbomnr').value='';
-    document.getElementById('sbomc2').value='';
     document.getElementById('sbinfourl').value='';
     if (outer.value != 'none') {
 	var elid='sb' + outer.value;
@@ -217,6 +215,7 @@ function setVisibility(outer) {
 	document.getElementById('sbomany').style.display= 'none';
     }
 }
+
 
 
 function j2pp(b64) {
@@ -275,6 +274,44 @@ $(document).on('change','.addbasics',function(e){
 	document.mudFile['ietf-mud:mud'][cur.name] = cur.value;
 	if (cur.name == 'mfg-name') {
 		fillpub(cur);
+	}
+	saveMUD();
+})
+
+$(document).on('change','.sbomstuff',function(e){
+	var cur = e.currentTarget;
+	var whichsbom = document.getElementById("sbom");
+
+	if (whichsbom == "none" ) {
+		return;
+	}
+	mf = document.mudfile['ietf-mud:mud'];
+	if (typeof mf['mudtx:transparency'] == 'undefined') {
+		mf['mudtx:transparency'] = {};
+		mf['extensions'] = '[ "ol", "transparency" ] ';
+	}
+	tx=mf['mudtx:transparency'];
+	if (whichsbom == 'local' || whichsbom == 'info' ) {
+		tx[cur.name] = cur.value;
+	} else if ( whichsbom == 'cloud' ) {
+		var clurl = document.getElementById('sbcloudurl').value;
+		var clver = document.getElementById('sbomswver').value;
+		if ( clurl == '' || clver == '' ) {
+			return;
+		}
+		tx['sboms'] = [
+			{
+				"version-info" : clver,
+				"sbom-url" : clurl
+			}
+		];
+	} else {
+		var cc = document.getElementById('sbomcc');
+		var nr = document.getElementById('sbomnr');
+		if ( cc == '' || nr == '' ) {
+			return;
+		}
+		tx['contact-info'] = 'tel:' + cc + nr;
 	}
 	saveMUD();
 })

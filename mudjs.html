@@ -371,7 +371,6 @@
                   <option value="local">Well-known URL on Device</option>
                   <option value="tel">Telephone</option>
                   <option value="infourl">Get more information URL</option>
-                  <option value="c2">OpenC2</option>
                 </select>
           </label>
           <span id="sbomany" style="display: none">
@@ -385,7 +384,7 @@
                 placeholder="https://your-sbom-host/location-here..">
             </span>
             <span id="sblocal" style="display: none">
-              <select id="sbschema" name="sbschema">
+              <select name="sbom-local-well-known">
                 <option value="https">https</option>
                 <option value="http">http</option>
                 <option value="coaps">coaps</option>
@@ -394,19 +393,14 @@
               ://{this device}/.well-known/sbom
             </span>
             <span id="sbtel" style="display: none">
-              Country Code: +<input id="sbomcc" name="sbomcc" size="3" maxlength="10"
+              Country Code: +<input id="sbomcc" size="3" maxlength="10"
                 pattern="[0-9]{1,3}">&nbsp;&nbsp;&nbsp;
-              Number <input id="sbomnr" name="sbomnr" size="10" maxlength="20" pattern="[0-9]{5,20}"><br>
-            </span>
-            <span id="sbc2" style="display: none"> OpenC2
-              URI:&nbsp;&nbsp;<input id="sbomc2" name="sbomc2" size="50" maxlength="200"
-                type="url">
+              Number <input  id="sbomnr" size="10" maxlength="20" pattern="[0-9]{5,20}"><br>
             </span>
             <span id="sbinfourl" style="display: none">
               <label>Enter URL here:
                 <input
-                  id="infourl"
-                  name="infourl"
+                  name="contact-info"
                   size="50"
                   placeholder="https://your-security-site..."
                   maxlength="200"
