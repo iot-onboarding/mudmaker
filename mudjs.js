@@ -285,7 +285,7 @@ $(document).on('change','.sbomstuff',function(e){
 	if (whichsbom == "none" ) {
 		return;
 	}
-	mf = document.mudfile['ietf-mud:mud'];
+	mf = document.mudFile['ietf-mud:mud'];
 	if (typeof mf['mudtx:transparency'] == 'undefined') {
 		mf['mudtx:transparency'] = {};
 		mf['extensions'] = '[ "ol", "transparency" ] ';
