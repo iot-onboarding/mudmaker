@@ -208,11 +208,13 @@ function setVisibility(outer) {
     document.getElementById('sbomnr').value='';
     document.getElementById('sbinfourl').value='';
     if (outer.value != 'none') {
-	var elid='sb' + outer.value;
-	document.getElementById('sbomany').style.display= 'inherit';
-	document.getElementById(elid).style.display= 'inline-block';
+		var elid='sb' + outer.value;
+		document.getElementById('sbomany').style.display= 'inherit';
+		document.getElementById(elid).style.display= 'inline-block';
     } else {
-	document.getElementById('sbomany').style.display= 'none';
+		document.getElementById('sbomany').style.display= 'none';
+		delete document.mudFile['mudtx:transparency'];
+		saveMUD();
     }
 }
 
