@@ -289,11 +289,16 @@ $(document).on('change','.sbomstuff',function(e){
 	delete mf['mudtx:transparency'];
 
 	if (typeof mf['mudtx:transparency'] == 'undefined') {
-		mf['mudtx:transparency'] = {};
 		mf['extensions'] = [ "ol", "transparency" ];
 	}
 	tx=mf['mudtx:transparency'];
 	if (whichsbom != "none" ) {
+		var vulnurl = tx['vuln-url'];
+		mf['mudtx:transparency'] = {};
+		tx=mf['mudtx:transparency'];
+		if ( vulnurl != 'undefined') {
+			tx['vuln-url'] = vulnurl;
+		}
 		if (whichsbom == 'local' || whichsbom == 'info' ) {
 			tx[cur.name] = cur.value;
 		} else if ( whichsbom == 'cloud' ) {
@@ -318,8 +323,10 @@ $(document).on('change','.sbomstuff',function(e){
 		}
 	}
 	if ( cur.name == 'vuln-url') {
-		tx['vuln-url'] = [ cur.value ];
+		if ( mf['mudtx:transparency'] == 'undefined') {		
+			mf['mudtx:transparency'] = {};
+		}
+		mf['mudtx:transparency']['vuln-url'] = [ cur.value ];
 	}
-
 	saveMUD();
 })
