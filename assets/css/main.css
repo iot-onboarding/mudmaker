@@ -1857,13 +1857,12 @@
 	    border-radius: 10px 10px 10px 10px;
 	}
 
-	input[type="text"]:valid,
-	input[type="password"]:valid,
-	input[type="email"]:valid,
-	input[type="url"]:valid,
-	textarea:valid {
-	    border: 1px solid rgb(12, 129, 12);
-		background-color: #baffb073;
+	input[type="text"]:user-invalid,
+	input[type="password"]:user-invalid,
+	input[type="email"]:user-invalid,
+	input[type="url"]:user-invalid,
+	textarea:user-invalid {
+	    border: 1px dashed #fd1b1b;
 	    box-shadow: none;
 	}
 
