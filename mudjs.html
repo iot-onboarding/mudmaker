@@ -50,12 +50,12 @@
           <li>
             <label for="mfg-name">Manufacturer Name</label>
             <input class="addbasics" name="mfg-name" maxlength="40" size="40"
-            placeholder="Company, Inc.">
+            placeholder="Company, Inc." pattern="..*" required="true">
           </li>
           <li>
             <label for="systeminfo">A short description for this device</label>
             <input class="addbasics" name="systeminfo" maxlength="120" size="40" required="yes"
-            placeholder="This device does..">
+            placeholder="This device does.." pattern="..*" required="true">
           </li>
           </ul>
           <ul class="twocol">
@@ -68,7 +68,7 @@
           <li>
                   <label for="email_addr">EMail</label></li><li>
             <input name="email_addr" maxlength="60" size="40" required="yes"
-            placeholder="someone@example.com">
+            placeholder="someone@example.com" type="email">
           </li>
           </ul>
           <ul class="twocol">
