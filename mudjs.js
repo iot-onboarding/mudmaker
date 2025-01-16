@@ -323,7 +323,7 @@ $(document).on('change','.sbomstuff',function(e){
 		}
 	}
 	if ( cur.name == 'vuln-url') {
-		if ( mf['mudtx:transparency'] == 'undefined') {		
+		if ( typeof mf['mudtx:transparency'] == 'undefined') {		
 			mf['mudtx:transparency'] = {};
 		}
 		mf['mudtx:transparency']['vuln-url'] = [ cur.value ];
