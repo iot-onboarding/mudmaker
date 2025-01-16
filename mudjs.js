@@ -286,19 +286,20 @@ $(document).on('change','.sbomstuff',function(e){
 
 
 	mf = document.mudFile['ietf-mud:mud'];
-	delete mf['mudtx:transparency'];
 
 	if (typeof mf['mudtx:transparency'] == 'undefined') {
 		mf['extensions'] = [ "ol", "transparency" ];
 	}
-	tx=mf['mudtx:transparency'];
 	if (whichsbom != "none" ) {
-		var vulnurl = tx['vuln-url'];
-		mf['mudtx:transparency'] = {};
-		tx=mf['mudtx:transparency'];
-		if ( vulnurl != 'undefined') {
-			tx['vuln-url'] = vulnurl;
+		if ( typeof mf['mudtx:transparency'] == 'undefined') {
+			mf['mudtx:transparency'] = {};
+		} else {
+			if ( typeof mf['mudtx:transparency']['vuln-url'] != undefined ) {
+				var v= mf['mudtx:transparency']['vuln-url'];
+				mf['mudtx:transparency'] = { 'vuln-url': v };
+			}
 		}
+		tx=mf['mudtx:transparency'];
 		if (whichsbom == 'local' || whichsbom == 'info' ) {
 			tx[cur.name] = cur.value;
 		} else if ( whichsbom == 'cloud' ) {
