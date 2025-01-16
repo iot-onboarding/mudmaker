@@ -1863,7 +1863,7 @@
 	input[type="url"]:valid,
 	textarea:valid {
 	    border: 1px solid rgb(12, 129, 12);
-		background-color: #cef3c9;
+		background-color: #baffb073;
 	    box-shadow: none;
 	}
 
