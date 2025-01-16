@@ -1858,13 +1858,13 @@
 	    border-radius: 10px 10px 10px 10px;
 	}
 
-	input[type="text"]:invalid,
-	input[type="password"]:invalid,
-	input[type="email"]:invalid,
-	input[type="url"]:invalid,
-	select:invalid,
-	textarea:invalid {
-	    border: 2px dashed red;
+	input[type="text"]:valid,
+	input[type="password"]:valid,
+	input[type="email"]:valid,
+	input[type="url"]:valid,
+	select:valid,
+	textarea:valid {
+	    border: 2px dashed rgb(21, 127, 21);
 	    box-shadow: none;
 	}
 
