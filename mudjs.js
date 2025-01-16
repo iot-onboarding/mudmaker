@@ -284,6 +284,9 @@ $(document).on('change','.sbomstuff',function(e){
 	var cur = e.target;
 	var whichsbom = document.getElementById("sbom").value;
 
+	if ( cur.validity.valid == false ) {
+		return;
+	}
 
 	mf = document.mudFile['ietf-mud:mud'];
 
