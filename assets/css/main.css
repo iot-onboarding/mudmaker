@@ -1862,7 +1862,8 @@
 	input[type="email"]:valid,
 	input[type="url"]:valid,
 	textarea:valid {
-	    border: 1px solid rgb(24, 199, 24);
+	    border: 1px solid rgb(12, 129, 12);
+		background-color: #bdf8c0;
 	    box-shadow: none;
 	}
 
