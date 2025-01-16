@@ -317,8 +317,8 @@ $(document).on('change','.sbomstuff',function(e){
 			tx['contact-info'] = 'tel:' + cc + nr;
 		}
 	}
-	if ( e.name == 'vuln-url') {
-		tx['vuln-url'] = [ e.value ];
+	if ( cur.name == 'vuln-url') {
+		tx['vuln-url'] = [ cur.value ];
 	}
 
 	saveMUD();
