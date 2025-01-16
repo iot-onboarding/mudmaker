@@ -281,7 +281,7 @@ $(document).on('change','.addbasics',function(e){
 })
 
 $(document).on('change','.sbomstuff',function(e){
-	var cur = e.delegateTarget.activeElement;
+	var cur = e.target;
 	var whichsbom = document.getElementById("sbom").value;
 
 
