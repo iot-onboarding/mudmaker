@@ -288,36 +288,38 @@ $(document).on('change','.sbomstuff',function(e){
 	mf = document.mudFile['ietf-mud:mud'];
 	delete mf['mudtx:transparency'];
 
-	if (whichsbom == "none" ) {
-		return;
-	}
-
 	if (typeof mf['mudtx:transparency'] == 'undefined') {
 		mf['mudtx:transparency'] = {};
 		mf['extensions'] = [ "ol", "transparency" ];
 	}
 	tx=mf['mudtx:transparency'];
-	if (whichsbom == 'local' || whichsbom == 'info' ) {
-		tx[cur.name] = cur.value;
-	} else if ( whichsbom == 'cloud' ) {
-		var clurl = document.getElementById('sbomcloudurl').value;
-		var clver = document.getElementById('sbomswver').value;
-		if ( clurl == '' || clver == '' ) {
-			return;
-		}
-		tx['sboms'] = [
-			{
-				"version-info" : clver,
-				"sbom-url" : clurl
+	if (whichsbom != "none" ) {
+		if (whichsbom == 'local' || whichsbom == 'info' ) {
+			tx[cur.name] = cur.value;
+		} else if ( whichsbom == 'cloud' ) {
+			var clurl = document.getElementById('sbomcloudurl').value;
+			var clver = document.getElementById('sbomswver').value;
+			if ( clurl == '' || clver == '' ) {
+				return;
 			}
-		];
-	} else {
-		var cc = document.getElementById('sbomcc').value;
-		var nr = document.getElementById('sbomnr').value	;
-		if ( cc == '' || nr == '' ) {
-			return;
+			tx['sboms'] = [
+				{
+					"version-info" : clver,
+					"sbom-url" : clurl
+				}
+			];
+		} else {
+			var cc = document.getElementById('sbomcc').value;
+			var nr = document.getElementById('sbomnr').value	;
+			if ( cc == '' || nr == '' ) {
+				return;
+			}
+			tx['contact-info'] = 'tel:' + cc + nr;
 		}
-		tx['contact-info'] = 'tel:' + cc + nr;
 	}
+	if ( e.name == 'vuln-url') {
+		tx['vuln-url'] = [ e.value ];
+	}
+
 	saveMUD();
 })
