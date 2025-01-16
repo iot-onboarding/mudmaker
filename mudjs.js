@@ -289,15 +289,15 @@ $(document).on('change','.sbomstuff',function(e){
 
 	if (typeof mf['mudtx:transparency'] == 'undefined') {
 		mf['extensions'] = [ "ol", "transparency" ];
+	} else {
+		if ( typeof mf['mudtx:transparency']['vuln-url'] != undefined ) {
+			var v= mf['mudtx:transparency']['vuln-url'];
+			mf['mudtx:transparency'] = { 'vuln-url': v };
+		}
 	}
 	if (whichsbom != "none" ) {
 		if ( typeof mf['mudtx:transparency'] == 'undefined') {
 			mf['mudtx:transparency'] = {};
-		} else {
-			if ( typeof mf['mudtx:transparency']['vuln-url'] != undefined ) {
-				var v= mf['mudtx:transparency']['vuln-url'];
-				mf['mudtx:transparency'] = { 'vuln-url': v };
-			}
 		}
 		tx=mf['mudtx:transparency'];
 		if (whichsbom == 'local' || whichsbom == 'info' ) {
