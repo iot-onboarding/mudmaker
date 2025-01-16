@@ -1845,6 +1845,7 @@
 	input[type="text"],
 	input[type="password"],
 	input[type="email"],
+	input[type="url"],
 	select,
 	textarea {
 /*		appearance: none;*/
@@ -1860,6 +1861,7 @@
 	input[type="text"]:invalid,
 	input[type="password"]:invalid,
 	input[type="email"]:invalid,
+	input[type="url"]:invalid,
 	select:invalid,
 	textarea:invalid {
 	    border: 2px dashed red;
