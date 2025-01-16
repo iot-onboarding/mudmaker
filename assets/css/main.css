@@ -1852,7 +1852,6 @@
 	    border: solid 1px;
 	    color: inherit;
 	    outline: 0;
-	    padding: 0 1em;
 	    height: 2.5em;
 	    border-color: #4aaa;
 	    border-radius: 10px 10px 10px 10px;
@@ -1863,7 +1862,7 @@
 	input[type="email"]:valid,
 	input[type="url"]:valid,
 	textarea:valid {
-	    border: 1px solid rgb(21, 127, 21);
+	    border: 1px solid rgb(24, 199, 24);
 	    box-shadow: none;
 	}
 
