@@ -240,39 +240,8 @@ function j2pp(b64) {
     xhr.send(jsonText);
 }
 
-$('summary').click(function() {
-    var parent = $(this).parent()[0];
-    var pbox = parent.id + 'box';
-    if ( parent.open == false ) {
-	document.getElementById(pbox).checked = true;
-    } else {
-	document.getElementById(pbox).checked = false;
-    }
-});
-
-$(document).on('click','.addable',function(e){
-	var cur=e.target;
-	if ( cur.className == 'delete' ) {
-		var parent = cur.parentElement;
-		parent.remove()
-	} else if ( cur.className == 'addItem' ) {	
-		var grandparent = cur.parentElement.parentElement;
-		addEntry(grandparent);
-	}
-})
-
-
-$(document).on('change','.addable',function(e){
-	var cur=e.target;
-	if (cur.className == 'proto') {
-		var parent = cur.parentElement;
-		var val = cur.value;
-		tcporudp(parent,val);
-	}
-})
-
-$(document).on('change','.addbasics',function(e){
-	var cur=e.target;
+// js update
+function addbasics(cur) {
 	if ( cur.value == '') {
 		delete document.mudFile['ietf-mud:mud'][cur.name];
 	} else {
@@ -285,10 +254,9 @@ $(document).on('change','.addbasics',function(e){
 		}
 	}
 	saveMUD();
-})
+}
 
-$(document).on('change','.sbomstuff',function(e){
-	var cur = e.target;
+function sbomify(cur) {
 	var whichsbom = document.getElementById("sbom").value;
 
 	if ( cur.validity.valid == false ) {
@@ -341,4 +309,45 @@ $(document).on('change','.sbomstuff',function(e){
 		mf['mudtx:transparency']['vuln-url'] = [ cur.value ];
 	}
 	saveMUD();
+}
+
+$('summary').click(function() {
+    var parent = $(this).parent()[0];
+    var pbox = parent.id + 'box';
+    if ( parent.open == false ) {
+	document.getElementById(pbox).checked = true;
+    } else {
+	document.getElementById(pbox).checked = false;
+    }
+});
+
+$(document).on('click','.addable',function(e){
+	var cur=e.target;
+	if ( cur.className == 'delete' ) {
+		var parent = cur.parentElement;
+		parent.remove()
+	} else if ( cur.className == 'addItem' ) {	
+		var grandparent = cur.parentElement.parentElement;
+		addEntry(grandparent);
+	}
+})
+
+
+$(document).on('change','.addable',function(e){
+	var cur=e.target;
+	if (cur.className == 'proto') {
+		var parent = cur.parentElement;
+		var val = cur.value;
+		tcporudp(parent,val);
+	}
+})
+
+$(document).on('change','.addbasics',function(e){
+	var cur=e.target;
+	addbasics(cur);
+})
+
+$(document).on('change','.sbomstuff',function(e){
+	var cur = e.target;
+	sbomify(cur);
 })
