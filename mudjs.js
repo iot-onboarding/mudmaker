@@ -263,7 +263,7 @@ $(document).on('click','.addable',function(e){
 
 
 $(document).on('change','.addable',function(e){
-	var cur=e.delegateTarget.activeElement;
+	var cur=e.target;
 	if (cur.className == 'proto') {
 		var parent = cur.parentElement;
 		var val = cur.value;
