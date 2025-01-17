@@ -1415,6 +1415,13 @@
 		background-color: #fff;
 		color: #504E4E;
 	}*/
+	
+	input[type="text"]:user-invalid,
+	input[type="email"]:user-invalid,
+	input[type="url"]:user-invalid {
+	    border: 1px dashed #fd1b1b;
+	    box-shadow: none;
+	}
 
 	body, input, select, textarea {
 	    font-family: Arial, Helvetica, sans-serif;
@@ -1842,28 +1849,21 @@
 		font-weight: bold;
 	}
 
+
+	
 	input[type="text"],
 	input[type="password"],
 	input[type="email"],
+	input[type="url"],
 	select,
 	textarea {
 /*		appearance: none;*/
 	    border: solid 1px;
 	    color: inherit;
 	    outline: 0;
-	    padding: 0 1em;
 	    height: 2.5em;
 	    border-color: #4aaa;
 	    border-radius: 10px 10px 10px 10px;
-	}
-
-	input[type="text"]:invalid,
-	input[type="password"]:invalid,
-	input[type="email"]:invalid,
-	select:invalid,
-	textarea:invalid {
-	    border: 2px dashed red;
-	    box-shadow: none;
 	}
 
 	.select-wrapper {
