@@ -273,9 +273,13 @@ $(document).on('change','.addable',function(e){
 
 $(document).on('change','.addbasics',function(e){
 	var cur=e.target;
-	document.mudFile['ietf-mud:mud'][cur.name] = cur.value;
-	if (cur.name == 'mfg-name') {
-		fillpub(cur);
+	if ( cur.value == '') {
+		delete document.mudFile['ietf-mud:mud'][cur.name];
+	} else {
+		document.mudFile['ietf-mud:mud'][cur.name] = cur.value;
+		if (cur.name == 'mfg-name') {
+			fillpub(cur);
+		}
 	}
 	saveMUD();
 })
