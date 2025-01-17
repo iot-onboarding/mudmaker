@@ -276,7 +276,7 @@ $(document).on('change','.addbasics',function(e){
 	if ( cur.value == '') {
 		delete document.mudFile['ietf-mud:mud'][cur.name];
 	} else {
-		if ( cur.validity.isvalid == false ) {
+		if ( cur.validity.valid == false ) {
 			return;
 		}
 		document.mudFile['ietf-mud:mud'][cur.name] = cur.value;
