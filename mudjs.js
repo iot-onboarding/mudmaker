@@ -241,8 +241,7 @@ function j2pp(b64) {
 }
 
 // js update
-function addbasics(e) {
-	cur=e.target;
+function addbasics(cur) {
 	if ( cur.value == '') {
 		delete document.mudFile['ietf-mud:mud'][cur.name];
 	} else {
@@ -343,10 +342,11 @@ $(document).on('change','.addable',function(e){
 	}
 })
 
-$(document).on('change','.addbasics',addbasics(e));
+$(document).on('change','.addbasics',function(e){
+	addbasics(e.target);
+})
 
 
 $(document).on('change','.sbomstuff',function(e){
-	var cur = e.target;
-	sbomify(cur);
+	sbomify(e.target);
 })
