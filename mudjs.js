@@ -251,7 +251,7 @@ $('summary').click(function() {
 });
 
 $(document).on('click','.addable',function(e){
-	var cur=e.delegateTarget.activeElement;
+	var cur=e.target;
 	if ( cur.className == 'delete' ) {
 		var parent = cur.parentElement;
 		parent.remove()
