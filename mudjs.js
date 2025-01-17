@@ -276,11 +276,12 @@ $(document).on('change','.addbasics',function(e){
 	if ( cur.value == '') {
 		delete document.mudFile['ietf-mud:mud'][cur.name];
 	} else {
-		if ( cur.validity.isvalid ) {
-			document.mudFile['ietf-mud:mud'][cur.name] = cur.value;
-			if (cur.name == 'mfg-name') {
-				fillpub(cur);
-			}
+		if ( cur.validity.isvalid == false ) {
+			return;
+		}
+		document.mudFile['ietf-mud:mud'][cur.name] = cur.value;
+		if (cur.name == 'mfg-name') {
+			fillpub(cur);
 		}
 	}
 	saveMUD();
