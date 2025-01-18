@@ -271,7 +271,7 @@ function makeAcls(){
 	mud["ietf-access-control-list:acls"] = {"acl": []};
 
 	document.aclBase= 'acl' + Math.floor(Math.random()*100000);
-	bN = document.aclBase;
+	bn = document.aclBase;
 	mud['from-device-policy'] = {
 		"access-lists" : {"access-list" : [{}]}
 	};
