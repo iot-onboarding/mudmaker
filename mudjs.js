@@ -391,7 +391,7 @@ $(document).on('change','.addable',function(e){
 		if ( typeof ace_entry.aceBase != 'undefined') {
 			ace_entry.aceBase = 'ace' + Math.floor(Math.random()*100000);
 		}
-		if (ace_entry[0].value == '') {
+		if (ace_entry.children[0].value == '') {
 			// entry must at some point be deleted, if it exists.
 			return;
 		}
