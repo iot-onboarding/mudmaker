@@ -273,7 +273,7 @@ function makeAcls(){
 	document.aclBase= 'acl' + Math.floor(Math.random()*100000);
 	bN = document.aclBase;
 	mud['from-device-policy'] = {
-		"access-lists" : {"access-list" : [{}]};
+		"access-lists" : {"access-list" : [{}]}
 	};
 	toacls=mud['from-device-policy']['access-lists']["access-list"];
 	mud['to-device-policy'] = structuredClone(mud['from-device-policy']);
