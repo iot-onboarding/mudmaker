@@ -256,6 +256,43 @@ function addbasics(cur) {
 	saveMUD();
 }
 
+function makeAcl(name,atype){
+	var acls = document.mudFile['ietf-mud:mud']['ietf-access-control-list:acls']['acl'];
+	acl = { "name" : name, "type" : atype + "-acl-type", "aces" : []};
+}
+
+function makeAcls(){
+	var mud = document.mudFile['ietf-mud:mud'];
+	var acltype= document.getElementById("ipchoice").value;
+	
+	if (typeof document.aclBase != 'undefined') {
+		return;
+	}
+	mud["ietf-access-control-list:acls"] = {"acl": []};
+
+	document.aclBase= 'acl' + Math.floor(Math.random()*100000);
+	bN = document.aclBase;
+	mud['from-device-policy'] = {
+		"access-lists" : {"access-list" : [{}]};
+	};
+	toacls=mud['from-device-policy']['access-lists']["access-list"];
+	mud['to-device-policy'] = structuredClone(mud['from-device-policy']);
+	fracls=mud['from-device-policy']['access-lists']["access-list"];
+	if ( acltype == 'ipv4' || acltype == 'both') {
+		toacls.push({'name' : 'toipv4-' + bn});
+		makeAcl('toipv4-' + bn, "ipv4");
+		fracls.push({'name' : 'fripv4-' + bn});
+		makeAcl('fripv4-' + bn, "ipv4");
+	}
+	if ( acltype == 'ipv6' || acltype == 'both') {
+		toacls.push({'name' : 'toipv6-' + bn});
+		makeAcl('toipv6-' + bn, "ipv6");
+		fracls.push({'name' : 'fripv6-' + bn});
+		makeAcl('fripv6-' + bn, "ipv6");
+	}
+	saveMUD();
+}
+
 function sbomify(cur) {
 	var whichsbom = document.getElementById("sbom").value;
 
@@ -339,6 +376,27 @@ $(document).on('change','.addable',function(e){
 		var parent = cur.parentElement;
 		var val = cur.value;
 		tcporudp(parent,val);
+		return;
+	}
+	if ( cur.nodeName == 'INPUT' ) {
+		var p = e.target.parentNode;
+		var ace_entry = cur;
+		while ( p.nodeName != 'DETAILS' ) {
+			ace_entry = p;
+			p = p.parentNode;
+		}
+
+		// build an ace for both directions from ace_entry.  Store name in dom.
+		// does name exist?
+		if ( typeof ace_entry.aceBase != 'undefined') {
+			ace_entry.aceBase = 'ace' + Math.floor(Math.random()*100000);
+		}
+		if (ace_entry[0].value == '') {
+			// entry must at some point be deleted, if it exists.
+			return;
+		}
+		makeAcls();
+
 	}
 })
 

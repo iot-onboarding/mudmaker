@@ -343,7 +343,7 @@
             </li>
             <li>
               <label for="ipchoice">This device speaks</label>
-              <select id="ipchoice" name="ipchoice">
+              <select id="ipchoice" name="ipchoice" value="ipv4">
                 <option value="ipv4">IPv4</option>
                 <option value="ipv6">IPv6</option>
                 <option value="both">Both</option>
@@ -443,7 +443,7 @@
             <input pattern="^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[\.A-Za-z0-9])$"
               maxlength="120"
               size="40"
-              name="clname"
+              name="ietf-acldns:src-dnsname"
               placeholder="hostname.manufacturer.com"
               type="text">&nbsp;&nbsp;&nbsp;
               Protocol&nbsp;
