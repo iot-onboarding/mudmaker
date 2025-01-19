@@ -355,7 +355,7 @@ function updateAces(p,ace_entry) {
 		return;
 	}
 	makeAcls();
-	for (i in document.mudFile['ietf-mud:mud']['ietf-access-control-list:acls']['acl'].entries()) {
+	for (i in document.mudFile['ietf-mud:mud']['ietf-access-control-list:acls']['acl']) {
 		updateAce(acl[i],ace_entry,aceBase,p);
 	}
 	saveMUD();
