@@ -23,7 +23,7 @@ function removeIt(elemId) {
     
 // js update
 function addEntry(entry){
-    var newdiv= document.createElement('span');
+    var newdiv= document.createElement('div');
 	var typefield;
 	var pattern;
 	var hidden;
@@ -87,7 +87,7 @@ function addEntry(entry){
 	}
 
         newdiv.innerHTML = 
-            " <br><input type=" + typefield + "name='" + entryType  + "name'" + pattern +
+            "<input type=" + typefield + "name='" + entryType  + "name'" + pattern +
 	    " size='40' " + placeholder + fieldinfo + ">&nbsp;&nbsp;&nbsp;" +
 	    " Protocol&nbsp;&nbsp;<select class='proto' name='proto'>" +
 	    any +
