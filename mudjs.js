@@ -301,14 +301,16 @@ function makeproto(acl_entry,proto,sport,dport,cominit){
 			"operator" : "eq",
 			"port" : sport
 		};
+		return ret;
 	}
 	if (dport != "any") {
 		ret['destination-port'] = {
 			"operator" : "eq",
 			"port" : dport
 		};
-	}
-	return ret;
+		return ret;
+	} 
+	return null;
 }
 
 function findAce(ace) {
@@ -351,19 +353,19 @@ function updateAce(acl,ace_entry,aceBase,p){
 			deviceProto = makeproto(ace_entry,proto,lport,rport,cominit);
 		}
 	} else {
-		deviceProto = {};
+		deviceProto = null;
 	}
 	matchobj=JSON.parse('{"' + ipver + '": {"' + matchname + '":"' +
 		ace_entry.children[0].value + '"}}');
 	if ( proto == 'tcp' ) {
 		matchobj[ipver]['protocol'] = 6;
-		if (deviceProto != {} ){
+		if (deviceProto != null ){
 			matchobj['tcp'] = deviceProto; 
 		}
 	}
 	if ( proto == 'udp' ){
 		matchobj[ipver]['protocol'] = 17;
-		if (deviceProto != {} ){
+		if (deviceProto != null ){
 			matchobj['udp'] = deviceProto; 
 		}
 	}
