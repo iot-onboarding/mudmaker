@@ -96,8 +96,8 @@ function addEntry(entry){
 	    "</select>" + "&nbsp;<input type='button' class='delete' value='-'><br>" +
 	    "<span class='portinfo' style='visibility: hidden'>"
 	    + "&nbsp;&nbsp;&nbsp;" + 
-	    "<br>Local Port&nbsp; <input pattern='([0-9]{1,5}|any)' value='any' " +
-	    "class='lport' style='width:60px'>" +
+	    "Local Port&nbsp; <input pattern='([0-9]{1,5}|any)' value='any' " +
+	    "class='lport' style='width:60px'>" 
 	    + "&nbsp;&nbsp;&nbsp;" + 
 	    "Remote Port&nbsp; <input pattern='([0-9]{1,5}|any)' value='any' " +
 	    "class='rport' style='width:60px'></span>" +
