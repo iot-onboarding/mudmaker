@@ -330,7 +330,7 @@ function updateAce(acl,ace_entry,aceBase,p){
 	};
 
 	aIndex = acl.aces.ace.findIndex(findAce);
-	if ( AIndex >= 0 ) {
+	if ( aIndex >= 0 ) {
 		acl.aces.ace[aIndex]= ace;
 	} else {
 		acl.aces.ace.push(ace);
