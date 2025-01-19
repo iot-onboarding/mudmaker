@@ -291,6 +291,26 @@ function makeAcls(){
 	}
 }
 
+function makeproto(acl_entry,proto,sport,dport,cominit){
+	ret = {};
+	if (proto = 'tcp' && cominit != 'either'){
+		ret['ietf-mud:direction-initiated'] = cominit;
+	}
+	if ( sport != "any" ) {
+		ret['source-port'] = {
+			"operator" : "eq",
+			"port" : sport
+		};
+	}
+	if (dport != "any") {
+		ret['destination-port'] = {
+			"operator" : "eq",
+			"port" : dport
+		};
+	}
+	return ret;
+}
+
 function findAce(ace) {
 	return(typeof ace != 'undefined');
 }
@@ -316,14 +336,38 @@ function updateAce(acl,ace_entry,aceBase,p){
 	if ( p.id == 'cl') {
 		if ( direction == 'to') {
 			matchname = 'ietf-acldns:src-dnsname';
-
 		} else {
 			matchname = 'ietf-acldns:dst-dnsname';
 		}
 	}
-	
+	proto = ace_entry.children[1];
+	if ( proto != 'any') {
+		lport = acl_entry.children[4].children[0].value;
+		rport = acl_entry.children[4].children[1].value;
+		cominit = acl_entry.children[5].children[0].value;
+		if ( direction == 'to' ) {
+			deviceProto = makeproto(acl_entry,proto,rport,sport,cominit);
+		} else {
+			deviceProto = makeproto(acl_entry,proto,sport,rport,cominit);
+		}
+	} else {
+		deviceProto = {};
+	}
 	matchobj=JSON.parse('{"' + ipver + '": {"' + matchname + '":"' +
 		ace_entry.children[0].value + '"}}');
+	if ( proto == 'tcp' ) {
+		matchobj[ipver]['protocol'] = 6;
+		if (deviceProto != {} ){
+			matchobj['tcp'] = deviceProto; 
+		}
+	}
+	if ( proto == 'udp' ){
+		matchobj[ipver]['protocol'] = 17;
+		if (deviceProto != {} ){
+			matchobj['udp'] = deviceProto; 
+		}
+	}
+
 	ace= { 
 		"name": ace_name, 
 		"matches" : matchobj,
