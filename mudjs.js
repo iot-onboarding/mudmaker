@@ -524,7 +524,7 @@ $(document).on('click','.addable',function(e){
 	var cur=e.target;
 	if ( cur.className == 'delete' ) {
 		var parent = cur.parentElement;
-		removeAces(cur);
+		removeAces(parent);
 		parent.remove();
 	} else if ( cur.className == 'addItem' ) {	
 		var grandparent = cur.parentElement.parentElement;
