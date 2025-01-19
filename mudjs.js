@@ -23,7 +23,7 @@ function removeIt(elemId) {
     
 // js update
 function addEntry(entry){
-    var newdiv= document.createElement('span');
+    var newdiv= document.createElement('div');
 	var typefield;
 	var pattern;
 	var hidden;
@@ -87,17 +87,17 @@ function addEntry(entry){
 	}
 
         newdiv.innerHTML = 
-            " <br><input type=" + typefield + "name='" + entryType  + "name'" + pattern +
+            "<input type=" + typefield + "name='" + entryType  + "name'" + pattern +
 	    " size='40' " + placeholder + fieldinfo + ">&nbsp;&nbsp;&nbsp;" +
 	    " Protocol&nbsp;&nbsp;<select class='proto' name='proto'>" +
 	    any +
 	    "<option value='tcp'>TCP</option>" +
 	    "<option value='udp'>UDP</option>" +
-	    "</select>" + "&nbsp;<input type='button' class='delete' value='-'>" +
+	    "</select>" + "&nbsp;<input type='button' class='delete' value='-'><br>" +
 	    "<span class='portinfo' style='visibility: hidden'>"
 	    + "&nbsp;&nbsp;&nbsp;" + 
-	    "<br>Local Port&nbsp; <input pattern='([0-9]{1,5}|any)' value='any' " +
-	    "class='lport' style='width:60px'>" +
+	    "Local Port&nbsp; <input pattern='([0-9]{1,5}|any)' value='any' " +
+	    "class='lport' style='width:60px'>" 
 	    + "&nbsp;&nbsp;&nbsp;" + 
 	    "Remote Port&nbsp; <input pattern='([0-9]{1,5}|any)' value='any' " +
 	    "class='rport' style='width:60px'></span>" +
@@ -240,39 +240,8 @@ function j2pp(b64) {
     xhr.send(jsonText);
 }
 
-$('summary').click(function() {
-    var parent = $(this).parent()[0];
-    var pbox = parent.id + 'box';
-    if ( parent.open == false ) {
-	document.getElementById(pbox).checked = true;
-    } else {
-	document.getElementById(pbox).checked = false;
-    }
-});
-
-$(document).on('click','.addable',function(e){
-	var cur=e.target;
-	if ( cur.className == 'delete' ) {
-		var parent = cur.parentElement;
-		parent.remove()
-	} else if ( cur.className == 'addItem' ) {	
-		var grandparent = cur.parentElement.parentElement;
-		addEntry(grandparent);
-	}
-})
-
-
-$(document).on('change','.addable',function(e){
-	var cur=e.delegateTarget.activeElement;
-	if (cur.className == 'proto') {
-		var parent = cur.parentElement;
-		var val = cur.value;
-		tcporudp(parent,val);
-	}
-})
-
-$(document).on('change','.addbasics',function(e){
-	var cur=e.target;
+// js update
+function addbasics(cur) {
 	if ( cur.value == '') {
 		delete document.mudFile['ietf-mud:mud'][cur.name];
 	} else {
@@ -285,10 +254,171 @@ $(document).on('change','.addbasics',function(e){
 		}
 	}
 	saveMUD();
-})
+}
 
-$(document).on('change','.sbomstuff',function(e){
-	var cur = e.target;
+function makeAcl(name,atype){
+	document.mudFile['ietf-mud:mud']['ietf-access-control-list:acls']['acl'].push({ "name" : name, "type" : atype + "-acl-type", "aces" : { "ace": []}});
+}
+
+function makeAcls(){
+	var mud = document.mudFile['ietf-mud:mud'];
+	var acltype= document.getElementById("ipchoice").value;
+	
+	if (typeof document.aclBase != 'undefined') {
+		return;
+	}
+	mud["ietf-access-control-list:acls"] = {"acl": []};
+
+	document.aclBase= 'acl' + Math.floor(Math.random()*100000);
+	bn = document.aclBase;
+	mud['from-device-policy'] = {
+		"access-lists" : {"access-list" : [{}]}
+	};
+	toacls=mud['from-device-policy']['access-lists']["access-list"];
+	mud['to-device-policy'] = structuredClone(mud['from-device-policy']);
+	fracls=mud['from-device-policy']['access-lists']["access-list"];
+	if ( acltype == 'ipv4' || acltype == 'both') {
+		toacls.push({'name' : 'toipv4-' + bn});
+		makeAcl('toipv4-' + bn, "ipv4");
+		fracls.push({'name' : 'fripv4-' + bn});
+		makeAcl('fripv4-' + bn, "ipv4");
+	}
+	if ( acltype == 'ipv6' || acltype == 'both') {
+		toacls.push({'name' : 'toipv6-' + bn});
+		makeAcl('toipv6-' + bn, "ipv6");
+		fracls.push({'name' : 'fripv6-' + bn});
+		makeAcl('fripv6-' + bn, "ipv6");
+	}
+}
+
+function makeproto(acl_entry,proto,sport,dport,cominit){
+	ret = {};
+
+	if (sport == "any" && dport == "any"){
+		return null;
+	}
+
+	if (proto = 'tcp' && cominit != 'either'){
+		ret['ietf-mud:direction-initiated'] = cominit;
+	}
+	if ( sport != "any" ) {
+		ret['source-port'] = {
+			"operator" : "eq",
+			"port" : sport
+		};
+	}
+	if (dport != "any") {
+		ret['destination-port'] = {
+			"operator" : "eq",
+			"port" : dport
+		};
+	}
+	return ret;
+}
+
+function updateAce(acl,ace_entry,aceBase,p){
+	// distinguish between to and from.  just means choosing src or dst fields; also for transport.
+	const actions = { "forwarding" : "accept"};
+	re=/^fr.*/;
+	
+	if (acl["type"] == "ipv4-acl-type"){
+		ipver = "ipv4";
+	} else {
+		ipver = "ipv6";
+	}
+
+	if (acl.name.match(re) == null) {
+		direction='to';
+		ace_name = 'to' + aceBase;
+	} else {
+		direction='from';
+		ace_name = 'fr' + aceBase;
+	}
+	if ( p.id == 'cl') {
+		if ( direction == 'to') {
+			matchname = 'ietf-acldns:src-dnsname';
+		} else {
+			matchname = 'ietf-acldns:dst-dnsname';
+		}
+	}
+	proto = ace_entry.children[1].value;
+	if ( proto != 'any') {
+		lport = ace_entry.children[4].children[0].value;
+		rport = ace_entry.children[4].children[1].value;
+		cominit = ace_entry.children[5].children[0].value;
+		if ( direction == 'to' ) {
+			deviceProto = makeproto(ace_entry,proto,rport,lport,cominit);
+		} else {
+			deviceProto = makeproto(ace_entry,proto,lport,rport,cominit);
+		}
+	} else {
+		deviceProto = null;
+	}
+	matchobj=JSON.parse('{"' + ipver + '": {"' + matchname + '":"' +
+		ace_entry.children[0].value + '"}}');
+	if ( proto == 'tcp' ) {
+		matchobj[ipver]['protocol'] = 6;
+		if (deviceProto != null ){
+			matchobj['tcp'] = deviceProto; 
+		}
+	}
+	if ( proto == 'udp' ){
+		matchobj[ipver]['protocol'] = 17;
+		if (deviceProto != null ){
+			matchobj['udp'] = deviceProto; 
+		}
+	}
+
+	ace= { 
+		"name": ace_name, 
+		"matches" : matchobj,
+		"actions" : actions
+	};
+
+	aIndex=-1;
+	for (i in acl.aces.ace){
+		if (acl.aces.ace[i].name == ace_name ) {
+			aIndex=i;
+		}
+	}
+
+	if ( aIndex >= 0 ) {
+		acl.aces.ace[aIndex]= ace;
+	} else {
+		acl.aces.ace.push(ace);
+	}
+
+}
+
+function updateAces(p,ace_entry) {
+	// build an ace for both directions from ace_entry.  Store name in dom.
+	// does name exist?
+	if ( typeof ace_entry.aceBase == 'undefined') {
+		aceBase = 'ace' + Math.floor(Math.random()*100000);
+		ace_entry.aceBase = aceBase;
+	} else {
+		aceBase=ace_entry.aceBase;
+	}
+	if (ace_entry.children[0].value == '') {
+		// entry must at some point be deleted, if it exists.
+		return;
+	}
+	makeAcls();
+	acls=document.mudFile['ietf-mud:mud']['ietf-access-control-list:acls']['acl'];
+	for (i in acls) {
+		updateAce(acls[i],ace_entry,aceBase,p);
+	}
+	saveMUD();
+}
+
+function updateOneAceGroup(p,ace_entry) {
+	while ( p.nodeName != 'DETAILS' ) {
+		ace_entry = p;
+		p = p.parentNode;
+	}
+	updateAces(p,ace_entry);
+}
+function sbomify(cur) {
 	var whichsbom = document.getElementById("sbom").value;
 
 	if ( cur.validity.valid == false ) {
@@ -341,4 +471,54 @@ $(document).on('change','.sbomstuff',function(e){
 		mf['mudtx:transparency']['vuln-url'] = [ cur.value ];
 	}
 	saveMUD();
+}
+
+$('summary').click(function() {
+    var parent = $(this).parent()[0];
+    var pbox = parent.id + 'box';
+    if ( parent.open == false ) {
+	document.getElementById(pbox).checked = true;
+    } else {
+	document.getElementById(pbox).checked = false;
+    }
+});
+
+$(document).on('click','.addable',function(e){
+	var cur=e.target;
+	if ( cur.className == 'delete' ) {
+		var parent = cur.parentElement;
+		parent.remove()
+	} else if ( cur.className == 'addItem' ) {	
+		var grandparent = cur.parentElement.parentElement;
+		addEntry(grandparent);
+	}
+})
+
+
+$(document).on('change','.addable',function(e){
+	var cur=e.target;
+
+	if (cur.validity.valid  == false ) {
+		return;
+	}
+
+	if (cur.className == 'proto') {
+		var parent = cur.parentElement;
+		var val = cur.value;
+		tcporudp(parent,val);
+		updateOneAceGroup(e.target.parentNode,cur);
+		return;
+	}
+	if ( cur.nodeName == 'INPUT' ) {
+		updateOneAceGroup(e.target.parentNode,cur);
+	}
+})
+
+$(document).on('change','.addbasics',function(e){
+	addbasics(e.target);
+})
+
+
+$(document).on('change','.sbomstuff',function(e){
+	sbomify(e.target);
 })
