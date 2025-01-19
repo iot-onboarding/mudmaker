@@ -293,6 +293,11 @@ function makeAcls(){
 
 function makeproto(acl_entry,proto,sport,dport,cominit){
 	ret = {};
+
+	if (sport == "any" && dport == "any"){
+		return null;
+	}
+
 	if (proto = 'tcp' && cominit != 'either'){
 		ret['ietf-mud:direction-initiated'] = cominit;
 	}
@@ -301,16 +306,14 @@ function makeproto(acl_entry,proto,sport,dport,cominit){
 			"operator" : "eq",
 			"port" : sport
 		};
-		return ret;
 	}
 	if (dport != "any") {
 		ret['destination-port'] = {
 			"operator" : "eq",
 			"port" : dport
 		};
-		return ret;
-	} 
-	return null;
+	}
+	return ret;
 }
 
 function findAce(ace) {
