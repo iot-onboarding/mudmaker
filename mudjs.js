@@ -342,13 +342,13 @@ function updateAce(acl,ace_entry,aceBase,p){
 	}
 	proto = ace_entry.children[1].value;
 	if ( proto != 'any') {
-		lport = acl_entry.children[4].children[0].value;
-		rport = acl_entry.children[4].children[1].value;
-		cominit = acl_entry.children[5].children[0].value;
+		lport = ace_entry.children[4].children[0].value;
+		rport = ace_entry.children[4].children[1].value;
+		cominit = ace_entry.children[5].children[0].value;
 		if ( direction == 'to' ) {
-			deviceProto = makeproto(acl_entry,proto,rport,sport,cominit);
+			deviceProto = makeproto(ace_entry,proto,rport,sport,cominit);
 		} else {
-			deviceProto = makeproto(acl_entry,proto,sport,rport,cominit);
+			deviceProto = makeproto(ace_entry,proto,sport,rport,cominit);
 		}
 	} else {
 		deviceProto = {};
@@ -490,6 +490,7 @@ $(document).on('change','.addable',function(e){
 		var parent = cur.parentElement;
 		var val = cur.value;
 		tcporudp(parent,val);
+		updateAces(e.target.parentNode,cur);
 		return;
 	}
 	if ( cur.nodeName == 'INPUT' ) {
