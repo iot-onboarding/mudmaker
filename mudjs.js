@@ -491,6 +491,11 @@ $(document).on('click','.addable',function(e){
 
 $(document).on('change','.addable',function(e){
 	var cur=e.target;
+
+	if (cur.validity.valid  == false ) {
+		return;
+	}
+
 	if (cur.className == 'proto') {
 		var parent = cur.parentElement;
 		var val = cur.value;
