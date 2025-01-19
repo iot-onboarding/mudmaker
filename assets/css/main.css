@@ -1416,12 +1416,12 @@
 		color: #504E4E;
 	}*/
 	
-	/*input[type="text"]:user-invalid,
+	input[type="text"]:user-invalid,
 	input[type="email"]:user-invalid,
 	input[type="url"]:user-invalid {
 	    border: 1px dashed #fd1b1b;
 	    box-shadow: none;
-	}*/
+	}
 	:user-invalid {
 		border: 1px dashed #fd1b1b;
 	    box-shadow: none;
