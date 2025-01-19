@@ -438,7 +438,7 @@ function removeAces(cur){
 		return;
 	}
 	const re=new RegExp('.*' + cur.aceBase + '.*');
-	acls=['ietf-mud:mud']['ietf-access-control-list:acls']['acl'];
+	acls=document.mudFile['ietf-mud:mud']['ietf-access-control-list:acls']['acl'];
 	for (i in acls) {
 		if (acls[i].aces.ace.length == 0 ){
 			return;
