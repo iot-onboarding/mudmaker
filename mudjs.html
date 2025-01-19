@@ -447,7 +447,7 @@
               placeholder="hostname.manufacturer.com"
               type="text">&nbsp;&nbsp;&nbsp;
               Protocol&nbsp;
-            <select id="clsel" class="proto" value="any">
+            <select class="proto" value="any">
               <option value="any">Any</option>
               <option value="tcp">TCP</option>
               <option value="udp">UDP</option>
@@ -478,40 +478,36 @@
           <summary>My Controller: Access to controllers specific to this device (no need to name
             a class)
           </summary>
-          <span id="myctllist">
+          <div class="clentry">
             <input value="(filled in by local admin)" readonly="readonly"
               size="40"
-              name="myctlnames[]"
+              name="my-controller"
               type="text">&nbsp;&nbsp;&nbsp;&nbsp;Protocol&nbsp;
-            <select id="myctlsel" name="myctlproto[]" value="any" onchange="tcporudp('myctlsel','myctlplist');">
+            <select class="proto" value="any">
               <option value="any">Any</option>
               <option value="tcp">TCP</option>
               <option value="udp">UDP</option>
             </select>
-            <input value="+" onclick="addInput('myctllist','myctl','dns',8);"
-              type="button">
+            <input value="+" type="button" class="addItem">
             <br>
-            <span id="myctlplistl" style="visibility: hidden"> Local
-              Port&nbsp; <input pattern="([0-9]{1,5}|any)" value="any"
-                name="myctlportl[]"
+            <span class="portinfo" style="visibility: hidden">
+              Local Port&nbsp; <input pattern="([0-9]{1,5}|any)" value="any"
+                class="lport"
                 style="width:60px">
-            </span> 
-            <span class="ports" style="visibility: hidden">
               &nbsp;&nbsp;Remote Port&nbsp; <input pattern="([0-9]{1,5}|any)"
                 value="any"
-                name="myctlport[]"
+                class="rport"
                 style="width:60px">
-            </span>
-            <span id="myctlplistc" style="visibility: hidden">
+            </span> 
+            <span class="coninit" style="visibility: hidden">
               &nbsp;&nbsp;Initiated by&nbsp;
-              <select name="myctlinit[]" id="myctlinit" value="either"
-                onchange="localcheck('myctlinit','myctlplistl');">
-                <option value="either">Either</option>
+              <select name="direction" value="either">
+                <option value ="either">Either</option>
                 <option value="thing">Thing</option>
                 <option value="remote">Remote</option>
               </select>
             </span>
-          </span>
+          </div>
         </details>
         <details id="loc" >
           <summary>Local Access: Access to/from any local host for

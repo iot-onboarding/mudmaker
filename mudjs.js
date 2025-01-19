@@ -334,13 +334,25 @@ function updateAce(acl,ace_entry,aceBase,p){
 		direction='from';
 		ace_name = 'fr' + aceBase;
 	}
+
 	if ( p.id == 'cl') {
 		if ( direction == 'to') {
 			matchname = 'ietf-acldns:src-dnsname';
 		} else {
 			matchname = 'ietf-acldns:dst-dnsname';
 		}
+		matchobj=JSON.parse('{"' + ipver + '": {"' + matchname + '":"' +
+			ace_entry.children[0].value + '"}}');
+	} else {
+		matchobj = {
+			"ietf-mud:mud" : {
+			}
+		}
+		if (p.id == 'myctl') {
+			matchobj['ietf-mud:mud']["my-controller"] = [ null ];
+		}
 	}
+
 	proto = ace_entry.children[1].value;
 	if ( proto != 'any') {
 		lport = ace_entry.children[4].children[0].value;
@@ -354,8 +366,7 @@ function updateAce(acl,ace_entry,aceBase,p){
 	} else {
 		deviceProto = null;
 	}
-	matchobj=JSON.parse('{"' + ipver + '": {"' + matchname + '":"' +
-		ace_entry.children[0].value + '"}}');
+
 	if ( proto == 'tcp' ) {
 		matchobj[ipver]['protocol'] = 6;
 		if (deviceProto != null ){
