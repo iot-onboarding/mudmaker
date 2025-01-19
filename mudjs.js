@@ -340,7 +340,7 @@ function updateAce(acl,ace_entry,aceBase,p){
 			matchname = 'ietf-acldns:dst-dnsname';
 		}
 	}
-	proto = ace_entry.children[1];
+	proto = ace_entry.children[1].value;
 	if ( proto != 'any') {
 		lport = acl_entry.children[4].children[0].value;
 		rport = acl_entry.children[4].children[1].value;
