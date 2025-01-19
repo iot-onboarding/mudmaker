@@ -439,6 +439,7 @@ function removeAces(cur){
 	}
 	const re=new RegExp('.*' + cur.aceBase + '.*');
 	acls=document.mudFile['ietf-mud:mud']['ietf-access-control-list:acls']['acl'];
+	cleanup=false;
 	for (i in acls) {
 		if (acls[i].aces.ace.length == 0 ){
 			return;
@@ -448,6 +449,15 @@ function removeAces(cur){
 				acls[i].aces.ace.splice(j,1);
 			}
 		}
+		if (acls[i].aces.ace.length == 0) {
+			cleanup=true;
+		}
+	}
+	if (cleanup == true){
+		delete document.mudFile['ietf-mud:mud']["ietf-access-control-list:acls"];
+		delete document.mudFile['ietf-mud:mud']['to-device-policy'];
+		delete document.mudFile['ietf-mud:mud']['from-device-policy'];
+		delete document.aclBase;
 	}
 	saveMUD();
 }
