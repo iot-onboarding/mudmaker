@@ -93,7 +93,7 @@ function addEntry(entry){
 	    any +
 	    "<option value='tcp'>TCP</option>" +
 	    "<option value='udp'>UDP</option>" +
-	    "</select>" + "&nbsp;<input type='button' class='delete' value='-'>" +
+	    "</select>" + "&nbsp;<input type='button' class='delete' value='-'><br>" +
 	    "<span class='portinfo' style='visibility: hidden'>"
 	    + "&nbsp;&nbsp;&nbsp;" + 
 	    "<br>Local Port&nbsp; <input pattern='([0-9]{1,5}|any)' value='any' " +
