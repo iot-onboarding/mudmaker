@@ -257,8 +257,7 @@ function addbasics(cur) {
 }
 
 function makeAcl(name,atype){
-	acls = document.mudFile['ietf-mud:mud']['ietf-access-control-list:acls']['acl'];
-	acls.push({ "name" : name, "type" : atype + "-acl-type", "aces" : []});
+	document.mudFile['ietf-mud:mud']['ietf-access-control-list:acls']['acl'].push({ "name" : name, "type" : atype + "-acl-type", "aces" : []});
 }
 
 function makeAcls(){
