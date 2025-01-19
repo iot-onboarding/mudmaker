@@ -346,9 +346,9 @@ function updateAce(acl,ace_entry,aceBase,p){
 		rport = ace_entry.children[4].children[1].value;
 		cominit = ace_entry.children[5].children[0].value;
 		if ( direction == 'to' ) {
-			deviceProto = makeproto(ace_entry,proto,rport,sport,cominit);
+			deviceProto = makeproto(ace_entry,proto,rport,lport,cominit);
 		} else {
-			deviceProto = makeproto(ace_entry,proto,sport,rport,cominit);
+			deviceProto = makeproto(ace_entry,proto,lport,rport,cominit);
 		}
 	} else {
 		deviceProto = {};
