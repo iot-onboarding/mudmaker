@@ -290,6 +290,75 @@ function makeAcls(){
 		fracls.push({'name' : 'fripv6-' + bn});
 		makeAcl('fripv6-' + bn, "ipv6");
 	}
+}
+
+function findAce(ace) {
+	return(typeof ace != 'undefined');
+}
+
+function updateAce(acl,ace_entry,aceBase,p){
+	// distinguish between to and from.  just means choosing src or dst fields; also for transport.
+	const actions = { "forwarding" : "accept"};
+	re=/^fr.*/;
+	
+	if (acl["type"] == "ipv4-acl-type"){
+		ipver = "ipv4";
+	} else {
+		ipver = "ipv6";
+	}
+
+	if (acl.name.match(re) == null) {
+		direction='to';
+		ace_name = 'to' + aceBase;
+	} else {
+		direction='from';
+		ace_name = 'fr' + aceBase;
+	}
+	if ( p.id == 'cl') {
+		if ( direction == 'to') {
+			matchname = 'ietf-acldns:src-dnsname';
+
+		} else {
+			matchname = 'ietf-acldns:dst-dnsname';
+		}
+	}
+	ace= { 
+		"name": ace_name, 
+		"matches" : {
+			ipver : { matchname : ace_entry.children[0].value }
+		},
+		"actions" : actions
+	};
+
+	aIndex = acl.findIndex(findAce);
+	if ( AIndex >= 0 ) {
+		acl[aIndex]= ace;
+	} else {
+		acl['aces'].push(ace);
+	}
+
+}
+
+function updateAces(p,ace_entry) {
+	while ( p.nodeName != 'DETAILS' ) {
+		ace_entry = p;
+		p = p.parentNode;
+	}
+
+	// build an ace for both directions from ace_entry.  Store name in dom.
+	// does name exist?
+	if ( typeof ace_entry.aceBase != 'undefined') {
+		aceBase = 'ace' + Math.floor(Math.random()*100000);
+		ace_entry.aceBase = aceBase;
+	}
+	if (ace_entry.children[0].value == '') {
+		// entry must at some point be deleted, if it exists.
+		return;
+	}
+	makeAcls();
+	for (let acl of document.mudFile['ietf-mud:mud']['ietf-access-control-list:acls']['acl'].entries()) {
+		updateAce(acl,ace_entry,aceBase,p);
+	}
 	saveMUD();
 }
 
@@ -379,24 +448,7 @@ $(document).on('change','.addable',function(e){
 		return;
 	}
 	if ( cur.nodeName == 'INPUT' ) {
-		var p = e.target.parentNode;
-		var ace_entry = cur;
-		while ( p.nodeName != 'DETAILS' ) {
-			ace_entry = p;
-			p = p.parentNode;
-		}
-
-		// build an ace for both directions from ace_entry.  Store name in dom.
-		// does name exist?
-		if ( typeof ace_entry.aceBase != 'undefined') {
-			ace_entry.aceBase = 'ace' + Math.floor(Math.random()*100000);
-		}
-		if (ace_entry.children[0].value == '') {
-			// entry must at some point be deleted, if it exists.
-			return;
-		}
-		makeAcls();
-
+		updateAces(e.target.parentNode,cur);
 	}
 })
 
