@@ -415,8 +415,8 @@ function updateOneAceGroup(p,ace_entry) {
 	while ( p.nodeName != 'DETAILS' ) {
 		ace_entry = p;
 		p = p.parentNode;
-		updateAces(p,ace_entry);
 	}
+	updateAces(p,ace_entry);
 }
 function sbomify(cur) {
 	var whichsbom = document.getElementById("sbom").value;
