@@ -329,11 +329,11 @@ function updateAce(acl,ace_entry,aceBase,p){
 		"actions" : actions
 	};
 
-	aIndex = acl.findIndex(findAce);
+	aIndex = acl.aces.ace.findIndex(findAce);
 	if ( AIndex >= 0 ) {
-		acl[aIndex]= ace;
+		acl.aces.ace[aIndex]= ace;
 	} else {
-		acl['aces'].push(ace);
+		acl.aces.ace.push(ace);
 	}
 
 }
