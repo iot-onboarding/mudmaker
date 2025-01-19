@@ -316,10 +316,6 @@ function makeproto(acl_entry,proto,sport,dport,cominit){
 	return ret;
 }
 
-function findAce(ace) {
-	return(typeof ace != 'undefined');
-}
-
 function updateAce(acl,ace_entry,aceBase,p){
 	// distinguish between to and from.  just means choosing src or dst fields; also for transport.
 	const actions = { "forwarding" : "accept"};
@@ -379,8 +375,14 @@ function updateAce(acl,ace_entry,aceBase,p){
 		"actions" : actions
 	};
 
-	aIndex = acl.aces.ace.findIndex(findAce);
-	if ( aIndex < 0 ) {
+	aIndex=-1;
+	for (i in acl.aces.ace){
+		if (acl.aces.ace[i].name == ace_name ) {
+			aIndex=i;
+		}
+	}
+
+	if ( aIndex >= 0 ) {
 		acl.aces.ace[aIndex]= ace;
 	} else {
 		acl.aces.ace.push(ace);
@@ -394,6 +396,8 @@ function updateAces(p,ace_entry) {
 	if ( typeof ace_entry.aceBase == 'undefined') {
 		aceBase = 'ace' + Math.floor(Math.random()*100000);
 		ace_entry.aceBase = aceBase;
+	} else {
+		aceBase=ace_entry.aceBase;
 	}
 	if (ace_entry.children[0].value == '') {
 		// entry must at some point be deleted, if it exists.
