@@ -321,13 +321,12 @@ function updateAce(acl,ace_entry,aceBase,p){
 			matchname = 'ietf-acldns:dst-dnsname';
 		}
 	}
-	matchobj = {};
-	matchobj[matchname] = ace_entry.children[0].value;
+	
+	matchobj=JSON.parse('{"' + ipver + '": {"' + matchname + '":"' +
+		ace_entry.children[0].value + '"}}');
 	ace= { 
 		"name": ace_name, 
-		"matches" : {
-			ipver : matchobj
-		},
+		"matches" : matchobj,
 		"actions" : actions
 	};
 
