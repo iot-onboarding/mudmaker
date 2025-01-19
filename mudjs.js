@@ -389,11 +389,6 @@ function updateAce(acl,ace_entry,aceBase,p){
 }
 
 function updateAces(p,ace_entry) {
-	while ( p.nodeName != 'DETAILS' ) {
-		ace_entry = p;
-		p = p.parentNode;
-	}
-
 	// build an ace for both directions from ace_entry.  Store name in dom.
 	// does name exist?
 	if ( typeof ace_entry.aceBase == 'undefined') {
@@ -412,6 +407,13 @@ function updateAces(p,ace_entry) {
 	saveMUD();
 }
 
+function updateOneAceGroup(p,ace_entry) {
+	while ( p.nodeName != 'DETAILS' ) {
+		ace_entry = p;
+		p = p.parentNode;
+		updateAces(p,ace_entry);
+	}
+}
 function sbomify(cur) {
 	var whichsbom = document.getElementById("sbom").value;
 
@@ -500,11 +502,11 @@ $(document).on('change','.addable',function(e){
 		var parent = cur.parentElement;
 		var val = cur.value;
 		tcporudp(parent,val);
-		updateAces(e.target.parentNode,cur);
+		updateOneAceGroup(e.target.parentNode,cur);
 		return;
 	}
 	if ( cur.nodeName == 'INPUT' ) {
-		updateAces(e.target.parentNode,cur);
+		updateOneAceGroup(e.target.parentNode,cur);
 	}
 })
 
