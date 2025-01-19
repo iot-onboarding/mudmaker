@@ -429,6 +429,29 @@ function updateOneAceGroup(p,ace_entry) {
 	}
 	updateAces(p,ace_entry);
 }
+
+function removeAces(cur){
+	if ( typeof document.mudFile['ietf-mud:mud']['ietf-access-control-list:acls'] == 'undefined' ){
+		return;
+	}
+	if (typeof cur.aceBase == 'undefined') {
+		return;
+	}
+	const re=new RegExp('.*' + cur.aceBase + '.*');
+	acls=['ietf-mud:mud']['ietf-access-control-list:acls']['acl'];
+	for (i in acls) {
+		if (acls[i].aces.ace.length == 0 ){
+			return;
+		}
+		for (j in acls[i].aces.ace ) {
+			if (acls[i].aces.ace[j].name.match(re) != null){
+				acls[i].aces.ace.splice(j,1);
+			}
+		}
+	}
+	saveMUD();
+}
+
 function sbomify(cur) {
 	var whichsbom = document.getElementById("sbom").value;
 
@@ -488,7 +511,10 @@ $('summary').click(function() {
     var parent = $(this).parent()[0];
     var pbox = parent.id + 'box';
     if ( parent.open == false ) {
-	document.getElementById(pbox).checked = true;
+		document.getElementById(pbox).checked = true;
+		if ( parent.id == "myctl" ) {
+			updateOneAceGroup(parent,parent.children[1]);
+		}
     } else {
 	document.getElementById(pbox).checked = false;
     }
@@ -498,7 +524,8 @@ $(document).on('click','.addable',function(e){
 	var cur=e.target;
 	if ( cur.className == 'delete' ) {
 		var parent = cur.parentElement;
-		parent.remove()
+		removeAces(cur);
+		parent.remove();
 	} else if ( cur.className == 'addItem' ) {	
 		var grandparent = cur.parentElement.parentElement;
 		addEntry(grandparent);
