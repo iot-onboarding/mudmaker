@@ -347,7 +347,7 @@ function updateAces(p,ace_entry) {
 
 	// build an ace for both directions from ace_entry.  Store name in dom.
 	// does name exist?
-	if ( typeof ace_entry.aceBase != 'undefined') {
+	if ( typeof ace_entry.aceBase == 'undefined') {
 		aceBase = 'ace' + Math.floor(Math.random()*100000);
 		ace_entry.aceBase = aceBase;
 	}
