@@ -526,7 +526,8 @@ $('summary').click(function() {
 			updateOneAceGroup(parent,parent.children[1]);
 		}
     } else {
-	document.getElementById(pbox).checked = false;
+		document.getElementById(pbox).checked = false;
+		removeAces(parent);
     }
 });
 
