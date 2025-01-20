@@ -1,14 +1,17 @@
 
 async function getviz(){
 	try {
-		const response = await fetch("mudvisjs.html");
-
+		fetch("mudvisjs.html")
+			.then(response => {
+				response.text()
+				  .then(htmltxt => {
+					thediv=document.getElementById("visdiv");
+					thediv.innerHTML=htmltxt;
+				  })
+			})
 		if (!response.ok) {
 		  throw new Error(`Response status: ${response.status}`);
 		}
-		
-		ret= await response.text();
-		return ret;
 	  } catch (error) {
 		console.error(error.message);
 	  }	
