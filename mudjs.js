@@ -527,7 +527,9 @@ $('summary').click(function() {
 		}
     } else {
 		document.getElementById(pbox).checked = false;
-		removeAces(parent);
+		if ( parent.nodeName == "DETAILS" ) {
+			removeAces(parent.children[1]);
+		}
     }
 });
 
