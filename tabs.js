@@ -2,13 +2,12 @@
 async function getviz(){
 	try {
 		fetch("mudvisjs.html")
-			.then(response => {
-				return response.text()
-				  .then(htmltxt => {
+			.then(response => response.text())
+			.then(htmltxt => {
 					thediv=document.getElementById("visdiv");
 					thediv.innerHTML=htmltxt;
 				  })
-			})
+
 		if (!response.ok) {
 		  throw new Error(`Response status: ${response.status}`);
 		}
