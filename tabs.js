@@ -1,8 +1,4 @@
 
-function updateVis(html){
-	thediv=document.getElementById("visdiv");
-	thediv.innerHTML=html;
-}
 
 function getviz(){
 	fetch("mudvisjs.html")
@@ -24,9 +20,10 @@ function openTab(evt, tabName) {
 		pre.innerText = JSON.stringify(document.mudFile,null,2);
 	} else if (tabName == 'visualize') {
 		var incoming_mudfile = document.mudFile;
-		newdiv = document.createElement("div");
-		newdiv.id="visdiv";
-		getviz();
+		vizdiv = document.getElementById("visualize");
+		fetch("mudvisjs.html")
+			.then(response => response.text())
+			.then(htmltxt => {vizdiv.innerHTML = htmltxt })
 	}
 	// Get all elements with class="tablinks" and remove the class "active"
 	tablinks = document.getElementsByClassName("tablinks");
