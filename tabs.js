@@ -29,7 +29,7 @@ function openTab(evt, tabName) {
 		vis=document.getElementById("visualize");
 		newdiv = document.createElement("div");
 		newdiv.name = "visdiv";
-		newdiv.innerHTML = getvis();
+		newdiv.innerHTML = getviz();
 		vis.appendChild(newdiv);
 	}
 	// Get all elements with class="tablinks" and remove the class "active"
