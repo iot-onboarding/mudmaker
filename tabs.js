@@ -31,11 +31,9 @@ function openTab(evt, tabName) {
 		pre.innerText = JSON.stringify(document.mudFile,null,2);
 	} else if (tabName == 'visualize') {
 		var incoming_mudfile = document.mudFile;
-		vis=document.getElementById("visualize");
 		newdiv = document.createElement("div");
-		newdiv.name = "visdiv";
-		newdiv.innerHTML = getviz();
-		vis.appendChild(newdiv);
+		newdiv.id="visdiv";
+		getviz();
 	}
 	// Get all elements with class="tablinks" and remove the class "active"
 	tablinks = document.getElementsByClassName("tablinks");
