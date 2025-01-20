@@ -167,7 +167,7 @@ function saveMUD() {
 
 // js update
 function makemudurl() {
-    p=document.getElementById('entname1');
+    p=document.getElementById('controller');
     mh=document.getElementById('mudhost');
 	mm=document.getElementById('model_name');
     if (mh.value != '') {
