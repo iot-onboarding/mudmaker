@@ -1,19 +1,15 @@
 
 async function getviz(){
-	try {
-		fetch("mudvisjs.html")
-			.then(response => response.text())
-			.then(htmltxt => {
-					thediv=document.getElementById("visdiv");
-					thediv.innerHTML=htmltxt;
-				  })
+	fetch("mudvisjs.html")
+		.then(response => response.text())
+		.then(htmltxt => {
+				thediv=document.getElementById("visdiv");
+				thediv.innerHTML=htmltxt;
+				})
 
-		if (!response.ok) {
-		  throw new Error(`Response status: ${response.status}`);
-		}
-	  } catch (error) {
-		console.error(error.message);
-	  }	
+	if (!response.ok) {
+		throw new Error(`Response status: ${response.status}`);
+	}
 }
 
 function openTab(evt, tabName) {
