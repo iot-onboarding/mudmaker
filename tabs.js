@@ -11,6 +11,7 @@ function openTab(evt, tabName) {
 		pre=document.getElementById("mudcontent");
 		pre.innerText = JSON.stringify(document.mudFile,null,2);
 	} else if (tabName == 'visualize') {
+		var incoming_mudfile = document.mudFile;
 		vis=document.getElementById("visualize");
 		newdiv = document.createElement("iframe");
 		newdiv.width = self.innerWidth - 30;
