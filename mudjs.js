@@ -58,29 +58,22 @@ function addEntry(entry){
 	}
 
 	if ( entryType == 'loc' ) {
-            hidden="' style='visibility: hidden'";
-            any = "<option value='any'>Any</option>";
+        hidden="' style='visibility: hidden'";
 	    pattern = " ";
 	    fieldinfo = 'readonly="" value="any" ';
 	} else {
 	    if ( entryType == 'myctl' ) {
-            any = "<option value='any'>Any</option>";
 	    hidden ="' style='visibility: hidden' ";
 	    pattern = " ";
 	    fieldinfo = 'readonly="" value="(filled in by local admin)" ';
 	    } else { 
 		if (entryType == 'mymfg' ) {
-		    onchange=
-			"value='any' onchange=\"tcporudp('" + selname + "','" + portdivname + "');\"";
-		    any = "<option value='any'>Any</option>";
 		    hidden ="' style='visibility: inherit' ";
-		    any = '';
 		    pattern = " ";
 		    fieldinfo = 'readonly="" value="(filled in by system)" ';
 		}
 		 else {
 		     hidden="' style='visibility: hidden'";
-		     any = "<option value='any'>Any</option>";
 		     fieldinfo="maxlength='120'";
 		 }
 	    }
@@ -90,7 +83,7 @@ function addEntry(entry){
             "<input type=" + typefield + "name='" + entryType  + "name'" + pattern +
 	    " size='40' " + placeholder + fieldinfo + ">&nbsp;&nbsp;&nbsp;" +
 	    " Protocol&nbsp;&nbsp;<select class='proto' name='proto'>" +
-	    any +
+	    "<option value='any'>Any</option>" +
 	    "<option value='tcp'>TCP</option>" +
 	    "<option value='udp'>UDP</option>" +
 	    "</select>" + "&nbsp;<input type='button' class='delete' value='-'><br>" +
@@ -334,13 +327,27 @@ function updateAce(acl,ace_entry,aceBase,p){
 		direction='from';
 		ace_name = 'fr' + aceBase;
 	}
+
 	if ( p.id == 'cl') {
 		if ( direction == 'to') {
 			matchname = 'ietf-acldns:src-dnsname';
 		} else {
 			matchname = 'ietf-acldns:dst-dnsname';
 		}
+		matchobj=JSON.parse('{"' + ipver + '": {"' + matchname + '":"' +
+			ace_entry.children[0].value + '"}}');
+	} else {
+		matchobj = {
+			"ietf-mud:mud" : {
+			}
+		}
+		if (p.id == 'myctl' || p.id == 'loc' || p.id == 'mymfg') {
+			matchobj['ietf-mud:mud'][ace_entry.children[0].name] = [ null ];
+		} else if ( p.id == 'ctl' || p.id == 'mfg') {
+			matchobj['ietf-mud:mud'][ace_entry.children[0].name] = ace_entry.children[0].value;
+		}
 	}
+
 	proto = ace_entry.children[1].value;
 	if ( proto != 'any') {
 		lport = ace_entry.children[4].children[0].value;
@@ -354,16 +361,23 @@ function updateAce(acl,ace_entry,aceBase,p){
 	} else {
 		deviceProto = null;
 	}
-	matchobj=JSON.parse('{"' + ipver + '": {"' + matchname + '":"' +
-		ace_entry.children[0].value + '"}}');
+
 	if ( proto == 'tcp' ) {
-		matchobj[ipver]['protocol'] = 6;
+		if ( typeof matchobj[ipver] == 'undefined') {
+			matchobj[ipver] = {'protocol' : 6};
+		}else {
+			matchobj[ipver]['protocol'] = 6;
+		}
 		if (deviceProto != null ){
 			matchobj['tcp'] = deviceProto; 
 		}
 	}
 	if ( proto == 'udp' ){
-		matchobj[ipver]['protocol'] = 17;
+		if ( typeof matchobj[ipver] == 'undefined') {
+			matchobj[ipver] =  {'protocol' : 17};
+		} else {
+			matchobj[ipver]['protocol'] = 17;
+		}
 		if (deviceProto != null ){
 			matchobj['udp'] = deviceProto; 
 		}
@@ -418,6 +432,39 @@ function updateOneAceGroup(p,ace_entry) {
 	}
 	updateAces(p,ace_entry);
 }
+
+function removeAces(cur){
+	if ( typeof document.mudFile['ietf-mud:mud']['ietf-access-control-list:acls'] == 'undefined' ){
+		return;
+	}
+	if (typeof cur.aceBase == 'undefined') {
+		return;
+	}
+	const re=new RegExp('.*' + cur.aceBase + '.*');
+	acls=document.mudFile['ietf-mud:mud']['ietf-access-control-list:acls']['acl'];
+	cleanup=false;
+	for (i in acls) {
+		if (acls[i].aces.ace.length == 0 ){
+			return;
+		}
+		for (j in acls[i].aces.ace ) {
+			if (acls[i].aces.ace[j].name.match(re) != null){
+				acls[i].aces.ace.splice(j,1);
+			}
+		}
+		if (acls[i].aces.ace.length == 0) {
+			cleanup=true;
+		}
+	}
+	if (cleanup == true){
+		delete document.mudFile['ietf-mud:mud']["ietf-access-control-list:acls"];
+		delete document.mudFile['ietf-mud:mud']['to-device-policy'];
+		delete document.mudFile['ietf-mud:mud']['from-device-policy'];
+		delete document.aclBase;
+	}
+	saveMUD();
+}
+
 function sbomify(cur) {
 	var whichsbom = document.getElementById("sbom").value;
 
@@ -477,9 +524,15 @@ $('summary').click(function() {
     var parent = $(this).parent()[0];
     var pbox = parent.id + 'box';
     if ( parent.open == false ) {
-	document.getElementById(pbox).checked = true;
+		document.getElementById(pbox).checked = true;
+		if ( parent.id == "myctl" || parent.id == "loc" || parent.id == 'mymfg') {
+			updateOneAceGroup(parent,parent.children[1]);
+		}
     } else {
-	document.getElementById(pbox).checked = false;
+		document.getElementById(pbox).checked = false;
+		if ( parent.nodeName == "DETAILS" ) {
+			removeAces(parent.children[1]);
+		}
     }
 });
 
@@ -487,7 +540,8 @@ $(document).on('click','.addable',function(e){
 	var cur=e.target;
 	if ( cur.className == 'delete' ) {
 		var parent = cur.parentElement;
-		parent.remove()
+		removeAces(parent);
+		parent.remove();
 	} else if ( cur.className == 'addItem' ) {	
 		var grandparent = cur.parentElement.parentElement;
 		addEntry(grandparent);
