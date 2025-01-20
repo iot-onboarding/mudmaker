@@ -3,7 +3,7 @@ async function getviz(){
 	try {
 		fetch("mudvisjs.html")
 			.then(response => {
-				response.text()
+				return response.text()
 				  .then(htmltxt => {
 					thediv=document.getElementById("visdiv");
 					thediv.innerHTML=htmltxt;
