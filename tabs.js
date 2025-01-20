@@ -1,5 +1,5 @@
 
-async function getviz(){
+function getviz(){
 	fetch("mudvisjs.html")
 		.then(response => response.text())
 		.then(htmltxt => {
