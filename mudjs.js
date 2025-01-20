@@ -370,13 +370,21 @@ function updateAce(acl,ace_entry,aceBase,p){
 	}
 
 	if ( proto == 'tcp' ) {
-		matchobj[ipver]['protocol'] = 6;
+		if ( typeof matchobj[ipver] == 'undefined') {
+			matchobj[ipver] = {'protocol' : 6};
+		}else {
+			matchobj[ipver]['protocol'] = 6;
+		}
 		if (deviceProto != null ){
 			matchobj['tcp'] = deviceProto; 
 		}
 	}
 	if ( proto == 'udp' ){
-		matchobj[ipver]['protocol'] = 17;
+		if ( typeof matchobj[ipver] == 'undefined') {
+			matchobj[ipver] =  {'protocol' : 17};
+		} else {
+			matchobj[ipver]['protocol'] = 17;
+		}
 		if (deviceProto != null ){
 			matchobj['udp'] = deviceProto; 
 		}
