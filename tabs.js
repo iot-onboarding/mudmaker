@@ -3,13 +3,9 @@ function getviz(){
 	fetch("mudvisjs.html")
 		.then(response => response.text())
 		.then(htmltxt => {
-				thediv=document.getElementById("visdiv");
+				const thediv=document.getElementById("visdiv");
 				thediv.innerHTML=htmltxt;
 				})
-
-	if (!response.ok) {
-		throw new Error(`Response status: ${response.status}`);
-	}
 }
 
 function openTab(evt, tabName) {
