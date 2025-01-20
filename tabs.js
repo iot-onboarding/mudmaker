@@ -14,6 +14,7 @@ function openTab(evt, tabName) {
 		vis=document.getElementById("visualize");
 		newdiv = document.createElement("iframe");
 		newdiv.width = self.innerWidth - 30;
+		newdiv.length = 300;
 		newdiv.src = "mudjsvis.html";
 		vis.appendChild(newdiv);
 	}
