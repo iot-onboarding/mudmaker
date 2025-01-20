@@ -58,27 +58,22 @@ function addEntry(entry){
 	}
 
 	if ( entryType == 'loc' ) {
-            hidden="' style='visibility: hidden'";
-            any = "<option value='any'>Any</option>";
+        hidden="' style='visibility: hidden'";
 	    pattern = " ";
 	    fieldinfo = 'readonly="" value="any" ';
 	} else {
 	    if ( entryType == 'myctl' ) {
-            any = "<option value='any'>Any</option>";
 	    hidden ="' style='visibility: hidden' ";
 	    pattern = " ";
 	    fieldinfo = 'readonly="" value="(filled in by local admin)" ';
 	    } else { 
 		if (entryType == 'mymfg' ) {
-		    any = "<option value='any'>Any</option>";
 		    hidden ="' style='visibility: inherit' ";
-		    any = '';
 		    pattern = " ";
 		    fieldinfo = 'readonly="" value="(filled in by system)" ';
 		}
 		 else {
 		     hidden="' style='visibility: hidden'";
-		     any = "<option value='any'>Any</option>";
 		     fieldinfo="maxlength='120'";
 		 }
 	    }
@@ -88,7 +83,7 @@ function addEntry(entry){
             "<input type=" + typefield + "name='" + entryType  + "name'" + pattern +
 	    " size='40' " + placeholder + fieldinfo + ">&nbsp;&nbsp;&nbsp;" +
 	    " Protocol&nbsp;&nbsp;<select class='proto' name='proto'>" +
-	    any +
+	    "<option value='any'>Any</option>" +
 	    "<option value='tcp'>TCP</option>" +
 	    "<option value='udp'>UDP</option>" +
 	    "</select>" + "&nbsp;<input type='button' class='delete' value='-'><br>" +
