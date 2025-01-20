@@ -31,11 +31,14 @@
     <div class="tab">
       <button id="createTab" class="tablinks" onclick="openTab(event, 'create')">Create</button>
       <button class="tablinks" onclick="openTab(event, 'visualize')">Visualize</button>
-      <button id="viewmudfile" class="tablinks" onclick="openTab(event, 'create')">View MUD File</button>
+      <button class="tablinks" onclick="openTab(event, 'viewmudfile')">View MUD File</button>
       <button class="tablinks" onclick="openTab(event, 'publish')">Publish</button>
     </div>
     <div id="publish" class="tabcontent"></div>
     <div id="visualize" class="tabcontent"></div>
+    <div id="viewmudfile">
+      <pre id="mudcontent"></pre>
+    </div>
     <div id="create" class="tabcontent">
       <section id="two" class="wrapper">
         <form method="POST" action="makemud2.php">
