@@ -344,7 +344,7 @@ function updateAce(acl,ace_entry,aceBase,p){
 		if (p.id == 'myctl' || p.id == 'loc' || p.id == 'mymfg') {
 			matchobj['ietf-mud:mud'][ace_entry.children[0].name] = [ null ];
 		} else if ( p.id == 'ctl' || p.id == 'mfg') {
-			matchobj['ietf-mud:mud']["controller"] = ace_entry.children[0].value;
+			matchobj['ietf-mud:mud'][ace_entry.children[0].name] = ace_entry.children[0].value;
 		}
 	}
 
