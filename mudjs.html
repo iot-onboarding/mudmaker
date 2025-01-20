@@ -576,44 +576,38 @@
             </span>
           </div>          
         </details>
-        <details id="mymfg">
+        <details id="mymfg" class="addable">
           <summary>Same Manufacturer: Access devices of the same manufacturer (based on the domain name in the MUD URL)
           </summary>
-          <span id="mymanlist"> <input value="(filled in by system)"
-              readonly="readonly"
-              name="mymannames[]"
+          <div id="mymanlist"> 
+            <input value="(filled in by system)" readonly="readonly" name="same-manufacturer"
               type="text">&nbsp;&nbsp;&nbsp;
             Protocol&nbsp;
-            <select id="mymansel" name="mymanproto[]" value="any" onchange="tcporudp('mymansel','mymanplist');">
+            <select class="proto" value="any">
               <option value="any">Any</option>
               <option value="tcp">TCP</option>
               <option value="udp">UDP</option>
-              &nbsp;
             </select>
-            <input value="+" onclick="addInput('mymanlist','myman','dns', 10);"
-              type="button">
+            <input value="+" type="button" class="addItem">
             <br>
-            <span id="mymanplistl" style="visibility: hidden"> Local
-              Port&nbsp; <input pattern="([0-9]{1,5}|any)" value="any"
-                name="mymanportl[]"
+            <span class="portinfo" style="visibility: hidden">
+              Local Port&nbsp; <input pattern="([0-9]{1,5}|any)" value="any"
+                class="lport"
                 style="width:60px">
-            </span>
-            <span id="mymanplist" style="visibility: hidden">
               &nbsp;&nbsp;Remote Port&nbsp; <input pattern="([0-9]{1,5}|any)"
                 value="any"
-                name="mymanport[]"
+                class="rport"
                 style="width:60px">
-            </span>
-            <span id="mymanplistc" style="visibility: hidden">
+            </span> 
+            <span class="coninit" style="visibility: hidden">
               &nbsp;&nbsp;Initiated by&nbsp;
-              <select name="mymaninit[]" id="mymaninit" value="either"
-                onchange="localcheck('mymaninit','mymanplistl');">
-                <option value="either">Either</option>
+              <select name="direction" value="either">
+                <option value ="either">Either</option>
                 <option value="thing">Thing</option>
                 <option value="remote">Remote</option>
               </select>
-            </span> 
-          </span>
+            </span>
+          </div>
         </details>
         <details id="mfg">
           <summary>By Manufacturer: identified by the domain names in their MUD URL</summary>

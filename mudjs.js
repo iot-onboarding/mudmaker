@@ -348,7 +348,7 @@ function updateAce(acl,ace_entry,aceBase,p){
 			"ietf-mud:mud" : {
 			}
 		}
-		if (p.id == 'myctl' || p.id == 'loc') {
+		if (p.id == 'myctl' || p.id == 'loc' || p.id == 'mymfg') {
 			matchobj['ietf-mud:mud'][ace_entry.children[0].name] = [ null ];
 		} else if ( p.id == 'ctl') {
 			matchobj['ietf-mud:mud']["controller"] = ace_entry.children[0].value;
@@ -524,7 +524,7 @@ $('summary').click(function() {
     var pbox = parent.id + 'box';
     if ( parent.open == false ) {
 		document.getElementById(pbox).checked = true;
-		if ( parent.id == "myctl" || parent.id == "loc") {
+		if ( parent.id == "myctl" || parent.id == "loc" || parent.id == 'mymfg') {
 			updateOneAceGroup(parent,parent.children[1]);
 		}
     } else {
