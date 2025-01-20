@@ -70,8 +70,6 @@ function addEntry(entry){
 	    fieldinfo = 'readonly="" value="(filled in by local admin)" ';
 	    } else { 
 		if (entryType == 'mymfg' ) {
-		    onchange=
-			"value='any' onchange=\"tcporudp('" + selname + "','" + portdivname + "');\"";
 		    any = "<option value='any'>Any</option>";
 		    hidden ="' style='visibility: inherit' ";
 		    any = '';
