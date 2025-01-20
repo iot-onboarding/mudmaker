@@ -350,6 +350,8 @@ function updateAce(acl,ace_entry,aceBase,p){
 		}
 		if (p.id == 'myctl') {
 			matchobj['ietf-mud:mud']["my-controller"] = [ null ];
+		} else if ( p.id == 'loc') {
+			matchobj['ietf-mud:mud']["local-networks"] = [ null ];
 		}
 	}
 

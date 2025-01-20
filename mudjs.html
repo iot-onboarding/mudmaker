@@ -512,38 +512,34 @@
         <details id="loc" >
           <summary>Local Access: Access to/from any local host for
           specific services (like COAP or HTTP)</summary>
-          <span id="loclist"> <input value="any" name="locnames[]" disabled="disabled"
-              type="hidden">
-            <input value="any" readonly="readonly" size="40" name="locnames[]"
+          <div class="clentry">
+            <input value="any" readonly="readonly" size="40" name="local-networks"
               type="text">&nbsp;&nbsp;&nbsp;&nbsp;Protocol&nbsp;
-            <select id="locsel" name="locproto[]" value="any" onchange="tcporudp('locsel','locplist');">
-              <option value="any">Any</option>
-              <option value="tcp">TCP</option>
-              <option value="udp">UDP</option>
-            </select>
-            <input value="+" onclick="addInput('loclist','loc','dns',4);"
-              type="button">
-            <br>
-            <span id="locplistl" style="visibility: hidden"> Local
-              Port&nbsp; <input pattern="([0-9]{1,5}|any)" value="any"
-                name="locportl[]"
-                style="width:60px">
-            </span> 
-            <span id="locplist" style="visibility: hidden">
-              &nbsp;&nbsp;Remote Port&nbsp; <input pattern="([0-9]{1,5}|any)"
-                value="any"
-                name="locport[]"
-                style="width:60px">
-            </span>
-            <span id="locplistc" style="visibility: hidden">
-              &nbsp;&nbsp;Initiated by&nbsp;
-              <select name="locinit[]" id="locinit" value="either" onchange="localcheck('locinit','locplistl');">
-                <option value="either">Either</option>
-                <option value="thing">Thing</option>
-                <option value="remote">Remote</option>
+              <select class="proto" value="any">
+                <option value="any">Any</option>
+                <option value="tcp">TCP</option>
+                <option value="udp">UDP</option>
               </select>
-            </span> 
-          </span>
+              <input value="+" type="button" class="addItem">
+              <br>
+              <span class="portinfo" style="visibility: hidden">
+                Local Port&nbsp; <input pattern="([0-9]{1,5}|any)" value="any"
+                  class="lport"
+                  style="width:60px">
+                &nbsp;&nbsp;Remote Port&nbsp; <input pattern="([0-9]{1,5}|any)"
+                  value="any"
+                  class="rport"
+                  style="width:60px">
+              </span> 
+              <span class="coninit" style="visibility: hidden">
+                &nbsp;&nbsp;Initiated by&nbsp;
+                <select name="direction" value="either">
+                  <option value ="either">Either</option>
+                  <option value="thing">Thing</option>
+                  <option value="remote">Remote</option>
+                </select>
+              </span>
+          </div>
         </details>
         <details id="ctl">
           <summary>Controllers (Enter a URI for the class)</summary>
