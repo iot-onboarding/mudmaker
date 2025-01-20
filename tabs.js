@@ -10,6 +10,11 @@ function openTab(evt, tabName) {
 	if (tabName == "viewmudfile"){
 		pre=document.getElementById("mudcontent");
 		pre.innerText = JSON.stringify(document.mudFile,null,2);
+	} else if (tabName == 'visualize') {
+		vis=document.getElementById("visualize");
+		newdiv = document.createElement("iframe");
+		newdiv.src = "mudjsvis.html";
+		vis.appendChild(newdiv);
 	}
 	// Get all elements with class="tablinks" and remove the class "active"
 	tablinks = document.getElementsByClassName("tablinks");
