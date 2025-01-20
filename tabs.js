@@ -9,7 +9,7 @@ function openTab(evt, tabName) {
 	}
 	if (tabName == "viewmudfile"){
 		pre=document.getElementById("mudcontent");
-		pre.innerContent = JSON.stringify(document.mudFile,null,2);
+		pre.innerText = JSON.stringify(document.mudFile,null,2);
 	}
 	// Get all elements with class="tablinks" and remove the class "active"
 	tablinks = document.getElementsByClassName("tablinks");
