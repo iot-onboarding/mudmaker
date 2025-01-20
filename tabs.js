@@ -13,6 +13,7 @@ function openTab(evt, tabName) {
 	} else if (tabName == 'visualize') {
 		vis=document.getElementById("visualize");
 		newdiv = document.createElement("iframe");
+		newdiv.width = self.innerWidth - 30;
 		newdiv.src = "mudjsvis.html";
 		vis.appendChild(newdiv);
 	}
