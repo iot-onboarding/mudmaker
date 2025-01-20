@@ -5,8 +5,9 @@ async function getviz(){
 		if (!response.ok) {
 		  throw new Error(`Response status: ${response.status}`);
 		}
-	
-		return response.body;
+		
+		ret= response.body;
+		return ret;
 	  } catch (error) {
 		console.error(error.message);
 	  }	
