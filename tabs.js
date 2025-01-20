@@ -1,11 +1,13 @@
 
+function updateVis(html){
+	thediv=document.getElementById("visdiv");
+	thediv.innerHTML=html;
+}
+
 function getviz(){
 	fetch("mudvisjs.html")
 		.then(response => response.text())
-		.then(htmltxt => {
-				const thediv=document.getElementById("visdiv");
-				thediv.innerHTML=htmltxt;
-				})
+		.then(htmltxt => updateVis(htmltxt))
 }
 
 function openTab(evt, tabName) {
