@@ -524,7 +524,7 @@ $('summary').click(function() {
     var pbox = parent.id + 'box';
     if ( parent.open == false ) {
 		document.getElementById(pbox).checked = true;
-		if ( parent.id == "myctl" ) {
+		if ( parent.id == "myctl" || parent.id == "loc") {
 			updateOneAceGroup(parent,parent.children[1]);
 		}
     } else {
