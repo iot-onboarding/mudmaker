@@ -1,3 +1,17 @@
+
+async function getviz(){
+	try {
+		const response = await fetch("mudvisjs.html");
+		if (!response.ok) {
+		  throw new Error(`Response status: ${response.status}`);
+		}
+	
+		return response.body;
+	  } catch (error) {
+		console.error(error.message);
+	  }	
+}
+
 function openTab(evt, tabName) {
 	// Declare all variables
 	var i, tabcontent, tablinks;
@@ -13,10 +27,9 @@ function openTab(evt, tabName) {
 	} else if (tabName == 'visualize') {
 		var incoming_mudfile = document.mudFile;
 		vis=document.getElementById("visualize");
-		newdiv = document.createElement("iframe");
-		newdiv.width = self.innerWidth - 30;
-		newdiv.height = 300;
-		newdiv.src = "mudjsvis.html";
+		newdiv = document.createElement("div");
+		newdiv.name = "visdiv";
+		newdiv.innerHTML = getvis();
 		vis.appendChild(newdiv);
 	}
 	// Get all elements with class="tablinks" and remove the class "active"
