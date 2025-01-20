@@ -509,7 +509,7 @@
             </span>
           </div>
         </details>
-        <details id="loc" >
+        <details id="loc" class="addable">
           <summary>Local Access: Access to/from any local host for
           specific services (like COAP or HTTP)</summary>
           <div class="clentry">
@@ -541,38 +541,35 @@
               </span>
           </div>
         </details>
-        <details id="ctl">
+        <details id="ctl" class="addable">
           <summary>Controllers (Enter a URI for the class)</summary>
           Access to <b>classes</b> of devices that are known to be
           controllers.&nbsp; Use this when you want different types of
           devices to access the same controller.
-          <div id="entlist"> <input maxlength="120" size="40" name="entnames[]"
-              type="url" id=entname1 placeholder="https://class name...">
+          <div class="clentry">
+            <input maxlength="120" size="40" name="controller"
+              type="url" placeholder="https://class name...">
             &nbsp;&nbsp;&nbsp;Protocol&nbsp;
-            <select id="entsel" name="entproto[]" value="any" onchange="tcporudp('entsel','entplist');">
+            <select class="proto" value="any">
               <option value="any">Any</option>
               <option value="tcp">TCP</option>
               <option value="udp">UDP</option>
-              &nbsp;
             </select>
-            <input value="+" onclick="addInput('entlist','ent','url',1);"
-              type="button">
+            <input value="+" type="button" class="addItem">
             <br>
-            <span id="entplistl" style="visibility: hidden"> Local
-              Port&nbsp; <input pattern="([0-9]{1,5}|any)" value="any"
-                name="entportl[]"
+            <span class="portinfo" style="visibility: hidden">
+              Local Port&nbsp; <input pattern="([0-9]{1,5}|any)" value="any"
+                class="lport"
                 style="width:60px">
-            </span>
-            <span id="entplist" style="visibility: hidden">
               &nbsp;&nbsp;Remote Port&nbsp; <input pattern="([0-9]{1,5}|any)"
                 value="any"
-                name="entport[]"
+                class="rport"
                 style="width:60px">
-            </span>
-            <span id="entplistc" style="visibility: hidden">
+            </span> 
+            <span class="coninit" style="visibility: hidden">
               &nbsp;&nbsp;Initiated by&nbsp;
-              <select name="entinit[]" id="entinit" value="either" onchange="localcheck('entinit','entplistl');">
-                <option value="either">Either</option>
+              <select name="direction" value="either">
+                <option value ="either">Either</option>
                 <option value="thing">Thing</option>
                 <option value="remote">Remote</option>
               </select>

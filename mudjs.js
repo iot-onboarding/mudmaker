@@ -348,10 +348,10 @@ function updateAce(acl,ace_entry,aceBase,p){
 			"ietf-mud:mud" : {
 			}
 		}
-		if (p.id == 'myctl') {
-			matchobj['ietf-mud:mud']["my-controller"] = [ null ];
-		} else if ( p.id == 'loc') {
-			matchobj['ietf-mud:mud']["local-networks"] = [ null ];
+		if (p.id == 'myctl' || p.id == 'loc') {
+			matchobj['ietf-mud:mud'][ace_entry.children[0].name] = [ null ];
+		} else if ( p.id == 'ctl') {
+			matchobj['ietf-mud:mud']["controller"] = ace_entry.children[0].value;
 		}
 	}
 
