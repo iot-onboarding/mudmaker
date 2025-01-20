@@ -609,45 +609,41 @@
             </span>
           </div>
         </details>
-        <details id="mfg">
+        <details id="mfg" class="addable">
           <summary>By Manufacturer: identified by the domain names in their MUD URL</summary>
-          <span id="manlist">
+          <div class="clentry">
             <input pattern="^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$"
             maxlength="120"
             size="40"
-            name="mannames[]"
+            name="manufacturer"
             placeholder="hostname.manufacturer.com"
             type="text">&nbsp;&nbsp;&nbsp;
                   Protocol&nbsp;
-            <select id="mansel" name="manproto[]" value="any" onchange="tcporudp('mansel','manplist');">
-              <option value="any">Any</option>
-              <option value="tcp">TCP</option>
-              <option value="udp">UDP</option>
-              &nbsp;
-            </select>
-            <input value="+" onclick="addInput('manlist','man','dns',6);"
-              type="button">
-            <br>
-            <span id="manplistl" style="visibility: hidden"> Local
-              Port&nbsp; <input pattern="([0-9]{1,5}|any)" value="any"
-                name="manportl[]"
-                style="width:60px">
-            </span>
-            <span id="manplist" style="visibility: hidden">
-            &nbsp;&nbsp;Remote Port&nbsp; <input pattern="([0-9]{1,5}|any)"
-              value="any"
-              name="manport[]"
-              style="width:60px">
-            </span>
-            <span id="manplistc" style="visibility: hidden">
-              &nbsp;&nbsp;Initiated by&nbsp;
-              <select name="maninit[]" id="maninit" value="either" onchange="localcheck('maninit','manplistl');">
-                <option value="either">Either</option>
-                <option value="thing">Thing</option>
-                <option value="remote">Remote</option>
-              </select>
-            </span> 
-          </span>
+                  <select class="proto" value="any">
+                    <option value="any">Any</option>
+                    <option value="tcp">TCP</option>
+                    <option value="udp">UDP</option>
+                  </select>
+                  <input value="+" type="button" class="addItem">
+                  <br>
+                  <span class="portinfo" style="visibility: hidden">
+                    Local Port&nbsp; <input pattern="([0-9]{1,5}|any)" value="any"
+                      class="lport"
+                      style="width:60px">
+                    &nbsp;&nbsp;Remote Port&nbsp; <input pattern="([0-9]{1,5}|any)"
+                      value="any"
+                      class="rport"
+                      style="width:60px">
+                  </span> 
+                  <span class="coninit" style="visibility: hidden">
+                    &nbsp;&nbsp;Initiated by&nbsp;
+                    <select name="direction" value="either">
+                      <option value ="either">Either</option>
+                      <option value="thing">Thing</option>
+                      <option value="remote">Remote</option>
+                    </select>
+                  </span>
+          </div>
         </details>
         <br>
         <input value="Submit" type="submit"> <input name="Reset" type="reset">
