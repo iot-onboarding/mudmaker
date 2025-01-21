@@ -166,7 +166,7 @@ function saveMUD() {
 	document.mfChanged = true;
 }
 
-function dodownload(){
+function savework(){
 	var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(document.mudFile));
 	var dlAnchorElem = document.getElementById('downloadAnchorElem');
 	var model_name = document.getElementById('model_name').value;
