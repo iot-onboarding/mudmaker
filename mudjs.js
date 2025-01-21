@@ -15,7 +15,7 @@ if ( document.mudFile == null ) {
 } else {
 	document.mudFile=JSON.parse(document.mudFile);
 }
-
+document.mfChanged = false;
 
 function removeIt(elemId) {
     var elem=document.getElementById(elemId);
@@ -163,6 +163,7 @@ function saveMUD() {
 	d = new Date();
 	document.mudFile['ietf-mud:mud']["last-change"] = d.toISOString();
 	window.sessionStorage.setItem('mudfile',JSON.stringify(document.mudFile));
+	document.mfChanged = true;
 }
 
 // js update
