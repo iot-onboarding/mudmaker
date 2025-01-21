@@ -179,6 +179,16 @@ function savework(){
 	dlAnchorElem.click();
 }
 
+function loadWork(){
+	var fileReadEvent = function(event) {
+		var fr = new FileReader();
+		fr.onload = () => {
+			document.mudFile = JSON.parse(fr.result);
+		}
+    };
+};
+
+
 // js update
 function makemudurl() {
     p=document.getElementById('controller');
