@@ -19,11 +19,13 @@ function openTab(evt, tabName) {
 		pre=document.getElementById("mudcontent");
 		pre.innerText = JSON.stringify(document.mudFile,null,2);
 	} else if (tabName == 'visualize') {
-		var incoming_mudfile = document.mudFile;
-		vizdiv = document.getElementById("visualize");
-		fetch("mudvisjs.html")
-			.then(response => response.text())
-			.then(htmltxt => {vizdiv.innerHTML = htmltxt })
+	    vizdiv = document.getElementById("visualize");
+	    iframe = document.createElement("iframe");
+	    iframe.width = window.innerWidth - 20;
+	    iframe.height = window.innerHeight - 200;
+	    iframe.src = "mudjsvis.html";
+	    vizdiv.appendChild(iframe);
+
 	}
 	// Get all elements with class="tablinks" and remove the class "active"
 	tablinks = document.getElementsByClassName("tablinks");
