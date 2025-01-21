@@ -169,7 +169,7 @@ function saveMUD() {
 function dodownload(){
 	var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(document.mudFile));
 	var dlAnchorElem = document.getElementById('downloadAnchorElem');
-	var model_name = document.getElementById('model_name').name;
+	var model_name = document.getElementById('model_name').value;
 	if ( model_name == ''){
 		alert("Please first set your model name");
 		return;
