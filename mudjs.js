@@ -6,7 +6,7 @@ var nref = [ 0, 0, 0, 0 ];
 
 var limit = 50;
 
-document.mudFile=window.sessionStorage.getItem("mudFile");
+document.mudFile=window.sessionStorage.getItem("mudfile");
 if ( document.mudFile == null ) {
 	d = new Date()
 	document.mudFile = JSON.parse('{"ietf-mud:mud" : {"mud-version" : 1, "extensions" : [ "ol"], "ol" : { "spdx-tag" : "0BSD"}, "cache-validity": 48, "is-supported" : true}}');
@@ -266,10 +266,12 @@ function makeAcls(){
 	document.aclBase= 'acl' + Math.floor(Math.random()*100000);
 	bn = document.aclBase;
 	mud['from-device-policy'] = {
-		"access-lists" : {"access-list" : [{}]}
+		"access-lists" : {"access-list" : []}
 	};
-	toacls=mud['from-device-policy']['access-lists']["access-list"];
-	mud['to-device-policy'] = structuredClone(mud['from-device-policy']);
+	mud['to-device-policy'] = {
+		"access-lists" : {"access-list" : []}
+	};
+	toacls=mud['to-device-policy']['access-lists']["access-list"];
 	fracls=mud['from-device-policy']['access-lists']["access-list"];
 	if ( acltype == 'ipv4' || acltype == 'both') {
 		toacls.push({'name' : 'toipv4-' + bn});
