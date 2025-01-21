@@ -166,7 +166,7 @@ function saveMUD() {
 	document.mfChanged = true;
 }
 
-function download(){
+function dodownload(){
 	var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(document.mudFile));
 	var dlAnchorElem = document.getElementById('downloadAnchorElem');
 	var model_name = document.getElementById('model_name')
@@ -174,8 +174,8 @@ function download(){
 		alert("Please first set your model name");
 		return;
 	}
-	dlAnchorElem.setAttribute("href",     dataStr     );
-	dlAnchorElem.setAttribute("download", model_name + '.json';
+	dlAnchorElem.setAttribute("href", dataStr);
+	dlAnchorElem.setAttribute("download", model_name + '.json');
 	dlAnchorElem.click();
 }
 
