@@ -160,10 +160,23 @@ function fillpub(cur) {
 
 // js update
 function saveMUD() {
-	d = new Date();
+	var d = new Date();
 	document.mudFile['ietf-mud:mud']["last-change"] = d.toISOString();
 	window.sessionStorage.setItem('mudfile',JSON.stringify(document.mudFile));
 	document.mfChanged = true;
+}
+
+function download(){
+	var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(document.mudFile));
+	var dlAnchorElem = document.getElementById('downloadAnchorElem');
+	var model_name = document.getElementById('model_name')
+	if ( model_name == ''){
+		alert("Please first set your model name");
+		return;
+	}
+	dlAnchorElem.setAttribute("href",     dataStr     );
+	dlAnchorElem.setAttribute("download", model_name + '.json';
+	dlAnchorElem.click();
 }
 
 // js update
