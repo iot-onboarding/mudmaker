@@ -20,8 +20,8 @@ function openTab(evt, tabName) {
 		pre.innerText = JSON.stringify(document.mudFile,null,2);
 	} else if (tabName == 'visualize') {
 	    vizdiv = document.getElementById("visualize");
-		if (typeof vizdev.children[0] != 'undefined') {
-			vizdev.children[0].remove();
+		if (typeof vizdiv.children[0] != 'undefined') {
+			vizdiv.children[0].remove();
 		}
 	    iframe = document.createElement("iframe");
 	    iframe.width = window.innerWidth - 20;
