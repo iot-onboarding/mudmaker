@@ -220,7 +220,7 @@ function reloadFields(){
 		} else if ( sbomtype == 'infourl' || sbomtype == 'tel ') {
 			document.getElementById(sbomtype).value = tx['contact-info'];
 		}
-		else if ( if sbomtype == 'cloud' ) {
+		else if ( sbomtype == 'cloud' ) {
 			document.getElementById('sbomcloudurl').value = tx['sboms'][0]['sbom-url'];
 			document.getElementById('sbomswver').value = tx['sboms'][0]['version-info'];
 		}
