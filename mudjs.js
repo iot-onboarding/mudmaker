@@ -194,9 +194,9 @@ function loadWork(input) {
 		document.mudFile = JSON.parse(reader.result);
 	  	mf = document.mudFile['ietf-mud:mud'];
 		document.getElementById('country').value=document.mudFile['country'];
-		document.mudFile['country'].remove();
+		delete document.mudFile['country'];
 		document.getElementById('email_addr').value=document.mudFile['email_addr'];
-		document.mudFile['email_addr'].remove();
+		delete document.mudFile['email_addr'];
 	  	inbasic.forEach(function(item){
 			if (typeof mf[item] != 'undefined') {
 				document.getElementById(item).value = mf[item];
