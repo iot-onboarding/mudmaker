@@ -229,7 +229,7 @@ function reloadFields(){
 			document.getElementById('vuln-url').value = tx['vuln-url'];
 			document.getElementById('vulnview').style.display='inherit';
 		}
-		setVisibility(document.getElementById('sbom').value);
+		setVisibility(sbomtype);
 	}
 }
 
