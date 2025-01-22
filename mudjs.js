@@ -193,10 +193,10 @@ function loadWork(input) {
 	reader.onload = function() {
 		document.mudFile = JSON.parse(reader.result);
 	  	mf = document.mudFile['ietf-mud:mud'];
-		document.getElementById('country').value=document.mudFile('country');
-		document.mudFile('country').remove();
-		document.getElementById('email_addr').value=document.mudFile('email_addr');
-		document.mudFile('email_addr').remove();
+		document.getElementById('country').value=document.mudFile['country'];
+		document.mudFile['country'].remove();
+		document.getElementById('email_addr').value=document.mudFile['email_addr'];
+		document.mudFile['email_addr'].remove();
 	  	inbasic.forEach(function(item){
 			if (typeof mf[item] != 'undefined') {
 				document.getElementById(item).value = mf[item];
