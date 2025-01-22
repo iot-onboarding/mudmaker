@@ -190,9 +190,9 @@ function loadWork(input) {
 		document.mudFile = JSON.parse(reader.result);
 	  	mf = document.mudFile['ietf-mud:mud'];
 
-	  	inbasic.forEach(a => {
-			if (typeof mf[a] != 'undefined') {
-				document.getElementById(a).value = mf[a];
+	  	inbasic.forEach(function(item){
+			if (typeof mf[item] != 'undefined') {
+				document.getElementById(item).value = mf[item];
 			}
 		});
 		if (typeof mf['ol']['owners'] != 'undefined') {
