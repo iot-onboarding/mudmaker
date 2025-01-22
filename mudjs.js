@@ -176,6 +176,7 @@ function savework(){
 	var toSave = structuredClone(document.mudFile);
 	toSave['country'] = document.getElementById('country').value;
 	toSave['email_addr'] = document.getElementById('email_addr').value || '';
+	toSave['sbomtype'] = document.getElementById('sbom').value;
 	var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(toSave));
 	var dlAnchorElem = document.getElementById('downloadAnchorElem');
 	var model_name = document.getElementById('model_name').value;
@@ -195,6 +196,9 @@ function reloadFields(){
 	delete document.mudFile['country'];
 	document.getElementById('email_addr').value=document.mudFile['email_addr'];
 	delete document.mudFile['email_addr'];
+	document.getElementById('sbom').value = document.mudFile['sbomtype'];
+	var sbomtype = document.mudFile['sbomtype'];
+	delete document.mudFile['sbomtype'];
 	inbasic.forEach(function(item){
 		if (typeof mf[item] != 'undefined') {
 			document.getElementById(item).value = mf[item];
@@ -211,15 +215,12 @@ function reloadFields(){
 	}
 	if (mf['extensions'].includes('transparency')){
 		var tx= mf['mudtx:transparency'];
-		if (typeof tx['sbom-local-well-known'] != 'undefined') {
-			document.getElementById('sbom').value = 'local';
+		if (sbomtype == 'local') {
 			document.getElementById('sbom-local-well-known').value=tx['sbom-local-well-known'];
-		} else if ( typeof tx['contact-info'] != 'undefined' ) {
-			document.getElementById('sbom').value = 'infourl';
-			document.getElementById('contact-info').value = tx['contact-info'];
+		} else if ( sbomtype == 'infourl' || sbomtype == 'tel ') {
+			document.getElementById(sbomtype).value = tx['contact-info'];
 		}
-		else if ( typeof tx['sbom-url'] != 'undefined') {
-			document.getElementById('sbom').value = 'cloud';
+		else if ( if sbomtype == 'cloud' ) {
 			document.getElementById('sbomcloudurl').value = tx['sboms'][0]['sbom-url'];
 			document.getElementById('sbomswver').value = tx['sboms'][0]['version-info'];
 		}
