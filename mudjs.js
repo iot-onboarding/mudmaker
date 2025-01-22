@@ -3,7 +3,7 @@
  
 
 var nref = [ 0, 0, 0, 0 ];
-
+var prev_sbom = 'none';
 var limit = 50;
 
 function initMUDFile() {
@@ -287,19 +287,21 @@ function setvulnvis(v) {
 }
 
 function setVisibility(outer) {
-
-    document.getElementById('sbcloud').style.display= 'none';
-    document.getElementById('sblocal').style.display= 'none';
-    document.getElementById('sbtel').style.display= 'none';
-    document.getElementById('sbinfourl').style.display= 'none';
+	if ( outer.value == prev_sbom ) {
+		return;
+	}
+	/* broken
     document.getElementById('sbomcloudurl').value='';
     document.getElementById('sbomcc').value='';
     document.getElementById('sbomnr').value='';
-    document.getElementById('sbinfourl').value='';
+    document.getElementById('sbinfourl').value='';*/
     if (outer.value != 'none') {
 		var elid='sb' + outer.value;
 		document.getElementById('sbomany').style.display= 'inherit';
 		document.getElementById(elid).style.display= 'inline-block';
+		if (prev_sbom != 'none') {
+			document.getElementById(sb+prev_sbom).style.display= 'none';
+		}
     } else {
 		document.getElementById('sbomany').style.display= 'none';
 		delete document.mudFile['mudtx:transparency'];
