@@ -190,51 +190,51 @@ function savework(){
 
 function reloadFields(){
 	var mf = document.mudFile['ietf-mud:mud'];
-		document.getElementById('country').value=document.mudFile['country'];
-		delete document.mudFile['country'];
-		document.getElementById('email_addr').value=document.mudFile['email_addr'];
-		delete document.mudFile['email_addr'];
-	  	inbasic.forEach(function(item){
-			if (typeof mf[item] != 'undefined') {
-				document.getElementById(item).value = mf[item];
-			}
-		});
-		if (typeof mf['ol']['owners'] != 'undefined') {
-			document.getElementById('pub_name').value = mf['ol']['owners'][0];
+	const inbasic = ['mfg-name', 'systeminfo', 'documentation'];
+	document.getElementById('country').value=document.mudFile['country'];
+	delete document.mudFile['country'];
+	document.getElementById('email_addr').value=document.mudFile['email_addr'];
+	delete document.mudFile['email_addr'];
+	inbasic.forEach(function(item){
+		if (typeof mf[item] != 'undefined') {
+			document.getElementById(item).value = mf[item];
 		}
-		if ( typeof mf['mud-url'] != 'undefined') {
-			re = /https:\/\/(?<hostname>[^\/]+)\/(?<model_name>.*)/;
-			matchres= mf['mud-url'].match(re);
-			document.getElementById('mudhost').value = matchres.groups.hostname;
-			document.getElementById('model_name').value = matchres.groups.model_name;
+	});
+	if (typeof mf['ol']['owners'] != 'undefined') {
+		document.getElementById('pub_name').value = mf['ol']['owners'][0];
+	}
+	if ( typeof mf['mud-url'] != 'undefined') {
+		re = /https:\/\/(?<hostname>[^\/]+)\/(?<model_name>.*)/;
+		matchres= mf['mud-url'].match(re);
+		document.getElementById('mudhost').value = matchres.groups.hostname;
+		document.getElementById('model_name').value = matchres.groups.model_name;
+	}
+	if (mf['extensions'].includes('transparency')){
+		var tx= mf['transparency'];
+		if (typeof tx['sbom-local-well-known'] != 'undefined') {
+			document.getElementById('sbom').value = 'local';
+			document.getElementById('sbom-local-well-known').value=tx['sbom-local-well-known'];
+		} else if ( typeof tx['contact-info'] != 'undefined' ) {
+			document.getElementById('sbom').value = 'infourl';
+			document.getElementById('contact-info').value = tx['contact-info'];
 		}
-		if (mf['extensions'].includes('transparency')){
-			var tx= mf['transparency'];
-			if (typeof tx['sbom-local-well-known'] != 'undefined') {
-				document.getElementById('sbom').value = 'local';
-				document.getElementById('sbom-local-well-known').value=tx['sbom-local-well-known'];
-			} else if ( typeof tx['contact-info'] != 'undefined' ) {
-				document.getElementById('sbom').value = 'infourl';
-				document.getElementById('contact-info').value = tx['contact-info'];
-			}
-			else if ( typeof tx['sbom-url'] != 'undefined') {
-				document.getElementById('sbom').value = 'cloud';
-				document.getElementById('sbomcloudurl').value = tx['sboms'][0]['sbom-url'];
-				document.getElementById('sbomswver').value = tx['sboms'][0]['version-info'];
-			}
-			if ( typeof tx['vuln-url'] != 'undefined') {
-				document.getElementById('vulntype').value = 'url';
-				document.getElementById('vuln-url').value = tx['vuln-url'];
-				document.getElementById('vulnview').style.display='inherit';
-			}
-			setVisibility(document.getElementById('sbom').value);
+		else if ( typeof tx['sbom-url'] != 'undefined') {
+			document.getElementById('sbom').value = 'cloud';
+			document.getElementById('sbomcloudurl').value = tx['sboms'][0]['sbom-url'];
+			document.getElementById('sbomswver').value = tx['sboms'][0]['version-info'];
 		}
+		if ( typeof tx['vuln-url'] != 'undefined') {
+			document.getElementById('vulntype').value = 'url';
+			document.getElementById('vuln-url').value = tx['vuln-url'];
+			document.getElementById('vulnview').style.display='inherit';
+		}
+		setVisibility(document.getElementById('sbom').value);
+	}
 }
 
 function loadWork(input) {
 	let file = input.files[0];
 	let reader = new FileReader();
-	const inbasic = ['mfg-name', 'systeminfo', 'documentation'];
   
 	reader.readAsText(file);
   
