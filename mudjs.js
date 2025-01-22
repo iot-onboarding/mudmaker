@@ -167,6 +167,10 @@ function saveMUD() {
 }
 
 function savework(){
+	// we may need to add some extras
+	var toSave = structuredClone(document.mudFile);
+	toSave['country'] = document.getElementById('country').value;
+	toSave['emailAddr'] = document.getElementById('email_addr').value;
 	var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(document.mudFile));
 	var dlAnchorElem = document.getElementById('downloadAnchorElem');
 	var model_name = document.getElementById('model_name').value;
@@ -189,7 +193,10 @@ function loadWork(input) {
 	reader.onload = function() {
 		document.mudFile = JSON.parse(reader.result);
 	  	mf = document.mudFile['ietf-mud:mud'];
-
+		document.getElementById('country').value=document.mudFile('country');
+		document.mudFile('country').remove();
+		document.getElementById('email_addr').value=document.mudFile('email_addr');
+		document.mudFile('email_addr').remove();
 	  	inbasic.forEach(function(item){
 			if (typeof mf[item] != 'undefined') {
 				document.getElementById(item).value = mf[item];
