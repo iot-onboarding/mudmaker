@@ -212,12 +212,22 @@ function reloadFields(){
 			var tx= mf['transparency'];
 			if (typeof tx['sbom-local-well-known'] != 'undefined') {
 				document.getElementById('sbom').value = 'local';
-			} else if ( tx['contact-info'] != 'undefined' ) {
+				document.getElementById('sbom-local-well-known').value=tx['sbom-local-well-known'];
+			} else if ( typeof tx['contact-info'] != 'undefined' ) {
 				document.getElementById('sbom').value = 'infourl';
+				document.getElementById('contact-info').value = tx['contact-info'];
 			}
-			else if ( tx['sbom-url'] != 'undefined') {
+			else if ( typeof tx['sbom-url'] != 'undefined') {
 				document.getElementById('sbom').value = 'cloud';
+				document.getElementById('sbomcloudurl').value = tx['sboms'][0]['sbom-url'];
+				document.getElementById('sbomswver').value = tx['sboms'][0]['version-info'];
 			}
+			if ( typeof tx['vuln-url'] != 'undefined') {
+				document.getElementById('vulntype').value = 'url';
+				document.getElementById('vuln-url').value = tx['vuln-url'];
+				document.getElementById('vulnview').style.display='inherit';
+			}
+			setVisibility(document.getElementById('sbom').value);
 		}
 }
 
@@ -671,6 +681,6 @@ $(document).on('change','.sbomstuff',function(e){
 	sbomify(e.target);
 })
 
-//// initialize
+////// initialize
 
 initMUDFile();
