@@ -6,16 +6,21 @@ var nref = [ 0, 0, 0, 0 ];
 
 var limit = 50;
 
-document.mudFile=window.sessionStorage.getItem("mudfile");
-if ( document.mudFile == null ) {
-	d = new Date()
-	document.mudFile = JSON.parse('{"ietf-mud:mud" : {"mud-version" : 1, "extensions" : [ "ol"], "ol" : { "spdx-tag" : "0BSD"}, "cache-validity": 48, "is-supported" : true}}');
-	document.mudFile['ietf-mud:mud']["last-change"] = d.toISOString();
-	window.sessionStorage.setItem('mudfile',JSON.stringify(document.mudFile));
-} else {
-	document.mudFile=JSON.parse(document.mudFile);
+function initMUDFile() {
+	document.mudFile=window.sessionStorage.getItem("mudfile");
+	if ( document.mudFile == null ) {
+		var d = new Date()
+		document.mudFile = JSON.parse('{"ietf-mud:mud" : {"mud-version" : 1, "extensions" : [ "ol"], "ol" : { "spdx-tag" : "0BSD"}, "cache-validity": 48, "is-supported" : true}}');
+		document.mudFile['ietf-mud:mud']["last-change"] = d.toISOString();
+		window.sessionStorage.setItem('mudfile',JSON.stringify(document.mudFile));
+	} else {
+		document.mudFile=JSON.parse(document.mudFile);
+	}
+	document.mfChanged = false;
 }
-document.mfChanged = false;
+
+
+
 
 function removeIt(elemId) {
     var elem=document.getElementById(elemId);
@@ -182,17 +187,9 @@ function savework(){
 	dlAnchorElem.setAttribute("download", model_name + '.json');
 	dlAnchorElem.click();
 }
-	
-function loadWork(input) {
-	let file = input.files[0];
-	let reader = new FileReader();
-	const inbasic = ['mfg-name', 'systeminfo', 'documentation'];
-  
-	reader.readAsText(file);
-  
-	reader.onload = function() {
-		document.mudFile = JSON.parse(reader.result);
-	  	var mf = document.mudFile['ietf-mud:mud'];
+
+function reloadFields(){
+	var mf = document.mudFile['ietf-mud:mud'];
 		document.getElementById('country').value=document.mudFile['country'];
 		delete document.mudFile['country'];
 		document.getElementById('email_addr').value=document.mudFile['email_addr'];
@@ -222,6 +219,18 @@ function loadWork(input) {
 				document.getElementById('sbom').value = 'cloud';
 			}
 		}
+}
+
+function loadWork(input) {
+	let file = input.files[0];
+	let reader = new FileReader();
+	const inbasic = ['mfg-name', 'systeminfo', 'documentation'];
+  
+	reader.readAsText(file);
+  
+	reader.onload = function() {
+		document.mudFile = JSON.parse(reader.result);
+	  	reloadFields();
 	}
 }
 
@@ -617,6 +626,10 @@ $('summary').click(function() {
     }
 });
 
+////////////////////// listeners
+
+
+
 $(document).on('click','.addable',function(e){
 	var cur=e.target;
 	if ( cur.className == 'delete' ) {
@@ -657,3 +670,7 @@ $(document).on('change','.addbasics',function(e){
 $(document).on('change','.sbomstuff',function(e){
 	sbomify(e.target);
 })
+
+//// initialize
+
+initMUDFile();
