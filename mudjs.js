@@ -178,15 +178,19 @@ function savework(){
 	dlAnchorElem.setAttribute("download", model_name + '.json');
 	dlAnchorElem.click();
 }
-
-function loadWork(){
-	var fileReadEvent = function(event) {
-		var fr = new FileReader();
-		fr.onload = () => {
-			document.mudFile = JSON.parse(fr.result);
-		}
-    };
-};
+	
+function loadWork(input) {
+	let file = input.files[0];
+  
+	let reader = new FileReader();
+  
+	reader.readAsText(file);
+  
+	reader.onload = function() {
+	  document.mudFile = reader.result;
+	};
+}
+  
 
 
 // js update
