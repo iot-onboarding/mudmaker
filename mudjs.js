@@ -151,7 +151,7 @@ function yesnoCheck(outer,inner,refind) {
 
 // js update
 function fillpub(cur) {
-    p=document.getElementById('pub_name');
+    var p=document.getElementById('pub_name');
     if (p.value == '') {
 		p.value = cur.value;
 		document.mudFile['ietf-mud:mud']['ol']['owners'] = [ cur.value ];
@@ -192,7 +192,7 @@ function loadWork(input) {
   
 	reader.onload = function() {
 		document.mudFile = JSON.parse(reader.result);
-	  	mf = document.mudFile['ietf-mud:mud'];
+	  	var mf = document.mudFile['ietf-mud:mud'];
 		document.getElementById('country').value=document.mudFile['country'];
 		delete document.mudFile['country'];
 		document.getElementById('email_addr').value=document.mudFile['email_addr'];
@@ -234,7 +234,7 @@ function makemudurl() {
 }
 
 function setvulnvis(v) {
-    me=document.getElementById('vulntype');
+    var me=document.getElementById('vulntype');
     if ( me.value != 'none' ) {
 	v.style.display='inherit';
     } else {
@@ -309,7 +309,10 @@ function makeAcl(name,atype){
 function makeAcls(){
 	var mud = document.mudFile['ietf-mud:mud'];
 	var acltype= document.getElementById("ipchoice").value;
-	
+	var bn;
+	var toacls;
+	var fracls;
+
 	if (typeof document.aclBase != 'undefined') {
 		return;
 	}
@@ -340,7 +343,7 @@ function makeAcls(){
 }
 
 function makeproto(acl_entry,proto,sport,dport,cominit){
-	ret = {};
+	var ret = {};
 
 	if (sport == "any" && dport == "any"){
 		return null;
@@ -367,8 +370,18 @@ function makeproto(acl_entry,proto,sport,dport,cominit){
 function updateAce(acl,ace_entry,aceBase,p){
 	// distinguish between to and from.  just means choosing src or dst fields; also for transport.
 	const actions = { "forwarding" : "accept"};
-	re=/^fr.*/;
-	
+	const re=/^fr.*/;
+	var direction;
+	var ace_name;
+	var matchname;
+	var matchobj;
+	var p;
+	var proto;
+	var lport;
+	var rport;
+	var ace;
+	var aIndex;
+
 	if (acl["type"] == "ipv4-acl-type"){
 		ipver = "ipv4";
 	} else {
@@ -460,6 +473,7 @@ function updateAce(acl,ace_entry,aceBase,p){
 }
 
 function updateAces(p,ace_entry) {
+	var acls;
 	// build an ace for both directions from ace_entry.  Store name in dom.
 	// does name exist?
 	if ( typeof ace_entry.aceBase == 'undefined') {
@@ -496,8 +510,8 @@ function removeAces(cur){
 		return;
 	}
 	const re=new RegExp('.*' + cur.aceBase + '.*');
-	acls=document.mudFile['ietf-mud:mud']['ietf-access-control-list:acls']['acl'];
-	cleanup=false;
+	var acls=document.mudFile['ietf-mud:mud']['ietf-access-control-list:acls']['acl'];
+	var cleanup=false;
 	for (i in acls) {
 		if (acls[i].aces.ace.length == 0 ){
 			return;
@@ -522,7 +536,7 @@ function removeAces(cur){
 
 function sbomify(cur) {
 	var whichsbom = document.getElementById("sbom").value;
-
+	var mf;
 	if ( cur.validity.valid == false ) {
 		return;
 	}
@@ -539,6 +553,7 @@ function sbomify(cur) {
 		}
 	}
 	if (whichsbom != "none" ) {
+		var tx;
 		if ( typeof mf['mudtx:transparency'] == 'undefined') {
 			mf['mudtx:transparency'] = {};
 		}
