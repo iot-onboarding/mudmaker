@@ -170,7 +170,7 @@ function savework(){
 	// we may need to add some extras
 	var toSave = structuredClone(document.mudFile);
 	toSave['country'] = document.getElementById('country').value;
-	toSave['emailAddr'] = document.getElementById('email_addr').value;
+	toSave['email_addr'] = document.getElementById('email_addr').value;
 	var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(toSave));
 	var dlAnchorElem = document.getElementById('downloadAnchorElem');
 	var model_name = document.getElementById('model_name').value;
