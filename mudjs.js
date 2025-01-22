@@ -211,6 +211,17 @@ function loadWork(input) {
 			document.getElementById('mudhost').value = matchres.groups.hostname;
 			document.getElementById('model_name').value = matchres.groups.model_name;
 		}
+		if (mf['extensions'].includes('transparency')){
+			var tx= mf['transparency'];
+			if (typeof tx['sbom-local-well-known'] != 'undefined') {
+				document.getElementById('sbom').value = 'local';
+			} else if ( tx['contact-info'] != 'undefined' ) {
+				document.getElementById('sbom').value = 'infourl';
+			}
+			else if ( tx['sbom-url'] != 'undefined') {
+				document.getElementById('sbom').value = 'cloud';
+			}
+		}
 	}
 }
 
