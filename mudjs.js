@@ -181,15 +181,26 @@ function savework(){
 	
 function loadWork(input) {
 	let file = input.files[0];
-  
 	let reader = new FileReader();
+	const inbasic = ['mfg-name', 'systeminfo', 'documentation'];
   
 	reader.readAsText(file);
   
 	reader.onload = function() {
-	  document.mudFile = reader.result;
-	};
+		document.mudFile = JSON.parse(reader.result);
+	  	mf = document.mudFile['ietf-mud:mud'];
+
+	  	for (a in inbasic) {
+			if (typeof mf[a] != 'undefined') {
+				document.getElementById(a).value = mf[a];
+			}
+		}
+		if (typeof mf['ol']['owners'] != 'undefined') {
+			document.getElementById('pub_name').value = mf['ol']['owners'][0];
+		}
+	}
 }
+
   
 
 
