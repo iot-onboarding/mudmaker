@@ -171,7 +171,7 @@ function savework(){
 	var toSave = structuredClone(document.mudFile);
 	toSave['country'] = document.getElementById('country').value;
 	toSave['emailAddr'] = document.getElementById('email_addr').value;
-	var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(document.mudFile));
+	var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(toSave));
 	var dlAnchorElem = document.getElementById('downloadAnchorElem');
 	var model_name = document.getElementById('model_name').value;
 	if ( model_name == ''){
