@@ -204,7 +204,7 @@ function reloadFields(){
 		document.getElementById('pub_name').value = mf['ol']['owners'][0];
 	}
 	if ( typeof mf['mud-url'] != 'undefined') {
-		re = /https:\/\/(?<hostname>[^\/]+)\/(?<model_name>.*)/;
+		re = /https:\/\/(?<hostname>[^\/]+)\/(?<model_name>.*)\.json/;
 		matchres= mf['mud-url'].match(re);
 		document.getElementById('mudhost').value = matchres.groups.hostname;
 		document.getElementById('model_name').value = matchres.groups.model_name;
