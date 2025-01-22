@@ -210,7 +210,7 @@ function reloadFields(){
 		document.getElementById('model_name').value = matchres.groups.model_name;
 	}
 	if (mf['extensions'].includes('transparency')){
-		var tx= mf['transparency'];
+		var tx= mf['mudtx:transparency'];
 		if (typeof tx['sbom-local-well-known'] != 'undefined') {
 			document.getElementById('sbom').value = 'local';
 			document.getElementById('sbom-local-well-known').value=tx['sbom-local-well-known'];
