@@ -224,6 +224,46 @@ function findNextAce(acetype){
 	return block.children[block.children.length-1];
 }
 
+function setProto(nextAce,ace,ipVer) {
+	var pstring;
+	var p1;
+	var p0;
+	let re = /^(..).+/;
+	let tofro = ace.name.match(re)[1];
+	if ( typeof ace['ipVer'] == 'undefined') {
+		return;
+	}
+	if ( typeof ace['ipVer']['protocol'] == 'undefined' ) {
+		return;
+	}
+	nextAce.children[1].value = ace['ipVer']['protocol'];
+	let proto = nextAce.children[4];
+	proto.style.visibility = 'inherit';
+	if ( ace[ipVer]['protocol'] == 6 ){
+		let cominit = nextAce.children[5];
+		cominit.style.visibility = "inherit";
+		pstring = 'tcp'
+		if (typeof ace['tcp']["ietf-mud:direction-initiated"] != 'undefined') {
+			cominit.children[0].value = ace['tcp']["ietf-mud:direction-initiated"];
+		}
+	} else {
+		pstring = 'udp'
+	}
+	if ( tofro == 'to' ) {
+		p1 = 1;
+		p0 = 0;
+	} else {
+		p1 = 0;
+		p0 = 1;
+	}
+	if (typeof ace[pstring]['source-port'] != 'undefined') {
+		proto.children[p1].value = ace[pstring]['source-port']['port'];
+	}
+	if (typeof ace[pstring]['destination-port'] != 'undefined') {
+		proto.children[p0].value = ace[pstring]['destiantion-port']['port'];
+	}
+}
+
 function reloadFields(){
 	var mf = document.mudFile['ietf-mud:mud'];
 	const inbasic = ['mfg-name', 'systeminfo', 'documentation'];
