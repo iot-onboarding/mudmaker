@@ -245,12 +245,14 @@ function setProto(nextAce,ace,ipVer) {
 	if ( matches[ipVer]['protocol'] == 6 ){
 		let cominit = nextAce.children[5];
 		cominit.style.visibility = "inherit";
-		pstring = 'tcp'
+		pstring = 'tcp';
+		nextAce.children[1].value='tcp';
 		if (typeof matches['tcp']["ietf-mud:direction-initiated"] != 'undefined') {
 			cominit.children[0].value = matches['tcp']["ietf-mud:direction-initiated"];
 		}
 	} else {
-		pstring = 'udp'
+		pstring = 'udp';
+		nextAce.children[1].value = 'tcp';
 	}
 	if ( tofro == 'to' ) {
 		p1 = 1;
