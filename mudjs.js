@@ -359,6 +359,7 @@ function reloadFields(){
 					nextAce.children[0].value = hostname;
 				}
 				nextAce.aceBase = aceBase;
+				nextAce.parentElement.open = true;
 				setProto(nextAce,ace,ipVer);
 				})
 	}
