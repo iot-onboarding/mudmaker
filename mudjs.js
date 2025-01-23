@@ -214,6 +214,16 @@ function clearAclUI(){
 	})
 }
 
+
+function findNextAce(acetype){
+	let block=document.getElementById(acetype);
+	if (typeof block.children[1]['aceBase'] == 'undefined') {
+		return block.children[1];
+	}
+	addEntry(aceType);
+	return block.children[block.children.length-1];
+}
+
 function reloadFields(){
 	var mf = document.mudFile['ietf-mud:mud'];
 	const inbasic = ['mfg-name', 'systeminfo', 'documentation'];
@@ -264,6 +274,53 @@ function reloadFields(){
 			document.getElementById('vulnview').style.display='inherit';
 		}
 		setVisibility(document.getElementById('sbom'));
+	}
+	clearAclUI();
+	if (typeof mf['ietf-access-control-lists'] != 'undefined'){
+		// we only need to look at one ACL/one set of ACEs.
+		document.mudFile['ietf-mud:mud']['ietf-access-control-list:acls'].acl[0].aces.ace.forEach(
+			function(ace){
+				mudtypes = {
+					'myctl' : 'my-controller',
+					'mymfg' : 'same-manufacturer',
+					'ctl' : 'controller',
+					'loc' : 'local-networks'
+				}
+
+				var nextAce;
+				let ipVer = null;
+				let inputVal = '';
+				// get aceBase value
+				let re = /^..(ace.*)/;
+				let aceBase = ace.name.match(re)[1];
+				// figure out type and then proceed.
+				if (typeof ace['matches']["ipv4"] != 'undefined') {
+					ipVer = 'ipv4';
+				} else if (typeof ace['matches']["ipv6"] != 'undefined') {
+					ipVer = 'ipv6';
+				}
+				if (typeof ace['matches']["ietf-mud:mud"] != 'undefined'){
+					for (let val in mudtypes ) {
+						if ( typeof ace['matches']["ietf-mud:mud"][mudtypes[va]] != 'undefined') {
+							nextAce = findNextAce(val);
+							if (! nextAce.children[0].readOnly) {
+								nextAce.children[0].value = ace['matches']["ietf-mud:mud"][mudtypes[va]];
+							}
+						}
+					}
+				} else {
+					var hostname;
+					nextAce=findNextAce('cl');
+					if(typeof ace['matches'][ipVer]['ietf-acldns:src-dnsname'] != 'undefined') {
+						hostname = ace['matches'][ipVer]['ietf-acldns:src-dnsname'];
+					} else {
+						hostname =  ace['matches'][ipVer]['ietf-acldns:dst-dnsname'];
+					}
+					nextAce.children[0].value = hostname;
+				}
+				nextAce.aceBase = aceBase;
+				setProto(nextAce,ace,ipVer);
+				})
 	}
 }
 
