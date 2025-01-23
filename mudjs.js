@@ -316,7 +316,7 @@ function reloadFields(){
 		setVisibility(document.getElementById('sbom'));
 	}
 	clearAclUI();
-	if (typeof mf['ietf-access-control-lists'] != 'undefined'){
+	if (typeof mf['ietf-access-control-lists:acls'] != 'undefined'){
 		// we only need to look at one ACL/one set of ACEs.
 		document.mudFile['ietf-mud:mud']['ietf-access-control-list:acls'].acl[0].aces.ace.forEach(
 			function(ace){
