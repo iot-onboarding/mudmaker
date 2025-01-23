@@ -509,27 +509,33 @@ function makeAcls(){
 
 function makeproto(acl_entry,proto,sport,dport,cominit){
 	var ret = {};
+	var hasval = false;
 
-	if (sport == "any" && dport == "any"){
-		return null;
-	}
+
 
 	if (proto = 'tcp' && cominit != 'either'){
 		ret['ietf-mud:direction-initiated'] = cominit;
+		hasval = true;
 	}
+
 	if ( sport != "any" ) {
 		ret['source-port'] = {
 			"operator" : "eq",
 			"port" : sport
 		};
+		hasval = true;
 	}
 	if (dport != "any") {
 		ret['destination-port'] = {
 			"operator" : "eq",
 			"port" : dport
 		};
+		hasval= true;
 	}
-	return ret;
+	if (hasval) {
+		return ret;	
+	}
+	return null;
 }
 
 function updateAce(acl,ace_entry,aceBase,p){
@@ -806,7 +812,7 @@ $(document).on('change','.addable',function(e){
 		updateOneAceGroup(e.target.parentNode,cur);
 		return;
 	}
-	
+
 	if ( cur.nodeName == 'INPUT' ) {
 		updateOneAceGroup(e.target.parentNode,cur);
 	}
