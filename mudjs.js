@@ -210,7 +210,7 @@ function clearAclUI(){
 		thegroup.children[4].style.visibility = 'hidden';
 		thegroup.children[5].children[0].value = 'either';
 		thegroup.children[5].style.visibility = 'hidden';
-		thegroup.open = false;
+		aclgroup.open = false;
 	})
 }
 
