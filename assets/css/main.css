@@ -44,6 +44,43 @@
 		border-collapse: collapse;
 		border-spacing: 0;
 	}
+	.tab {
+		overflow: hidden;
+		border: 1px solid #05040e1e;
+		background-color: inherit;
+	  }
+	  
+	  /* Style the buttons that are used to open the tab content */
+	  .tab button {
+		background-color: inherit;
+		color: #00A87B;
+		
+		float: left;
+		border: none;
+		outline: none;
+		cursor: pointer;
+		padding: 14px 16px;
+		transition: 0.3s;
+	  }
+	  
+	  /* Change background color of buttons on hover */
+	  .tab button:hover {
+		background-color: #095511;
+	  }
+	  
+	  /* Create an active/current tablink class */
+	  .tab button.active {
+		background-color: #7C3875;
+		color: #1bfddbf2;
+	  }
+	  
+	  /* Style the tab content */
+	  .tabcontent {
+		display: none;
+		padding: 6px 12px;
+		border: 1px solid #ccc;
+		border-top: none;
+	  }
 
 /* Box Model */
 
@@ -1426,6 +1463,7 @@
 		border: 1px dashed #fd1b1b;
 	    box-shadow: none;
 	}
+
 
 	body, input, select, textarea {
 	    font-family: Arial, Helvetica, sans-serif;

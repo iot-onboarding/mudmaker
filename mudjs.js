@@ -3,24 +3,30 @@
  
 
 var nref = [ 0, 0, 0, 0 ];
-
+var prev_sbom = 'none';
 var limit = 50;
 
-document.mudFile=window.sessionStorage.getItem("mudFile");
-if ( document.mudFile == null ) {
-	d = new Date()
-	document.mudFile = JSON.parse('{"ietf-mud:mud" : {"mud-version" : 1, "extensions" : [ "ol"], "ol" : { "spdx-tag" : "0BSD"}, "cache-validity": 48, "is-supported" : true}}');
-	document.mudFile['ietf-mud:mud']["last-change"] = d.toISOString();
-	window.sessionStorage.setItem('mudfile',JSON.stringify(document.mudFile));
-} else {
-	document.mudFile=JSON.parse(document.mudFile);
+function initMUDFile() {
+	document.mudFile=window.sessionStorage.getItem("mudfile");
+	if ( document.mudFile == null ) {
+		var d = new Date()
+		document.mudFile = JSON.parse('{"ietf-mud:mud" : {"mud-version" : 1, "extensions" : [ "ol"], "ol" : { "spdx-tag" : "0BSD"}, "cache-validity": 48, "is-supported" : true}}');
+		document.mudFile['ietf-mud:mud']["last-change"] = d.toISOString();
+		window.sessionStorage.setItem('mudfile',JSON.stringify(document.mudFile));
+	} else {
+		document.mudFile=JSON.parse(document.mudFile);
+	}
+	document.mfChanged = false;
 }
+
+
+
 
 function removeIt(elemId) {
     var elem=document.getElementById(elemId);
     elem.parentNode.removeChild(elem);
 }
-    
+
 // js update
 function addEntry(entry){
     var newdiv= document.createElement('div');
@@ -150,7 +156,7 @@ function yesnoCheck(outer,inner,refind) {
 
 // js update
 function fillpub(cur) {
-    p=document.getElementById('pub_name');
+    var p=document.getElementById('pub_name');
     if (p.value == '') {
 		p.value = cur.value;
 		document.mudFile['ietf-mud:mud']['ol']['owners'] = [ cur.value ];
@@ -159,14 +165,229 @@ function fillpub(cur) {
 
 // js update
 function saveMUD() {
-	d = new Date();
+	var d = new Date();
 	document.mudFile['ietf-mud:mud']["last-change"] = d.toISOString();
 	window.sessionStorage.setItem('mudfile',JSON.stringify(document.mudFile));
+	document.mfChanged = true;
 }
+
+function savework(){
+	// we may need to add some extras
+	var toSave = structuredClone(document.mudFile);
+	toSave['country'] = document.getElementById('country').value;
+	toSave['email_addr'] = document.getElementById('email_addr').value || '';
+	toSave['sbomtype'] = document.getElementById('sbom').value;
+	toSave['sbomcc'] = document.getElementById('sbomcc').value || '';
+	toSave['sbomnr'] = document.getElementById('sbomnr').value || '';
+
+	var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(toSave));
+	var dlAnchorElem = document.getElementById('downloadAnchorElem');
+	var model_name = document.getElementById('model_name').value;
+	if ( model_name == ''){
+		alert("Please first set your model name");
+		return;
+	}
+	dlAnchorElem.setAttribute("href", dataStr);
+	dlAnchorElem.setAttribute("download", model_name + '.json');
+	dlAnchorElem.click();
+}
+
+function clearAclUI(){
+	Array.from(document.getElementsByClassName("addable")).forEach(function(aclgroup){
+		if (aclgroup.children.length > 2) {
+			let nchild = aclgroup.children.length;
+			for (let i = 2; i< nchild; i++) {
+				aclgroup.children[2].remove();
+			}
+		}
+		var thegroup = aclgroup.children[1];
+		if (thegroup.children[0].readOnly != true ) {
+			thegroup.children[0].value='';
+		}
+		thegroup.children[1].value = 'any'; // protocol
+		thegroup.children[4].children[0].value = 'any'; // lport
+		thegroup.children[4].children[1].value = 'any'; // rport
+		thegroup.children[4].style.visibility = 'hidden';
+		thegroup.children[5].children[0].value = 'either';
+		thegroup.children[5].style.visibility = 'hidden';
+		aclgroup.open = false;
+	})
+}
+
+
+function findNextAce(aceType){
+	let block=document.getElementById(aceType);
+	if (typeof block.children[1]['aceBase'] == 'undefined') {
+		return block.children[1];
+	}
+	addEntry(block);
+	return block.children[block.children.length-1];
+}
+
+function setProto(nextAce,ace,ipVer) {
+	var pstring;
+	var p1;
+	var p0;
+	const re = /^(..).+/;
+	const matches = ace['matches'];
+
+	let tofro = ace.name.match(re)[1];
+
+	if ( typeof matches[ipVer] == 'undefined') {
+		return;
+	}
+	if ( typeof matches[ipVer]['protocol'] == 'undefined' ) {
+		return;
+	}
+	nextAce.children[1].value = matches[ipVer]['protocol'];
+	let proto = nextAce.children[4];
+	proto.style.visibility = 'inherit';
+	if ( matches[ipVer]['protocol'] == 6 ){
+		let cominit = nextAce.children[5];
+		cominit.style.visibility = "inherit";
+		pstring = 'tcp';
+		nextAce.children[1].value='tcp';
+		if (typeof matches['tcp']["ietf-mud:direction-initiated"] != 'undefined') {
+			cominit.children[0].value = matches['tcp']["ietf-mud:direction-initiated"];
+		}
+	} else {
+		pstring = 'udp';
+		nextAce.children[1].value = 'tcp';
+	}
+	if ( tofro == 'to' ) {
+		p1 = 1;
+		p0 = 0;
+	} else {
+		p1 = 0;
+		p0 = 1;
+	}
+	if (typeof matches[pstring]['source-port'] != 'undefined') {
+		proto.children[p1].value = matches[pstring]['source-port']['port'];
+	}
+	if (typeof matches[pstring]['destination-port'] != 'undefined') {
+		proto.children[p0].value = matches[pstring]['destination-port']['port'];
+	}
+}
+
+function reloadFields(){
+	var mf = document.mudFile['ietf-mud:mud'];
+	const inbasic = ['mfg-name', 'systeminfo', 'documentation'];
+	document.getElementById('country').value=document.mudFile['country'];
+	delete document.mudFile['country'];
+	document.getElementById('email_addr').value=document.mudFile['email_addr'];
+	delete document.mudFile['email_addr'];
+	document.getElementById('sbom').value = document.mudFile['sbomtype'];
+	var sbomtype = document.mudFile['sbomtype'];
+	delete document.mudFile['sbomtype'];
+	var sbomcc = document.mudFile['sbomcc'];
+	var sbomnr = document.mudFile['sbomnr'];
+	delete document.mudFile['sbomcc'];
+	delete document.mudFile['sbomnr'];
+
+	inbasic.forEach(function(item){
+		if (typeof mf[item] != 'undefined') {
+			document.getElementById(item).value = mf[item];
+		}
+	});
+	if (typeof mf['ol']['owners'] != 'undefined') {
+		document.getElementById('pub_name').value = mf['ol']['owners'][0];
+	}
+	if ( typeof mf['mud-url'] != 'undefined') {
+		re = /https:\/\/(?<hostname>[^\/]+)\/(?<model_name>.*)\.json/;
+		matchres= mf['mud-url'].match(re);
+		document.getElementById('mudhost').value = matchres.groups.hostname;
+		document.getElementById('model_name').value = matchres.groups.model_name;
+	}
+	if (mf['extensions'].includes('transparency')){
+		var tx= mf['mudtx:transparency'];
+		if (sbomtype == 'local') {
+			document.getElementById('sbom-local-well-known').value=tx['sbom-local-well-known'];
+		} else if ( sbomtype == 'infourl' ){
+			document.getElementById(sbomtype).value = tx['contact-info'];
+		} else if ( sbomtype == 'tel' ) {
+			// stuffed this stuff in the json file for safe keeping as well
+			document.getElementById('sbomcc').value = sbomcc;
+			document.getElementById('sbomnr').value = sbomnr;
+		} else if ( sbomtype == 'cloud' ) {
+			document.getElementById('sbomcloudurl').value = tx['sboms'][0]['sbom-url'];
+			document.getElementById('sbomswver').value = tx['sboms'][0]['version-info'];
+		}
+		
+		if ( typeof tx['vuln-url'] != 'undefined') {
+			document.getElementById('vulntype').value = 'url';
+			document.getElementById('vuln-url').value = tx['vuln-url'];
+			document.getElementById('vulnview').style.display='inherit';
+		}
+		setVisibility(document.getElementById('sbom'));
+	}
+	clearAclUI();
+	if (typeof mf['ietf-access-control-list:acls'] != 'undefined'){
+		// we only need to look at one ACL/one set of ACEs.
+		document.mudFile['ietf-mud:mud']['ietf-access-control-list:acls'].acl[0].aces.ace.forEach(
+			function(ace){
+				mudtypes = {
+					'myctl' : 'my-controller',
+					'mymfg' : 'same-manufacturer',
+					'ctl' : 'controller',
+					'loc' : 'local-networks'
+				}
+
+				var nextAce;
+				let ipVer = null;
+				let inputVal = '';
+				// get aceBase value
+				let re = /^..(ace.*)/;
+				let aceBase = ace.name.match(re)[1];
+				// figure out type and then proceed.
+				if (typeof ace['matches']["ipv4"] != 'undefined') {
+					ipVer = 'ipv4';
+				} else if (typeof ace['matches']["ipv6"] != 'undefined') {
+					ipVer = 'ipv6';
+				}
+				if (typeof ace['matches']["ietf-mud:mud"] != 'undefined'){
+					for (let val in mudtypes ) {
+						if ( typeof ace['matches']["ietf-mud:mud"][mudtypes[val]] != 'undefined') {
+							nextAce = findNextAce(val);
+							if (! nextAce.children[0].readOnly) {
+								nextAce.children[0].value = ace['matches']["ietf-mud:mud"][mudtypes[va]];
+							}
+						}
+					}
+				} else {
+					var hostname;
+					nextAce=findNextAce('cl');
+					if(typeof ace['matches'][ipVer]['ietf-acldns:src-dnsname'] != 'undefined') {
+						hostname = ace['matches'][ipVer]['ietf-acldns:src-dnsname'];
+					} else {
+						hostname =  ace['matches'][ipVer]['ietf-acldns:dst-dnsname'];
+					}
+					nextAce.children[0].value = hostname;
+				}
+				nextAce.aceBase = aceBase;
+				nextAce.parentElement.open = true;
+				setProto(nextAce,ace,ipVer);
+				})
+	}
+}
+
+function loadWork(input) {
+	let file = input.files[0];
+	let reader = new FileReader();
+  
+	reader.readAsText(file);
+  
+	reader.onload = function() {
+		document.mudFile = JSON.parse(reader.result);
+	  	reloadFields();
+	}
+}
+
+  
+
 
 // js update
 function makemudurl() {
-    p=document.getElementById('entname1');
+    p=document.getElementById('controller');
     mh=document.getElementById('mudhost');
 	mm=document.getElementById('model_name');
     if (mh.value != '') {
@@ -181,7 +402,7 @@ function makemudurl() {
 }
 
 function setvulnvis(v) {
-    me=document.getElementById('vulntype');
+    var me=document.getElementById('vulntype');
     if ( me.value != 'none' ) {
 	v.style.display='inherit';
     } else {
@@ -191,22 +412,25 @@ function setvulnvis(v) {
 }
 
 function setVisibility(outer) {
+	if ( outer.value == prev_sbom ) {
+		return; // nothing changed?!
+	}
 
-    document.getElementById('sbcloud').style.display= 'none';
-    document.getElementById('sblocal').style.display= 'none';
-    document.getElementById('sbtel').style.display= 'none';
-    document.getElementById('sbinfourl').style.display= 'none';
-    document.getElementById('sbomcloudurl').value='';
-    document.getElementById('sbomcc').value='';
-    document.getElementById('sbomnr').value='';
-    document.getElementById('sbinfourl').value='';
     if (outer.value != 'none') {
 		var elid='sb' + outer.value;
 		document.getElementById('sbomany').style.display= 'inherit';
 		document.getElementById(elid).style.display= 'inline-block';
+		if (prev_sbom != 'none') {
+			document.getElementById(sb+prev_sbom).style.display= 'none';
+		}
     } else {
 		document.getElementById('sbomany').style.display= 'none';
 		delete document.mudFile['mudtx:transparency'];
+    	document.getElementById('sbomswver').value='';
+		document.getElementById('sbomcloudurl').value='';
+    	document.getElementById('sbomcc').value='';
+    	document.getElementById('sbomnr').value='';
+    	document.getElementById('sbinfourl').value='';
 		saveMUD();
     }
 }
@@ -256,7 +480,10 @@ function makeAcl(name,atype){
 function makeAcls(){
 	var mud = document.mudFile['ietf-mud:mud'];
 	var acltype= document.getElementById("ipchoice").value;
-	
+	var bn;
+	var toacls;
+	var fracls;
+
 	if (typeof document.aclBase != 'undefined') {
 		return;
 	}
@@ -265,10 +492,12 @@ function makeAcls(){
 	document.aclBase= 'acl' + Math.floor(Math.random()*100000);
 	bn = document.aclBase;
 	mud['from-device-policy'] = {
-		"access-lists" : {"access-list" : [{}]}
+		"access-lists" : {"access-list" : []}
 	};
-	toacls=mud['from-device-policy']['access-lists']["access-list"];
-	mud['to-device-policy'] = structuredClone(mud['from-device-policy']);
+	mud['to-device-policy'] = {
+		"access-lists" : {"access-list" : []}
+	};
+	toacls=mud['to-device-policy']['access-lists']["access-list"];
 	fracls=mud['from-device-policy']['access-lists']["access-list"];
 	if ( acltype == 'ipv4' || acltype == 'both') {
 		toacls.push({'name' : 'toipv4-' + bn});
@@ -285,35 +514,51 @@ function makeAcls(){
 }
 
 function makeproto(acl_entry,proto,sport,dport,cominit){
-	ret = {};
+	var ret = {};
+	var hasval = false;
 
-	if (sport == "any" && dport == "any"){
-		return null;
-	}
+
 
 	if (proto = 'tcp' && cominit != 'either'){
 		ret['ietf-mud:direction-initiated'] = cominit;
+		hasval = true;
 	}
+
 	if ( sport != "any" ) {
 		ret['source-port'] = {
 			"operator" : "eq",
 			"port" : sport
 		};
+		hasval = true;
 	}
 	if (dport != "any") {
 		ret['destination-port'] = {
 			"operator" : "eq",
 			"port" : dport
 		};
+		hasval= true;
 	}
-	return ret;
+	if (hasval) {
+		return ret;	
+	}
+	return null;
 }
 
 function updateAce(acl,ace_entry,aceBase,p){
 	// distinguish between to and from.  just means choosing src or dst fields; also for transport.
 	const actions = { "forwarding" : "accept"};
-	re=/^fr.*/;
-	
+	const re=/^fr.*/;
+	var direction;
+	var ace_name;
+	var matchname;
+	var matchobj;
+	var p;
+	var proto;
+	var lport;
+	var rport;
+	var ace;
+	var aIndex;
+
 	if (acl["type"] == "ipv4-acl-type"){
 		ipver = "ipv4";
 	} else {
@@ -405,6 +650,7 @@ function updateAce(acl,ace_entry,aceBase,p){
 }
 
 function updateAces(p,ace_entry) {
+	var acls;
 	// build an ace for both directions from ace_entry.  Store name in dom.
 	// does name exist?
 	if ( typeof ace_entry.aceBase == 'undefined') {
@@ -441,8 +687,8 @@ function removeAces(cur){
 		return;
 	}
 	const re=new RegExp('.*' + cur.aceBase + '.*');
-	acls=document.mudFile['ietf-mud:mud']['ietf-access-control-list:acls']['acl'];
-	cleanup=false;
+	var acls=document.mudFile['ietf-mud:mud']['ietf-access-control-list:acls']['acl'];
+	var cleanup=false;
 	for (i in acls) {
 		if (acls[i].aces.ace.length == 0 ){
 			return;
@@ -467,7 +713,7 @@ function removeAces(cur){
 
 function sbomify(cur) {
 	var whichsbom = document.getElementById("sbom").value;
-
+	var mf;
 	if ( cur.validity.valid == false ) {
 		return;
 	}
@@ -484,6 +730,7 @@ function sbomify(cur) {
 		}
 	}
 	if (whichsbom != "none" ) {
+		var tx;
 		if ( typeof mf['mudtx:transparency'] == 'undefined') {
 			mf['mudtx:transparency'] = {};
 		}
@@ -536,6 +783,10 @@ $('summary').click(function() {
     }
 });
 
+////////////////////// listeners
+
+
+
 $(document).on('click','.addable',function(e){
 	var cur=e.target;
 	if ( cur.className == 'delete' ) {
@@ -563,10 +814,16 @@ $(document).on('change','.addable',function(e){
 		updateOneAceGroup(e.target.parentNode,cur);
 		return;
 	}
+	if ( cur.name == 'direction') {
+		updateOneAceGroup(e.target.parentNode,cur);
+		return;
+	}
+
 	if ( cur.nodeName == 'INPUT' ) {
 		updateOneAceGroup(e.target.parentNode,cur);
 	}
 })
+
 
 $(document).on('change','.addbasics',function(e){
 	addbasics(e.target);
@@ -576,3 +833,7 @@ $(document).on('change','.addbasics',function(e){
 $(document).on('change','.sbomstuff',function(e){
 	sbomify(e.target);
 })
+
+////// initialize
+
+initMUDFile();
