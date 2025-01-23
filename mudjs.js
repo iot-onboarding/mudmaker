@@ -246,7 +246,7 @@ function setProto(nextAce,ace,ipVer) {
 		let cominit = nextAce.children[5];
 		cominit.style.visibility = "inherit";
 		pstring = 'tcp'
-		if (typeof ace['tcp']["ietf-mud:direction-initiated"] != 'undefined') {
+		if (typeof matches['tcp']["ietf-mud:direction-initiated"] != 'undefined') {
 			cominit.children[0].value = matches['tcp']["ietf-mud:direction-initiated"];
 		}
 	} else {
