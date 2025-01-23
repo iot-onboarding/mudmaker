@@ -341,7 +341,7 @@ function reloadFields(){
 				}
 				if (typeof ace['matches']["ietf-mud:mud"] != 'undefined'){
 					for (let val in mudtypes ) {
-						if ( typeof ace['matches']["ietf-mud:mud"][mudtypes[va]] != 'undefined') {
+						if ( typeof ace['matches']["ietf-mud:mud"][mudtypes[val]] != 'undefined') {
 							nextAce = findNextAce(val);
 							if (! nextAce.children[0].readOnly) {
 								nextAce.children[0].value = ace['matches']["ietf-mud:mud"][mudtypes[va]];
