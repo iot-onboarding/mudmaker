@@ -262,10 +262,10 @@ function setProto(nextAce,ace,ipVer) {
 		p0 = 1;
 	}
 	if (typeof matches[pstring]['source-port'] != 'undefined') {
-		proto.children[p1].value = ace[pstring]['source-port']['port'];
+		proto.children[p1].value = matches[pstring]['source-port']['port'];
 	}
 	if (typeof matches[pstring]['destination-port'] != 'undefined') {
-		proto.children[p0].value = ace[pstring]['destiantion-port']['port'];
+		proto.children[p0].value = matches[pstring]['destiantion-port']['port'];
 	}
 }
 
