@@ -216,7 +216,7 @@ function clearAclUI(){
 
 
 function findNextAce(aceType){
-	let block=document.getElementById(acetype);
+	let block=document.getElementById(aceType);
 	if (typeof block.children[1]['aceBase'] == 'undefined') {
 		return block.children[1];
 	}
