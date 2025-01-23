@@ -200,7 +200,7 @@ function clearAclUI(){
 			}
 		}
 		var thegroup = aclgroup.children[1];
-		if (thegroup.children[0].readonly != true ) {
+		if (thegroup.children[0].readOnly != true ) {
 			thegroup.children[0].value='';
 		}
 		thegroup.children[1].value = 'any'; // protocol
