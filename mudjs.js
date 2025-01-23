@@ -192,6 +192,26 @@ function savework(){
 	dlAnchorElem.click();
 }
 
+function clearAclUI(){
+	Array.from(getElementsByClass("addable")).forEach(function(aclgroup){
+		if (aclgroup.children.length > 2) {
+			for (let i = 2; i< aclgroup.children.length; i++) {
+				aclgroup.children[i].remove();
+			}
+		}
+		var thegroup = aclgroup.children[1];
+		if (thegroup.children[0].readonly != true ) {
+			thegroup.children[0].value='';
+		}
+		thegroup.children[1].value = 'any'; // protocol
+		thegroup.children[4].children[0].value = 'any'; // lport
+		thegroup.children[4].children[1].value = 'any'; // rport
+		thegroup.children[4].style.visibility = 'hidden';
+		thegroup.children[5].children[0].value = 'either';
+		thegroup.children[5].style.visibility = 'hidden';
+	})
+}
+
 function reloadFields(){
 	var mf = document.mudFile['ietf-mud:mud'];
 	const inbasic = ['mfg-name', 'systeminfo', 'documentation'];
