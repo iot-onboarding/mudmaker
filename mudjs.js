@@ -288,13 +288,9 @@ function setvulnvis(v) {
 
 function setVisibility(outer) {
 	if ( outer.value == prev_sbom ) {
-		return;
+		return; // nothing changed?!
 	}
-	/* broken
-    document.getElementById('sbomcloudurl').value='';
-    document.getElementById('sbomcc').value='';
-    document.getElementById('sbomnr').value='';
-    document.getElementById('sbinfourl').value='';*/
+
     if (outer.value != 'none') {
 		var elid='sb' + outer.value;
 		document.getElementById('sbomany').style.display= 'inherit';
@@ -305,6 +301,11 @@ function setVisibility(outer) {
     } else {
 		document.getElementById('sbomany').style.display= 'none';
 		delete document.mudFile['mudtx:transparency'];
+    	document.getElementById('sbomswver').value='';
+		document.getElementById('sbomcloudurl').value='';
+    	document.getElementById('sbomcc').value='';
+    	document.getElementById('sbomnr').value='';
+    	document.getElementById('sbinfourl').value='';
 		saveMUD();
     }
 }
