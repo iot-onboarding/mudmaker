@@ -195,8 +195,9 @@ function savework(){
 function clearAclUI(){
 	Array.from(document.getElementsByClassName("addable")).forEach(function(aclgroup){
 		if (aclgroup.children.length > 2) {
-			for (let i = 2; i< aclgroup.children.length; i++) {
-				aclgroup.children[i].remove();
+			let nchild = aclgroup.children.length;
+			for (let i = 2; i< nchild; i++) {
+				aclgroup.children[2].remove();
 			}
 		}
 		var thegroup = aclgroup.children[1];
