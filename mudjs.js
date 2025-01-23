@@ -230,13 +230,13 @@ function setProto(nextAce,ace,ipVer) {
 	var p0;
 	let re = /^(..).+/;
 	let tofro = ace.name.match(re)[1];
-	if ( typeof ace['ipVer'] == 'undefined') {
+	if ( typeof ace[ipVer] == 'undefined') {
 		return;
 	}
-	if ( typeof ace['ipVer']['protocol'] == 'undefined' ) {
+	if ( typeof ace[ipVer]['protocol'] == 'undefined' ) {
 		return;
 	}
-	nextAce.children[1].value = ace['ipVer']['protocol'];
+	nextAce.children[1].value = ace[ipVer]['protocol'];
 	let proto = nextAce.children[4];
 	proto.style.visibility = 'inherit';
 	if ( ace[ipVer]['protocol'] == 6 ){
