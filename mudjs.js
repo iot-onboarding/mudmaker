@@ -220,7 +220,7 @@ function findNextAce(aceType){
 	if (typeof block.children[1]['aceBase'] == 'undefined') {
 		return block.children[1];
 	}
-	addEntry(aceType);
+	addEntry(block);
 	return block.children[block.children.length-1];
 }
 
