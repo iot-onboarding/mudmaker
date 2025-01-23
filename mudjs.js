@@ -228,23 +228,26 @@ function setProto(nextAce,ace,ipVer) {
 	var pstring;
 	var p1;
 	var p0;
-	let re = /^(..).+/;
+	const re = /^(..).+/;
+	const matches = ace['matches'];
+
 	let tofro = ace.name.match(re)[1];
-	if ( typeof ace[ipVer] == 'undefined') {
+
+	if ( typeof matches[ipVer] == 'undefined') {
 		return;
 	}
-	if ( typeof ace[ipVer]['protocol'] == 'undefined' ) {
+	if ( typeof matches[ipVer]['protocol'] == 'undefined' ) {
 		return;
 	}
-	nextAce.children[1].value = ace[ipVer]['protocol'];
+	nextAce.children[1].value = matches[ipVer]['protocol'];
 	let proto = nextAce.children[4];
 	proto.style.visibility = 'inherit';
-	if ( ace[ipVer]['protocol'] == 6 ){
+	if ( matches[ipVer]['protocol'] == 6 ){
 		let cominit = nextAce.children[5];
 		cominit.style.visibility = "inherit";
 		pstring = 'tcp'
 		if (typeof ace['tcp']["ietf-mud:direction-initiated"] != 'undefined') {
-			cominit.children[0].value = ace['tcp']["ietf-mud:direction-initiated"];
+			cominit.children[0].value = matches['tcp']["ietf-mud:direction-initiated"];
 		}
 	} else {
 		pstring = 'udp'
@@ -256,10 +259,10 @@ function setProto(nextAce,ace,ipVer) {
 		p1 = 0;
 		p0 = 1;
 	}
-	if (typeof ace[pstring]['source-port'] != 'undefined') {
+	if (typeof matches[pstring]['source-port'] != 'undefined') {
 		proto.children[p1].value = ace[pstring]['source-port']['port'];
 	}
-	if (typeof ace[pstring]['destination-port'] != 'undefined') {
+	if (typeof matches[pstring]['destination-port'] != 'undefined') {
 		proto.children[p0].value = ace[pstring]['destiantion-port']['port'];
 	}
 }
