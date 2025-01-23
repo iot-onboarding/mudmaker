@@ -802,10 +802,16 @@ $(document).on('change','.addable',function(e){
 		updateOneAceGroup(e.target.parentNode,cur);
 		return;
 	}
+	if ( cur.name == 'direction') {
+		updateOneAceGroup(e.target.parentNode,cur);
+		return;
+	}
+	
 	if ( cur.nodeName == 'INPUT' ) {
 		updateOneAceGroup(e.target.parentNode,cur);
 	}
 })
+
 
 $(document).on('change','.addbasics',function(e){
 	addbasics(e.target);
