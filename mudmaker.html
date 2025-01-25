@@ -40,17 +40,17 @@
     </div>
     <div id="publish" class="tabcontent">
       <section id="three" class="wrapper">
-        <details>
-        <summary>>Save your work for later</summary>
+        <details open="true">
+        <summary>Save your work for later</summary>
           Click <a onclick="savework()">here</a> to save your work for later.  Then return
           to this page later to load work.
         </details>
-        <details>
+        <details open="true">
         <summary>Continue Earlier Work</summary>
             <label for="getSavedWork">Want to load saved work?<label>
             <input type="file" accept="text/json, application/json" onchange="loadWork(this);"></input>
         </details>
-        <details>
+        <details open="true">
           <summary>Publish your MUD file and other work to GitHub</summary>
             You can publish your work to the <a href="https://github.com/iot-onboarding/mudfiles">
               IoT Onboaridng</a> organization for review and publication.  This <em>must</em> include
