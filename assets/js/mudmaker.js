@@ -211,7 +211,7 @@ function getSignedMUDfile(){
 		"Mudfile" : document.MudFile,
 		"EmailAddress" : email
 	};
-	const request = new Request("/mudzip", {
+	const request = new Request("/mudnob64zip", {
 		method: "POST",
 		body: JSON.stringify(pinfo),
 		headers: {
