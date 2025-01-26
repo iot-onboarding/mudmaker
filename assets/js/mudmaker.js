@@ -815,6 +815,9 @@ function sbomify(cur) {
 $('summary').click(function() {
     var parent = $(this).parent()[0];
     var pbox = parent.id + 'box';
+	if ( typeof document.getElementById(pbox) == 'undefined') {
+		return;
+	}
     if ( parent.open == false ) {
 		document.getElementById(pbox).checked = true;
 		if ( parent.id == "myctl" || parent.id == "loc" || parent.id == 'mymfg') {
