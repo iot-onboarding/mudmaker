@@ -229,7 +229,7 @@ function getSignedMUDfile(){
 			if (! response.ok ) {
 				throw new Error("bad answer");
 			}
-			return response.body;
+			return response.blob;
 		})
 		.then(zipdata => {
 			var blob = new Blob(zipdata, {type: "application/zip"}),
