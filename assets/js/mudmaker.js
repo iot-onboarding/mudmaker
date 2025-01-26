@@ -232,13 +232,11 @@ function getSignedMUDfile(){
 			return response.bytes();
 		})
 		.then(zipdata => {
-			var blob = new Blob(zipdata, {type: "application/zip"}),
-				url = URL.createObjectURL(blob),
+			var url = "data:application/zip;base64," + btoa(zipdata),
 				dlAnchorElem = document.getElementById('downloadZip');
-			dlAnchorElem.setAttribute("href", blob);
+			dlAnchorElem.setAttribute("href", url);
 			dlAnchorElem.setAttribute("download", model + ".zip");
 			dlAnchorElem.click();
-			URL.revokeObjectURL(url);
 		})
 }
 
