@@ -233,10 +233,10 @@ function getSignedMUDfile(){
 			if (! response.ok ) {
 				throw new Error("bad answer");
 			}
-			return response.bytes();
+			return response.blob();
 		})
 		.then(zipdata => {
-			var url = "data:application/octet-stream;base64," + b64_encode(zipdata),
+			var url = URL.createObjectURL(zipdata),
 				dlAnchorElem = document.getElementById('downloadZip');
 			dlAnchorElem.setAttribute("href", url);
 			dlAnchorElem.setAttribute("download", model + ".zip");
