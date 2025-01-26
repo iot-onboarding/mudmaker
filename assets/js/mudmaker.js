@@ -815,7 +815,7 @@ function sbomify(cur) {
 $('summary').click(function() {
     var parent = $(this).parent()[0];
     var pbox = parent.id + 'box';
-	if ( typeof document.getElementById(pbox) == 'undefined') {
+	if ( document.getElementById(pbox) == null ) {
 		return;
 	}
     if ( parent.open == false ) {
