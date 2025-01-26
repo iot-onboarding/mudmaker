@@ -233,7 +233,7 @@ function getSignedMUDfile(){
 		.then(zipdata => {
 			var blob = new Blob(zipdata, {type: "application/zip"}),
 				url = URL.createObjectURL(blob),
-				dlAnchorElem = document.getElementById('downloadAnchorElem');
+				dlAnchorElem = document.getElementById('downloadZip');
 			dlAnchorElem.setAttribute("href", blob);
 			dlAnchorElem.setAttribute("download", model + ".zip");
 			dlAnchorElem.click();
