@@ -26,7 +26,6 @@
           <p>A tool to build your own MUD files</p>
           <ul class="actions">
             <li><a href="index.html" class="button special">Help</a></li>
-            <li><a class="button special" onclick="savework()">Save Work</a></li>
           </ul>
           <a id="downloadAnchorElem" style="display:none"></a>
         </section>
@@ -35,17 +34,34 @@
     <!-- One -->
     <div class="tab">
       <button id="createTab" class="tablinks" onclick="openTab(event, 'create')">Create</button>
-      <button class="tablinks" onclick="openTab(event, 'visualize')">Visualize</button>
+      <button class="tablinks" onclick="openTab(event, 'visualize')">Visualize Network</button>
       <button class="tablinks" onclick="openTab(event, 'viewmudfile')">View MUD File</button>
-      <button class="tablinks" onclick="openTab(event, 'publish')">Publish</button>
+      <button class="tablinks" onclick="openTab(event, 'publish')">Publish/Save/Continue Work</button>
     </div>
     <div id="publish" class="tabcontent">
       <section id="three" class="wrapper">
-        <ul>
-          <li>
-            <a class="button special">Publish to Github</a>
-          </li>
-        </ul>
+        <details>
+        <summary>Save your work for later</summary>
+          Click <a onclick="savework()">here</a> to save your work for later.  Then return
+          to this page later to load work.
+        </details>
+        <details>
+        <summary>Continue Earlier Work</summary>
+            <label for="getSavedWork">Want to load saved work?<label>
+            <input type="file" accept="text/json, application/json" onchange="loadWork(this);"></input>
+        </details>
+        <details>
+          <summary>Download completed signed MUD file</summary>
+          Click <a onclick="getSignedMUDfile();">here</a> to download a completed MUD file with a sample signature and set of certificates.
+          <a id="downloadZip" style="display:none"></a>
+        </details>
+        <details>
+          <summary>Publish your MUD file and other work to GitHub</summary>
+            You can publish your work to the <a href="https://github.com/iot-onboarding/mudfiles">
+              IoT Onboarding</a> organization for review and publication.  This <em>must</em> include
+              your name, a MUD file, and contact information.  It <em>may</em> also include a PCAP
+              file by which a device can more easily be identified.
+          </details>
       </section>
     </div>
     <div id="visualize" class="tabcontent">
@@ -58,10 +74,6 @@
         <form method="POST" action="makemud2.php">
           <p><em>Note:</em> No information collected on this form is saved beyond this session.  It is only used to generate the
           files that are returned to you, or to facilitate your visualization.</p>
-          <p>
-            <label for="getSavedWork">Want to load saved work?<label>
-            <input type="file" accept="text/json, application/json" onchange="loadWork(this);"></input>
-          </p>
           <fieldset>
             <legend>Please enter the host and model to build a MUD-URL for this device:</legend>
             <label style="display: inline;">https://

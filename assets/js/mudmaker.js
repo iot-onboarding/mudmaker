@@ -192,6 +192,58 @@ function savework(){
 	dlAnchorElem.click();
 }
 
+function b64_encode(str) {
+	return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,
+        function toSolidBytes(match, p1) {
+            return String.fromCharCode('0x' + p1);
+		}
+	))
+}
+
+function getSignedMUDfile(){
+	let country = document.getElementById('country').value;
+	let email = document.getElementById('email_addr').value || '';
+	let mfgr = document.getElementById('mfg-name').value || '';
+	let mudb64 = b64_encode(JSON.stringify(document.mudFile,null,2));
+
+	if ( country == '0' || email == '' || mfgr == '' || 
+		typeof document.mudFile['ietf-mud:mud']['mud-url'] == 'undefined' ) {
+		alert("Manufacturer Name, Model, Country, Email must all be set to retrieve a signed MUD file");
+	}
+	let model = document.mudFile['ietf-mud:mud']['systeminfo'];
+	let pinfo = {
+		"Manufacturer" : mfgr,
+		"Model" : model,
+		"CountryCode" : country,
+		"MudURL" : document.mudFile['ietf-mud:mud']['mud-url'],
+		'SerialNumber' : "Demo12345",
+		"Mudfile" : mudb64,
+		"EmailAddress" : email
+	};
+	const request = new Request("/mudzip", {
+		method: "POST",
+		body: JSON.stringify(pinfo),
+		headers: {
+			"Content-type" : "application/json",
+			"Accept" : "application/zip"
+		}
+	})
+	fetch(request)
+		.then(response => {
+			if (! response.ok ) {
+				throw new Error("bad answer");
+			}
+			return response.blob();
+		})
+		.then(zipdata => {
+			var url = URL.createObjectURL(zipdata),
+				dlAnchorElem = document.getElementById('downloadZip');
+			dlAnchorElem.setAttribute("href", url);
+			dlAnchorElem.setAttribute("download", model + ".zip");
+			dlAnchorElem.click();
+		})
+}
+
 function clearAclUI(){
 	Array.from(document.getElementsByClassName("addable")).forEach(function(aclgroup){
 		if (aclgroup.children.length > 2) {
@@ -770,6 +822,9 @@ function sbomify(cur) {
 $('summary').click(function() {
     var parent = $(this).parent()[0];
     var pbox = parent.id + 'box';
+	if ( document.getElementById(pbox) == null ) {
+		return;
+	}
     if ( parent.open == false ) {
 		document.getElementById(pbox).checked = true;
 		if ( parent.id == "myctl" || parent.id == "loc" || parent.id == 'mymfg') {
