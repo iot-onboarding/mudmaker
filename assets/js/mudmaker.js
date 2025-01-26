@@ -210,6 +210,7 @@ function getSignedMUDfile(){
 	let pinfo = {
 		"Manufacturer" : mfgr,
 		"Model" : model,
+		"CountryCode" : country,
 		"MudURL" : document.mudFile['ietf-mud:mud']['mud-url'],
 		'SerialNumber' : "Demo12345",
 		"Mudfile" : mudb64,
