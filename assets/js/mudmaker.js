@@ -202,7 +202,7 @@ function getSignedMUDfile(){
 		typeof document.mudFile['ietf-mud:mud']['mud-url'] == 'undefined' ) {
 		alert("Manufacturer Name, Model, Country, Email must all be set to retrieve a signed MUD file");
 	}
-	let model = document.mudFile['ietf-mud:mud']['model-name'];
+	let model = document.mudFile['ietf-mud:mud']['systeminfo'];
 	let pinfo = {
 		"Manufacturer" : mfgr,
 		"Model" : model,
