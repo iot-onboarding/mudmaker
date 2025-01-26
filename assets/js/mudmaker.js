@@ -196,6 +196,10 @@ function getSignedMUDfile(){
 	let country = document.getElementById('country').value;
 	let email = document.getElementById('email_addr').value || '';
 	let mfgr = document.getElementById('mfg-name').value || '';
+	let mudb64 = btoa(encodeURIComponent(JSON.stringify(document.mudFile,null,2).replace(/%([0-9A-F]{2})/g,
+        function toSolidBytes(match, p1) {
+            return String.fromCharCode('0x' + p1);
+		})));
 
 
 	if ( country == '0' || email == '' || mfgr == '' || 
@@ -211,7 +215,7 @@ function getSignedMUDfile(){
 		"Mudfile" : document.MudFile,
 		"EmailAddress" : email
 	};
-	const request = new Request("/mudnob64zip", {
+	const request = new Request("/mudzip", {
 		method: "POST",
 		body: JSON.stringify(pinfo),
 		headers: {
