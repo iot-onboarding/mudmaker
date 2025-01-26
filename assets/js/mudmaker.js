@@ -192,6 +192,51 @@ function savework(){
 	dlAnchorElem.click();
 }
 
+function getSignedMUDfile(){
+	let country = document.getElementById('country').value;
+	let email = document.getElementById('email_addr').value || '';
+	let mfgr = document.getElementById('mfg-name').value || '';
+
+
+	if ( country == '0' || email == '' || mfgr == '' || 
+		typeof document.mudFile['ietf-mud:mud']['mud-url'] == 'undefined' ) {
+		alert("Manufacturer Name, Model, Country, Email must all be set to retrieve a signed MUD file");
+	}
+	let model = document.mudFile['ietf-mud:mud']['model-name'];
+	let pinfo = {
+		"Manufacturer" : mfgr,
+		"Model" : model,
+		"MudURL" : document.mudFile['ietf-mud:mud']['mud-url'],
+		'SerialNumber' : "Demo12345",
+		"Mudfile" : document.MudFile,
+		"EmailAddress" : email
+	};
+	const request = new Request("/mudzip", {
+		method: "POST",
+		body: JSON.stringify(pinfo),
+		headers: {
+			"Content-type" : "application/json",
+			"Accept" : "application/zip"
+		}
+	})
+	fetch(request)
+		.then(response => {
+			if (! response.ok ) {
+				throw new Error("bad answer");
+			}
+			return response.body;
+		})
+		.then(zipdata => {
+			var blob = new Blob(zipdata, {type: "application/zip"}),
+				url = URL.createObjectURL(blob),
+				dlAnchorElem = document.getElementById('downloadAnchorElem');
+			dlAnchorElem.setAttribute("href", blob);
+			dlAnchorElem.setAttribute("download", model + ".zip");
+			dlAnchorElem.click();
+			URL.revokeObjectURL(url);
+		})
+}
+
 function clearAclUI(){
 	Array.from(document.getElementsByClassName("addable")).forEach(function(aclgroup){
 		if (aclgroup.children.length > 2) {
