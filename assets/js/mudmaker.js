@@ -212,7 +212,7 @@ function getSignedMUDfile(){
 		"Model" : model,
 		"MudURL" : document.mudFile['ietf-mud:mud']['mud-url'],
 		'SerialNumber' : "Demo12345",
-		"Mudfile" : document.MudFile,
+		"Mudfile" : mudb64,
 		"EmailAddress" : email
 	};
 	const request = new Request("/mudzip", {
