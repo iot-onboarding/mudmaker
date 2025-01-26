@@ -20,7 +20,12 @@ function initMUDFile() {
 }
 
 
-
+function resetSite() {
+	window.sessionStorage.removeItem('mudFile');
+	initMUDFile();
+	clearAclUI();
+	reloadFields();
+}
 
 function removeIt(elemId) {
     var elem=document.getElementById(elemId);
