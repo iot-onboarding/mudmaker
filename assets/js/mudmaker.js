@@ -236,7 +236,7 @@ function getSignedMUDfile(){
 			return response.bytes();
 		})
 		.then(zipdata => {
-			var url = "data:application/zip;base64," + b64_encode(zipdata),
+			var url = "data:application/octet-stream;base64," + b64_encode(zipdata),
 				dlAnchorElem = document.getElementById('downloadZip');
 			dlAnchorElem.setAttribute("href", url);
 			dlAnchorElem.setAttribute("download", model + ".zip");
