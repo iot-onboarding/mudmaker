@@ -192,15 +192,19 @@ function savework(){
 	dlAnchorElem.click();
 }
 
+function b64_encode(str) {
+	return (b2a(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,
+        function toSolidBytes(match, p1) {
+            return String.fromCharCode('0x' + p1);
+		}
+	)))
+}
+
 function getSignedMUDfile(){
 	let country = document.getElementById('country').value;
 	let email = document.getElementById('email_addr').value || '';
 	let mfgr = document.getElementById('mfg-name').value || '';
-	let mudb64 = btoa(encodeURIComponent(JSON.stringify(document.mudFile,null,2).replace(/%([0-9A-F]{2})/g,
-        function toSolidBytes(match, p1) {
-            return String.fromCharCode('0x' + p1);
-		})));
-
+	let mudb64 = b64_encode(JSON.stringify(document.mudFile,null,2));
 
 	if ( country == '0' || email == '' || mfgr == '' || 
 		typeof document.mudFile['ietf-mud:mud']['mud-url'] == 'undefined' ) {
@@ -232,7 +236,7 @@ function getSignedMUDfile(){
 			return response.bytes();
 		})
 		.then(zipdata => {
-			var url = "data:application/zip;base64," + btoa(zipdata),
+			var url = "data:application/zip;base64," + b64_encode(zipdata),
 				dlAnchorElem = document.getElementById('downloadZip');
 			dlAnchorElem.setAttribute("href", url);
 			dlAnchorElem.setAttribute("download", model + ".zip");
