@@ -23,8 +23,10 @@ function initMUDFile() {
 function resetSite() {
 	window.sessionStorage.removeItem('mudFile');
 	initMUDFile();
+	['mudhost', 'model_name', 'mfg-name', 'systeminfo', 'documentation','email_addr'].forEach((field) => {
+		document.getElementById(field).value='';
+	});
 	clearAclUI();
-	reloadFields();
 }
 
 function removeIt(elemId) {
