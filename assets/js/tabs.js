@@ -32,6 +32,7 @@ function openTab(evt, tabName) {
 
 	} else if (tabName == "publish") {
 		let mans = document.getElementById("mandatories");
+		let gtg = true;
 		let innerhtml='<ul>';
 		let displaytab = {
 			"mudhost" : "Manufacturer Domain",
@@ -49,10 +50,17 @@ function openTab(evt, tabName) {
 						displaytab[k] + " : "  + v.value + "<span style='color: green'>&#9989;</span></li>";
 				} else {
 					innerhtml = innerhtml + '<li>' +
-						displaytab[k] + " : not set <span style='color: red'>&#10006;</span></li>" 
+						displaytab[k] + " : not set <span style='color: red'>&#10006;</span></li>";
+					gtg = false; 
 				}
 			});
 		mans.innerHTML = innerhtml + '</ul>';
+		let but = document.getElementById("pubbutton");
+		if ( gtg ==  false ) {
+			but.disabled = true;
+		} else {
+			but.disabled = false;
+		}
 	}
 	// Get all elements with class="tablinks" and remove the class "active"
 	tablinks = document.getElementsByClassName("tablinks");
