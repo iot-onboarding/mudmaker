@@ -21,7 +21,7 @@ function initMUDFile() {
 
 
 function resetSite() {
-	window.sessionStorage.removeItem('mudFile');
+	window.sessionStorage.clear();
 	delete document.mudFie;
 	delete document.mfChanged;
 	initMUDFile();
