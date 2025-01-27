@@ -40,28 +40,39 @@
     </div>
     <div id="publish" class="tabcontent">
       <section id="three" class="wrapper">
-        <details>
-        <summary>Save your work for later</summary>
-          Click <a onclick="savework()">here</a> to save your work for later.  Then return
-          to this page later to load work.
-        </details>
-        <details>
-        <summary>Continue Earlier Work</summary>
-            <label for="getSavedWork">Want to load saved work?<label>
-            <input id="loadsaved" type="file" accept="text/json, application/json" onchange="loadWork(this);"></input>
-        </details>
-        <details>
-          <summary>Download completed signed MUD file</summary>
-          Click <a onclick="getSignedMUDfile();">here</a> to download a completed MUD file with a sample signature and set of certificates.
-          <a id="downloadZip" style="display:none"></a>
-        </details>
-        <details>
-          <summary>Publish your MUD file and other work to GitHub</summary>
-            You can publish your work to the <a href="https://github.com/iot-onboarding/mudfiles">
+        <table>
+          <tbody>
+          <tr>
+            <td>Save your work for later</td>
+            <td>>Click <a onclick="savework()">here</a> to save your work for later.  Then return
+              to this page later to load work.
+            </td>
+          </tr>
+          <tr>
+            <td>Continue Earlier Work</td>
+            <td>
+              <label for="getSavedWork">Want to load saved work?<label>
+              <input id="loadsaved" type="file" accept="text/json, application/json" onchange="loadWork(this);"></input>
+            </td>
+          </tr>
+          <tr>
+            <td>Download completed signed MUD file</td>
+            <td>
+              Click <a onclick="getSignedMUDfile();">here</a> to download a completed MUD file with a sample signature and set of certificates.
+              <a id="downloadZip" style="display:none"></a>
+            </td>
+          </tr>
+          <tr>
+          <td>Publish your MUD file and other work to GitHub</td>
+          <td>
+              You can publish your work to the <a href="https://github.com/iot-onboarding/mudfiles">
               IoT Onboarding</a> organization for review and publication.  This <em>must</em> include
               your name, a MUD file, and contact information.  It <em>may</em> also include a PCAP
               file by which a device can more easily be identified.
-          </details>
+          </td>
+        </tr>
+        </tbody>
+        </table>
       </section>
     </div>
     <div id="visualize" class="tabcontent">
