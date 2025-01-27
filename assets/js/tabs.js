@@ -19,12 +19,13 @@ function openTab(evt, tabName) {
 		pre=document.getElementById("mudcontent");
 		pre.innerText = JSON.stringify(document.mudFile,null,2);
 	} else if (tabName == 'visualize') {
-	    vizdiv = document.getElementById("vis2");
+	    vizdiv = document.getElementById("vis2"); 
 	    iframe = document.createElement("iframe");
+		iframe.id="vis2";
 	    iframe.width = window.innerWidth - 20;
 	    iframe.height = window.innerHeight - 200;
 	    iframe.src = "mudjsvis.html";
-	    vizdiv.children[0] = iframe;
+	    document.getElementById("visualizer").appendChild(iframe);
 
 	} else if (tabName == "publish") {
 		let mans = document.getElementById("mandatories");
