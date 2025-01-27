@@ -24,7 +24,7 @@ function resetSite() {
 	window.sessionStorage.removeItem('mudFile');
 	initMUDFile();
 	clearAclUI();
-	[ "sbomany", "sbomcloud", "sblocal", "sbtel", "sbinfourl","vulnview"].forEach((field) => {
+	[ "sbomany", "sbcloud", "sblocal", "sbtel", "sbinfourl","vulnview"].forEach((field) => {
 		document.getElementById(field).style.display='hidden';
 	});
 	getElementsByTagName("details").foreach((det) => {
