@@ -23,10 +23,13 @@ function initMUDFile() {
 function resetSite() {
 	window.sessionStorage.removeItem('mudFile');
 	initMUDFile();
-	['mudhost', 'model_name', 'mfg-name', 'systeminfo', 'documentation','email_addr'].forEach((field) => {
-		document.getElementById(field).value='';
-	});
 	clearAclUI();
+	[ "sbomany", "sbomcloud", "sblocal", "sbtel", "sbinfourl","vulnview"].forEach((field) => {
+		document.getElementById(field).style.display='hidden';
+	});
+	getElementsByTagName("details").foreach((det) => {
+		det.open = false;
+	});
 }
 
 function removeIt(elemId) {
