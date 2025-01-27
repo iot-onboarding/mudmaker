@@ -25,7 +25,7 @@ function openTab(evt, tabName) {
 	    iframe.width = window.innerWidth - 20;
 	    iframe.height = window.innerHeight - 200;
 	    iframe.src = "mudjsvis.html";
-	    document.getElementById("visualizer").appendChild(iframe);
+	    document.getElementById("visualize").appendChild(iframe);
 
 	} else if (tabName == "publish") {
 		let mans = document.getElementById("mandatories");
