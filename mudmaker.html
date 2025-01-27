@@ -43,27 +43,26 @@
         <table>
           <tbody>
           <tr>
-            <td>Save your work for later</td>
-            <td>Click <a onclick="savework()">here</a> to save your work for later.  Then return
-              to this page later to load work.
+            <td><s</s><input type="submit" name="Save" onclick="savework()"></td>
+            <td>save your work for later.  Then return to this page later to upload and continue work.
             </td>
           </tr>
           <tr>
-            <td>Continue Earlier Work</td>
-            <td>
               <label for="getSavedWork">Want to load saved work?<label>
               <input id="loadsaved" type="file" accept="text/json, application/json" onchange="loadWork(this);"></input>
             </td>
+            <td>Continue Earlier Work</td>
+            <td>
           </tr>
           <tr>
-            <td>Download completed signed MUD file</td>
+            <td><input type="submit" name="Sign" onclick="getSignedMUDfile()"></td>
             <td>
-              Click <a onclick="getSignedMUDfile();">here</a> to download a completed MUD file with a sample signature and set of certificates.
+              Download a completed MUD file with a sample signature and set of certificates.
               <a id="downloadZip" style="display:none"></a>
             </td>
           </tr>
           <tr>
-          <td>Publish your MUD file and other work to GitHub</td>
+          <td><input type="submit" name="Publish" onclick="alert('not yet');"></td>
           <td>
               You can publish your work to the <a href="https://github.com/iot-onboarding/mudfiles">
               IoT Onboarding</a> organization for review and publication.  This <em>must</em> include
