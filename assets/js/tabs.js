@@ -30,6 +30,37 @@ function openTab(evt, tabName) {
 	    iframe.src = "mudjsvis.html";
 	    vizdiv.appendChild(iframe);
 
+	} else if (tabName == "publish") {
+		let mans = document.getElementById("mandatories");
+		let gtg = true;
+		let innerhtml='<ul>';
+		let displaytab = {
+			"mudhost" : "Manufacturer Domain",
+			"mfg-name" : "Manufacturer Name",
+			"model_name" : "Device Model",
+			"systeminfo" : "Device Description",
+			"documentation" : "Documentation URL",
+			"email_addr" : "EMail Address"
+		};
+		Object.keys(displaytab).forEach(
+			(k) => {
+				let v = document.getElementById(k);
+				if (v.validity.valid && v.value != null & v.value != '' ) {
+					innerhtml = innerhtml + '<li>' + 
+						displaytab[k] + " : "  + v.value + "<span style='color: green'>&#9989;</span></li>";
+				} else {
+					innerhtml = innerhtml + '<li>' +
+						displaytab[k] + " : not set <span style='color: red'>&#10006;</span></li>";
+					gtg = false; 
+				}
+			});
+		mans.innerHTML = innerhtml + '</ul>';
+		let but = document.getElementById("pubbutton");
+		if ( gtg ==  false ) {
+			but.disabled = true;
+		} else {
+			but.disabled = false;
+		}
 	}
 	// Get all elements with class="tablinks" and remove the class "active"
 	tablinks = document.getElementsByClassName("tablinks");
