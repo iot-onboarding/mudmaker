@@ -268,6 +268,9 @@ function clearAclUI(){
 		if (thegroup.children[0].readOnly != true ) {
 			thegroup.children[0].value=null;
 		}
+		if (typeof thegroup['aceBase'] != 'undefined') {
+			thegroup['aceBase'].remove();
+		}
 		thegroup.children[1].value = 'any'; // protocol
 		thegroup.children[4].children[0].value = 'any'; // lport
 		thegroup.children[4].children[1].value = 'any'; // rport
@@ -398,7 +401,6 @@ function reloadFields(){
 
 				var nextAce;
 				let ipVer = null;
-				let inputVal = '';
 				// get aceBase value
 				let re = /^..(ace.*)/;
 				let aceBase = ace.name.match(re)[1];
