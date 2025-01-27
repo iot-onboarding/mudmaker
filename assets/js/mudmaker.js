@@ -269,7 +269,7 @@ function clearAclUI(){
 			thegroup.children[0].value=null;
 		}
 		if (typeof thegroup['aceBase'] != 'undefined') {
-			thegroup['aceBase'].remove();
+			delete thegroup['aceBase'];
 		}
 		thegroup.children[1].value = 'any'; // protocol
 		thegroup.children[4].children[0].value = 'any'; // lport
