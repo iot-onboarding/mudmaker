@@ -19,7 +19,7 @@ function openTab(evt, tabName) {
 		pre=document.getElementById("mudcontent");
 		pre.innerText = JSON.stringify(document.mudFile,null,2);
 	} else if (tabName == 'visualize') {
-	    vizdiv = document.getElementById("vis2"); 
+	    document.getElementById("vis2").remove();
 	    iframe = document.createElement("iframe");
 		iframe.id="vis2";
 	    iframe.width = window.innerWidth - 20;
