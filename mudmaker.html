@@ -7,10 +7,14 @@
     <title>Build a MUD file</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!--[if lte IE 8]><script src="assets/js/ie/html5shiv.js"></script><![endif]-->
-    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="assets/css/main.css" defer="defer">
     <!--[if lte IE 9]><link rel="stylesheet" href="assets/css/ie9.css" /><![endif]-->
-    <script type="text/javascript" src="aux.js" defer="defer"></script>
-  </head>
+    <script type="text/javascript" src="assets/js/mudmaker.js" defer="defer"></script>
+    <script type="text/javascript" src="assets/js/tabs.js"></script>
+    <link rel='stylesheet' href='css/mainWindow.css' type='text/css' media='all'
+/>
+    <link rel='stylesheet' href='css/tooltip.css' type='text/css' media='all'/>
+    <link rel='stylesheet' href='css/introjs.css'>  </head>
   <body>
     <!-- Banner -->
     <section id="banner">
@@ -23,52 +27,91 @@
           <ul class="actions">
             <li><a href="index.html" class="button special">Help</a></li>
           </ul>
+          <a id="downloadAnchorElem" style="display:none"></a>
         </section>
       </div>
     </section>
     <!-- One -->
-    <section id="two" class="wrapper">
-      <form method="POST" action="makemud2.php">
-        <p><em>Note:</em> No information collected on this form is saved beyond this session.  It is only used to generate the
-        files that are returned to you, or to facilitate your visualization.</p>
-        <fieldset>
-          <legend>Please enter the host and model to build a MUD-URL for this device:</legend>
-        <label style="display: inline;">https://
-          <input id="mudhost" name="mudhost"  maxlength="50" size="40" required="yes"
-                 placeholder="hostname.manufacturer.com"
-		 onchange='controller_hint();'>
-        </label>
-        <label style="display: inline;">(model name here-&gt;)
-          <input name="model_name" maxlength="50" size="20"
-		 required="yes" placeholder="Device model">
-        </label>
-      </fieldset>
-        <br>
-        <fieldset>
+    <div class="tab">
+      <button id="createTab" class="tablinks" onclick="openTab(event, 'create')">Create</button>
+      <button class="tablinks" onclick="openTab(event, 'visualize')">Visualize Network</button>
+      <button class="tablinks" onclick="openTab(event, 'viewmudfile')">View MUD File</button>
+      <button class="tablinks" onclick="openTab(event, 'publish')">Publish/Save/Continue Work</button>
+    </div>
+    <div id="publish" class="tabcontent">
+      <section id="three" class="wrapper">
+        <details>
+        <summary>Save your work for later</summary>
+          Click <a onclick="savework()">here</a> to save your work for later.  Then return
+          to this page later to load work.
+        </details>
+        <details>
+        <summary>Continue Earlier Work</summary>
+            <label for="getSavedWork">Want to load saved work?<label>
+            <input id="loadsaved" type="file" accept="text/json, application/json" onchange="loadWork(this);"></input>
+        </details>
+        <details>
+          <summary>Download completed signed MUD file</summary>
+          Click <a onclick="getSignedMUDfile();">here</a> to download a completed MUD file with a sample signature and set of certificates.
+          <a id="downloadZip" style="display:none"></a>
+        </details>
+        <details>
+          <summary>Publish your MUD file and other work to GitHub</summary>
+            You can publish your work to the <a href="https://github.com/iot-onboarding/mudfiles">
+              IoT Onboarding</a> organization for review and publication.  This <em>must</em> include
+              your name, a MUD file, and contact information.  It <em>may</em> also include a PCAP
+              file by which a device can more easily be identified.
+          </details>
+      </section>
+    </div>
+    <div id="visualize" class="tabcontent">
+    </div>
+    <div id="viewmudfile" class="tabcontent">
+      <pre id="mudcontent" style="line-height: 1.2"></pre>
+    </div>
+    <div id="create" class="tabcontent">
+      <section id="two" class="wrapper">
+        <form method="POST" action="makemud2.php" id="mudform">
+          <p><em>Note:</em> No information collected on this form is saved beyond this session.  It is only used to generate the
+          files that are returned to you, or to facilitate your visualization.</p>
+          <fieldset>
+            <legend>Please enter the host and model to build a MUD-URL for this device:</legend>
+            <label style="display: inline;">https://
+              <input id="mudhost" name="mudhost"  maxlength="50" size="40" required="yes"
+                  placeholder="hostname.manufacturer.com"
+                  onchange='makemudurl();'>
+            </label>
+            <label style="display: inline;">(model name here-&gt;)
+              <input id="model_name" maxlength="50" size="20" pattern=".+"
+              required="yes" placeholder="Device model" onchange='makemudurl();'>
+            </label>
+          </fieldset>
+          <br>
+          <fieldset>
           <legend>Basic Information</legend>
           <ul class="twocol">
             <li>
-              <label for="man_name">Manufacturer Name</label>
-              <input id="man_name" name="man_name" maxlength="40" size="40"
-              placeholder="Company, Inc."
-              onchange='fillpub();'></li>
+              <label for="mfg-name">Manufacturer Name</label>
+              <input class="addbasics" id='mfg-name' name="mfg-name" maxlength="40" size="40"
+              placeholder="Company, Inc." pattern="..*" required="true">
+            </li>
             <li>
-                    <label for="sysDescr">A short description for this device</label>
-              <input name="sysDescr" maxlength="120" size="40" required="yes"
-              placeholder="This device does..">
+              <label for="systeminfo">A short description for this device</label>
+              <input class="addbasics" id="systeminfo" name="systeminfo" maxlength="120" size="40" required="yes"
+              placeholder="This device does.." pattern="..*" required="true">
             </li>
             </ul>
             <ul class="twocol">
             <li>
-                    <label for="doc_url">Documentation URL</label>
-              <input name="doc_url" maxlength="60" size="40" required="yes"
+              <label for="documentation">Documentation URL</label>
+              <input class="addbasics" id="documentation" name="documentation" maxlength="60" size="40" required="yes"
               type="url"
               placeholder="https://documentation...">
             </li>
             <li>
                     <label for="email_addr">EMail</label></li><li>
-              <input name="email_addr" maxlength="60" size="40" required="yes"
-              placeholder="someone@example.com">
+              <input id="email_addr" name="email_addr" maxlength="60" size="40" required="yes"
+              placeholder="someone@example.com" type="email">
             </li>
             </ul>
             <ul class="twocol">
@@ -343,14 +386,14 @@
               </li>
               <li>
                 <label for="ipchoice">This device speaks</label>
-                <select id="ipchoice" name="ipchoice">
+                <select id="ipchoice" name="ipchoice" value="ipv4">
                   <option value="ipv4">IPv4</option>
                   <option value="ipv6">IPv6</option>
                   <option value="both">Both</option>
                 </select>
               </li>
           </ul>
-         <ul class="twocol">
+          <ul class="twocol">
           <li>
             <label for='pub_name'>MUD File Publisher Name</label>
             <input id="pub_name" name="pub_name" maxlength="80"
@@ -359,8 +402,8 @@
           </li>
         </ul>
         <br>
-      </fieldset>
-      <fieldset>
+          </fieldset>
+          <fieldset>
         <ul class=twocol>
           <li>
             <label>How can one get a software bill of materials?
@@ -371,10 +414,9 @@
                     <option value="local">Well-known URL on Device</option>
                     <option value="tel">Telephone</option>
                     <option value="infourl">Get more information URL</option>
-                    <option value="c2">OpenC2</option>
                   </select>
             </label>
-            <span id="sbomany" style="display: none">
+            <span id="sbomany" class="sbomstuff" style="display: none">
               <br>
               <span id="sbcloud" style="display: none"> Static SBOM URL on Internet:
               <br>
@@ -385,7 +427,8 @@
                   placeholder="https://your-sbom-host/location-here..">
               </span>
               <span id="sblocal" style="display: none">
-                <select id="sbschema" name="sbschema">
+                <select name="sbom-local-well-known" id="sbom-local-well-known" value="none">
+                  <option value="none">Choose</option>
                   <option value="https">https</option>
                   <option value="http">http</option>
                   <option value="coaps">coaps</option>
@@ -394,19 +437,14 @@
                 ://{this device}/.well-known/sbom
               </span>
               <span id="sbtel" style="display: none">
-                Country Code: +<input id="sbomcc" name="sbomcc" size="3" maxlength="10"
+                Country Code: +<input id="sbomcc" size="3" maxlength="10"
                   pattern="[0-9]{1,3}">&nbsp;&nbsp;&nbsp;
-                Number <input id="sbomnr" name="sbomnr" size="10" maxlength="20" pattern="[0-9]{5,20}"><br>
-              </span>
-              <span id="sbc2" style="display: none"> OpenC2
-                URI:&nbsp;&nbsp;<input id="sbomc2" name="sbomc2" size="50" maxlength="200"
-                  type="url">
+                Number <input  id="sbomnr" size="10" maxlength="20" pattern="[0-9]{5,20}"><br>
               </span>
               <span id="sbinfourl" style="display: none">
                 <label>Enter URL here:
                   <input
-                    id="infourl"
-                    name="infourl"
+                    name="contact-info" id="'contact-info"
                     size="50"
                     placeholder="https://your-security-site..."
                     maxlength="200"
@@ -423,8 +461,8 @@
               <option value="url">URL to CSAF/CVRF</option>
             </select>
             </label>
-            <span id="vulnview" style="display: none"><label for=vulninfo>Enter URL:</label>
-              <input name="vulninfo"
+            <span id="vulnview" class="sbomstuff" style="display: none"><label for=vulninfo>Enter URL:</label>
+              <input name="vuln-url" id="vuln-url"
                   size="50"
                   maxlength="200"
                   placeholder="https://your-security-site..."
@@ -432,251 +470,229 @@
             </span>
           </li>
         </ul>
-        <input type="checkbox" id=clbox name=clbox style="visibility:hidden">
-        <input type="checkbox" id=myctlbox name=myctlbox style="visibility:hidden">
-        <input type="checkbox" id=ctlbox name=ctlbox style="visibility:hidden">
-        <input type="checkbox" id=locbox name=locbox style="visibility:hidden">
-        <input type="checkbox" id=mfgbox name=mfgbox style="visibility:hidden">
-        <input type="checkbox" id=mymfgbox name=mymfgbox style="visibility:hidden">
+          </fieldset>
+          <input type="checkbox" id=clbox name=clbox style="visibility:hidden">
+          <input type="checkbox" id=myctlbox name=myctlbox style="visibility:hidden">
+          <input type="checkbox" id=ctlbox name=ctlbox style="visibility:hidden">
+          <input type="checkbox" id=locbox name=locbox style="visibility:hidden">
+          <input type="checkbox" id=mfgbox name=mfgbox style="visibility:hidden">
+          <input type="checkbox" id=mymfgbox name=mymfgbox style="visibility:hidden">
 
-        <h3>What systems does this device need to talk to?</h3>
-	      Select all that apply: <em>(optional)</em>
-        <details id="cl"> 
-          <summary>Internet hosts by name</summary>
-          <span id="cllist">
-	          <input pattern="^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[\.A-Za-z0-9])$"
+          <h3>What systems does this device need to talk to?</h3>
+          Select all that apply: <em>(optional)</em>
+          <details id="cl" class="addable"> 
+            <summary>Internet hosts by name</summary>
+            <div class="clentry">
+              <input pattern="^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[\.A-Za-z0-9])$"
+                maxlength="120"
+                size="40"
+                name="ietf-acldns:src-dnsname"
+                placeholder="hostname.manufacturer.com"
+                type="text">&nbsp;&nbsp;&nbsp;
+                Protocol&nbsp;
+              <select class="proto" value="any">
+                <option value="any">Any</option>
+                <option value="tcp">TCP</option>
+                <option value="udp">UDP</option>
+                &nbsp;
+              </select>
+              <input value="+" type="button" class="addItem">
+              <br>
+              <span class="portinfo" style="visibility: hidden">
+                Local Port&nbsp; <input pattern="([0-9]{1,5}|any)" value="any"
+                  class="lport"
+                  style="width:60px">
+                &nbsp;&nbsp;Remote Port&nbsp; <input pattern="([0-9]{1,5}|any)"
+                  value="any"
+                  class="rport"
+                  style="width:60px">
+              </span> 
+              <span class="coninit" style="visibility: hidden">
+                &nbsp;&nbsp;Initiated by&nbsp;
+                <select name="direction" value="either">
+                  <option value ="either">Either</option>
+                  <option value="thing">Thing</option>
+                  <option value="remote">Remote</option>
+                </select>
+              </span> 
+            </div>
+          </details>
+          <details id="myctl" class="addable">
+            <summary>My Controller: Access to controllers specific to this device (no need to name
+              a class)
+            </summary>
+            <div class="clentry">
+              <input value="(filled in by local admin)" readonly="readonly"
+                size="40"
+                name="my-controller"
+                type="text">&nbsp;&nbsp;&nbsp;&nbsp;Protocol&nbsp;
+              <select class="proto" value="any">
+                <option value="any">Any</option>
+                <option value="tcp">TCP</option>
+                <option value="udp">UDP</option>
+              </select>
+              <input value="+" type="button" class="addItem">
+              <br>
+              <span class="portinfo" style="visibility: hidden">
+                Local Port&nbsp; <input pattern="([0-9]{1,5}|any)" value="any"
+                  class="lport"
+                  style="width:60px">
+                &nbsp;&nbsp;Remote Port&nbsp; <input pattern="([0-9]{1,5}|any)"
+                  value="any"
+                  class="rport"
+                  style="width:60px">
+              </span> 
+              <span class="coninit" style="visibility: hidden">
+                &nbsp;&nbsp;Initiated by&nbsp;
+                <select name="direction" value="either">
+                  <option value ="either">Either</option>
+                  <option value="thing">Thing</option>
+                  <option value="remote">Remote</option>
+                </select>
+              </span>
+            </div>
+          </details>
+          <details id="loc" class="addable">
+            <summary>Local Access: Access to/from any local host for
+            specific services (like COAP or HTTP)</summary>
+            <div class="clentry">
+              <input value="any" readonly="readonly" size="40" name="local-networks"
+                type="text">&nbsp;&nbsp;&nbsp;&nbsp;Protocol&nbsp;
+                <select class="proto" value="any">
+                  <option value="any">Any</option>
+                  <option value="tcp">TCP</option>
+                  <option value="udp">UDP</option>
+                </select>
+                <input value="+" type="button" class="addItem">
+                <br>
+                <span class="portinfo" style="visibility: hidden">
+                  Local Port&nbsp; <input pattern="([0-9]{1,5}|any)" value="any"
+                    class="lport"
+                    style="width:60px">
+                  &nbsp;&nbsp;Remote Port&nbsp; <input pattern="([0-9]{1,5}|any)"
+                    value="any"
+                    class="rport"
+                    style="width:60px">
+                </span> 
+                <span class="coninit" style="visibility: hidden">
+                  &nbsp;&nbsp;Initiated by&nbsp;
+                  <select name="direction" value="either">
+                    <option value ="either">Either</option>
+                    <option value="thing">Thing</option>
+                    <option value="remote">Remote</option>
+                  </select>
+                </span>
+            </div>
+          </details>
+          <details id="ctl" class="addable">
+            <summary>Controllers (Enter a URI for the class)
+            Access to <b>classes</b> of devices that are known to be
+            controllers.&nbsp; Use this when you want different types of
+            devices to access the same controller.</summary>
+            <div class="clentry">
+              <input maxlength="120" size="40" name="controller" id="controller"
+                type="url" placeholder="https://class name...">
+              &nbsp;&nbsp;&nbsp;Protocol&nbsp;
+              <select class="proto" value="any">
+                <option value="any">Any</option>
+                <option value="tcp">TCP</option>
+                <option value="udp">UDP</option>
+              </select>
+              <input value="+" type="button" class="addItem">
+              <br>
+              <span class="portinfo" style="visibility: hidden">
+                Local Port&nbsp; <input pattern="([0-9]{1,5}|any)" value="any"
+                  class="lport"
+                  style="width:60px">
+                &nbsp;&nbsp;Remote Port&nbsp; <input pattern="([0-9]{1,5}|any)"
+                  value="any"
+                  class="rport"
+                  style="width:60px">
+              </span> 
+              <span class="coninit" style="visibility: hidden">
+                &nbsp;&nbsp;Initiated by&nbsp;
+                <select name="direction" value="either">
+                  <option value ="either">Either</option>
+                  <option value="thing">Thing</option>
+                  <option value="remote">Remote</option>
+                </select>
+              </span>
+            </div>          
+          </details>
+          <details id="mymfg" class="addable">
+            <summary>Same Manufacturer: Access devices of the same manufacturer (based on the domain name in the MUD URL)
+            </summary>
+            <div class="clentry"> 
+              <input value="(filled in by system)" readonly="readonly" name="same-manufacturer"
+                size='40' type="text">&nbsp;&nbsp;&nbsp;
+              Protocol&nbsp;
+              <select class="proto" value="any">
+                <option value="any">Any</option>
+                <option value="tcp">TCP</option>
+                <option value="udp">UDP</option>
+              </select>
+              <input value="+" type="button" class="addItem">
+              <br>
+              <span class="portinfo" style="visibility: hidden">
+                Local Port&nbsp; <input pattern="([0-9]{1,5}|any)" value="any"
+                  class="lport"
+                  style="width:60px">
+                &nbsp;&nbsp;Remote Port&nbsp; <input pattern="([0-9]{1,5}|any)"
+                  value="any"
+                  class="rport"
+                  style="width:60px">
+              </span> 
+              <span class="coninit" style="visibility: hidden">
+                &nbsp;&nbsp;Initiated by&nbsp;
+                <select name="direction" value="either">
+                  <option value ="either">Either</option>
+                  <option value="thing">Thing</option>
+                  <option value="remote">Remote</option>
+                </select>
+              </span>
+            </div>
+          </details>
+          <details id="mfg" class="addable">
+            <summary>By Manufacturer: identified by the domain names in their MUD URL</summary>
+            <div class="clentry">
+              <input pattern="^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$"
               maxlength="120"
               size="40"
-              name="clnames[]"
+              name="manufacturer"
               placeholder="hostname.manufacturer.com"
               type="text">&nbsp;&nbsp;&nbsp;
-              Protocol&nbsp;
-            <select id="clsel" name="clproto[]" value="any" onchange="tcporudp('clsel','clplist');">
-              <option value="any">Any</option>
-              <option value="tcp">TCP</option>
-              <option value="udp">UDP</option>
-              &nbsp;
-            </select>
-            <input value="+" onclick="addInput('cllist','cl','dns',0);"
-              type="button">
-            <br>
-            <span id="clplistl" style="visibility: hidden"> Local
-              Port&nbsp; <input pattern="([0-9]{1,5}|any)" value="any"
-                name="clportl[]"
-                style="width:60px">
-            </span>
-            <span id="clplist" style="visibility: hidden">
-              &nbsp;&nbsp;Remote Port&nbsp; <input pattern="([0-9]{1,5}|any)"
-                value="any"
-                name="clport[]"
-                style="width:60px">
-            </span> 
-            <span id="clplistc" style="visibility: hidden">
-              &nbsp;&nbsp;Initiated by&nbsp;
-              <select name="clinit[]" id="clinit" value="either" onchange="localcheck('clinit','clplistl');">
-                <option value="either">Either</option>
-                <option value="thing">Thing</option>
-                <option value="remote">Remote</option>
-              </select>
-            </span> 
-          </span>
-        </details>
-        <details id="myctl" >
-          <summary>My Controller: Access to controllers specific to this device (no need to name
-            a class)
-          </summary>
-          <span id="myctllist">
-            <input value="(filled in by local admin)" readonly="readonly"
-              size="40"
-              name="myctlnames[]"
-              type="text">&nbsp;&nbsp;&nbsp;&nbsp;Protocol&nbsp;
-            <select id="myctlsel" name="myctlproto[]" value="any" onchange="tcporudp('myctlsel','myctlplist');">
-              <option value="any">Any</option>
-              <option value="tcp">TCP</option>
-              <option value="udp">UDP</option>
-            </select>
-            <input value="+" onclick="addInput('myctllist','myctl','dns',8);"
-              type="button">
-            <br>
-            <span id="myctlplistl" style="visibility: hidden"> Local
-              Port&nbsp; <input pattern="([0-9]{1,5}|any)" value="any"
-                name="myctlportl[]"
-                style="width:60px">
-            </span> 
-            <span id="myctlplist" style="visibility: hidden">
-              &nbsp;&nbsp;Remote Port&nbsp; <input pattern="([0-9]{1,5}|any)"
-                value="any"
-                name="myctlport[]"
-                style="width:60px">
-            </span>
-            <span id="myctlplistc" style="visibility: hidden">
-              &nbsp;&nbsp;Initiated by&nbsp;
-              <select name="myctlinit[]" id="myctlinit" value="either"
-                onchange="localcheck('myctlinit','myctlplistl');">
-                <option value="either">Either</option>
-                <option value="thing">Thing</option>
-                <option value="remote">Remote</option>
-              </select>
-            </span>
-          </span>
-        </details>
-        <details id="loc" >
-          <summary>Local Access: Access to/from any local host for
-          specific services (like COAP or HTTP)</summary>
-          <span id="loclist"> <input value="any" name="locnames[]" disabled="disabled"
-              type="hidden">
-            <input value="any" readonly="readonly" size="40" name="locnames[]"
-              type="text">&nbsp;&nbsp;&nbsp;&nbsp;Protocol&nbsp;
-            <select id="locsel" name="locproto[]" value="any" onchange="tcporudp('locsel','locplist');">
-              <option value="any">Any</option>
-              <option value="tcp">TCP</option>
-              <option value="udp">UDP</option>
-            </select>
-            <input value="+" onclick="addInput('loclist','loc','dns',4);"
-              type="button">
-            <br>
-            <span id="locplistl" style="visibility: hidden"> Local
-              Port&nbsp; <input pattern="([0-9]{1,5}|any)" value="any"
-                name="locportl[]"
-                style="width:60px">
-            </span> 
-            <span id="locplist" style="visibility: hidden">
-              &nbsp;&nbsp;Remote Port&nbsp; <input pattern="([0-9]{1,5}|any)"
-                value="any"
-                name="locport[]"
-                style="width:60px">
-            </span>
-            <span id="locplistc" style="visibility: hidden">
-              &nbsp;&nbsp;Initiated by&nbsp;
-              <select name="locinit[]" id="locinit" value="either" onchange="localcheck('locinit','locplistl');">
-                <option value="either">Either</option>
-                <option value="thing">Thing</option>
-                <option value="remote">Remote</option>
-              </select>
-            </span> 
-          </span>
-        </details>
-        <details id="ctl">
-          <summary>Controllers (Enter a URI for the class)</summary>
-          Access to <b>classes</b> of devices that are known to be
-          controllers.&nbsp; Use this when you want different types of
-          devices to access the same controller.
-          <div id="entlist"> <input maxlength="120" size="40" name="entnames[]"
-              type="url" id=entname1 placeholder="https://class name...">
-            &nbsp;&nbsp;&nbsp;Protocol&nbsp;
-            <select id="entsel" name="entproto[]" value="any" onchange="tcporudp('entsel','entplist');">
-              <option value="any">Any</option>
-              <option value="tcp">TCP</option>
-              <option value="udp">UDP</option>
-              &nbsp;
-            </select>
-            <input value="+" onclick="addInput('entlist','ent','url',1);"
-              type="button">
-            <br>
-            <span id="entplistl" style="visibility: hidden"> Local
-              Port&nbsp; <input pattern="([0-9]{1,5}|any)" value="any"
-                name="entportl[]"
-                style="width:60px">
-            </span>
-            <span id="entplist" style="visibility: hidden">
-              &nbsp;&nbsp;Remote Port&nbsp; <input pattern="([0-9]{1,5}|any)"
-                value="any"
-                name="entport[]"
-                style="width:60px">
-            </span>
-            <span id="entplistc" style="visibility: hidden">
-              &nbsp;&nbsp;Initiated by&nbsp;
-              <select name="entinit[]" id="entinit" value="either" onchange="localcheck('entinit','entplistl');">
-                <option value="either">Either</option>
-                <option value="thing">Thing</option>
-                <option value="remote">Remote</option>
-              </select>
-            </span>
-          </div>          
-        </details>
-        <details id="mymfg">
-          <summary>Same Manufacturer: Access devices of the same manufacturer (based on the domain name in the MUD URL)
-          </summary>
-          <span id="mymanlist"> <input value="(filled in by system)"
-              readonly="readonly"
-              name="mymannames[]"
-              type="text">&nbsp;&nbsp;&nbsp;
-            Protocol&nbsp;
-            <select id="mymansel" name="mymanproto[]" value="any" onchange="tcporudp('mymansel','mymanplist');">
-              <option value="any">Any</option>
-              <option value="tcp">TCP</option>
-              <option value="udp">UDP</option>
-              &nbsp;
-            </select>
-            <input value="+" onclick="addInput('mymanlist','myman','dns', 10);"
-              type="button">
-            <br>
-            <span id="mymanplistl" style="visibility: hidden"> Local
-              Port&nbsp; <input pattern="([0-9]{1,5}|any)" value="any"
-                name="mymanportl[]"
-                style="width:60px">
-            </span>
-            <span id="mymanplist" style="visibility: hidden">
-              &nbsp;&nbsp;Remote Port&nbsp; <input pattern="([0-9]{1,5}|any)"
-                value="any"
-                name="mymanport[]"
-                style="width:60px">
-            </span>
-            <span id="mymanplistc" style="visibility: hidden">
-              &nbsp;&nbsp;Initiated by&nbsp;
-              <select name="mymaninit[]" id="mymaninit" value="either"
-                onchange="localcheck('mymaninit','mymanplistl');">
-                <option value="either">Either</option>
-                <option value="thing">Thing</option>
-                <option value="remote">Remote</option>
-              </select>
-            </span> 
-          </span>
-        </details>
-        <details id="mfg">
-          <summary>By Manufacturer: identified by the domain names in their MUD URL</summary>
-          <span id="manlist">
-            <input pattern="^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$"
-            maxlength="120"
-            size="40"
-            name="mannames[]"
-            placeholder="hostname.manufacturer.com"
-            type="text">&nbsp;&nbsp;&nbsp;
-                  Protocol&nbsp;
-            <select id="mansel" name="manproto[]" value="any" onchange="tcporudp('mansel','manplist');">
-              <option value="any">Any</option>
-              <option value="tcp">TCP</option>
-              <option value="udp">UDP</option>
-              &nbsp;
-            </select>
-            <input value="+" onclick="addInput('manlist','man','dns',6);"
-              type="button">
-            <br>
-            <span id="manplistl" style="visibility: hidden"> Local
-              Port&nbsp; <input pattern="([0-9]{1,5}|any)" value="any"
-                name="manportl[]"
-                style="width:60px">
-            </span>
-            <span id="manplist" style="visibility: hidden">
-            &nbsp;&nbsp;Remote Port&nbsp; <input pattern="([0-9]{1,5}|any)"
-              value="any"
-              name="manport[]"
-              style="width:60px">
-            </span>
-            <span id="manplistc" style="visibility: hidden">
-              &nbsp;&nbsp;Initiated by&nbsp;
-              <select name="maninit[]" id="maninit" value="either" onchange="localcheck('maninit','manplistl');">
-                <option value="either">Either</option>
-                <option value="thing">Thing</option>
-                <option value="remote">Remote</option>
-              </select>
-            </span> 
-          </span>
-        </details>
-        <br>
-        <input value="Submit" type="submit"> <input name="Reset" type="reset">
+                    Protocol&nbsp;
+                    <select class="proto" value="any">
+                      <option value="any">Any</option>
+                      <option value="tcp">TCP</option>
+                      <option value="udp">UDP</option>
+                    </select>
+                    <input value="+" type="button" class="addItem">
+                    <br>
+                    <span class="portinfo" style="visibility: hidden">
+                      Local Port&nbsp; <input pattern="([0-9]{1,5}|any)" value="any"
+                        class="lport"
+                        style="width:60px">
+                      &nbsp;&nbsp;Remote Port&nbsp; <input pattern="([0-9]{1,5}|any)"
+                        value="any"
+                        class="rport"
+                        style="width:60px">
+                    </span> 
+                    <span class="coninit" style="visibility: hidden">
+                      &nbsp;&nbsp;Initiated by&nbsp;
+                      <select name="direction" value="either">
+                        <option value ="either">Either</option>
+                        <option value="thing">Thing</option>
+                        <option value="remote">Remote</option>
+                      </select>
+                    </span>
+            </div>
+          </details>
+          <br>
+          <input value="Submit" type="submit"> <input name="Reset" type="reset" onclick="resetSite()">
       </form>
-    </section>
+      </section>
+    </div>
     <!-- Footer -->
     <footer id="footer">
       <div class="copyright"> Except as follows, this page is open source.<br>
@@ -689,6 +705,8 @@
     <script src="assets/js/util.js"></script>
     <!--[if lte IE 8]><script src="assets/js/ie/respond.min.js"></script><![endif]-->
     <script src="assets/js/main.js"></script>
-    
+    <script>
+      document.getElementById("createTab").click();
+    </script>
   </body>
 </html>
