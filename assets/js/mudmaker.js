@@ -27,8 +27,7 @@ function resetSite() {
 	[ "sbomany", "sbcloud", "sblocal", "sbtel", "sbinfourl","vulnview"].forEach((field) => {
 		document.getElementById(field).style.display='hidden';
 	});
-	let k=Array.from(document.getElementsByTagName("details"))
-	k.foreach((det) => {
+	Array.from(document.getElementsByTagName("details")).forEach((det) => {
 		det.open = false;
 	});
 }
