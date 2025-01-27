@@ -47,7 +47,10 @@
 	.tab {
 		overflow: hidden;
 		border: 1px solid #05040e1e;
-		background-color: inherit;
+		background-color: white;
+		position: sticky;
+		top: 0;
+		z-index: 5;
 	  }
 	  
 	  /* Style the buttons that are used to open the tab content */
