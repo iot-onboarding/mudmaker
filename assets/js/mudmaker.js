@@ -22,6 +22,8 @@ function initMUDFile() {
 
 function resetSite() {
 	window.sessionStorage.removeItem('mudFile');
+	delete document.mudFie;
+	delete document.mfChanged;
 	initMUDFile();
 	clearAclUI();
 	[ "sbomany", "sbcloud", "sblocal", "sbtel", "sbinfourl","vulnview"].forEach((field) => {
