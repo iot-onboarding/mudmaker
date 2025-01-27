@@ -44,43 +44,6 @@
 		border-collapse: collapse;
 		border-spacing: 0;
 	}
-	.tab {
-		overflow: hidden;
-		border: 1px solid #05040e1e;
-		background-color: inherit;
-	  }
-	  
-	  /* Style the buttons that are used to open the tab content */
-	  .tab button {
-		background-color: inherit;
-		color: #00A87B;
-		
-		float: left;
-		border: none;
-		outline: none;
-		cursor: pointer;
-		padding: 14px 16px;
-		transition: 0.3s;
-	  }
-	  
-	  /* Change background color of buttons on hover */
-	  .tab button:hover {
-		background-color: #095511;
-	  }
-	  
-	  /* Create an active/current tablink class */
-	  .tab button.active {
-		background-color: #7C3875;
-		color: #1bfddbf2;
-	  }
-	  
-	  /* Style the tab content */
-	  .tabcontent {
-		display: none;
-		padding: 6px 12px;
-		border: 1px solid #ccc;
-		border-top: none;
-	  }
 
 /* Box Model */
 
@@ -1452,18 +1415,6 @@
 		background-color: #fff;
 		color: #504E4E;
 	}*/
-	
-	input[type="text"]:user-invalid,
-	input[type="email"]:user-invalid,
-	input[type="url"]:user-invalid {
-	    border: 1px dashed #fd1b1b;
-	    box-shadow: none;
-	}
-	:user-invalid {
-		border: 1px dashed #fd1b1b;
-	    box-shadow: none;
-	}
-
 
 	body, input, select, textarea {
 	    font-family: Arial, Helvetica, sans-serif;
@@ -1891,21 +1842,28 @@
 		font-weight: bold;
 	}
 
-
-	
 	input[type="text"],
 	input[type="password"],
 	input[type="email"],
-	input[type="url"],
 	select,
 	textarea {
 /*		appearance: none;*/
 	    border: solid 1px;
 	    color: inherit;
 	    outline: 0;
+	    padding: 0 1em;
 	    height: 2.5em;
 	    border-color: #4aaa;
 	    border-radius: 10px 10px 10px 10px;
+	}
+
+	input[type="text"]:invalid,
+	input[type="password"]:invalid,
+	input[type="email"]:invalid,
+	select:invalid,
+	textarea:invalid {
+	    border: 2px dashed red;
+	    box-shadow: none;
 	}
 
 	.select-wrapper {
