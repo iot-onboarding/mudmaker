@@ -32,7 +32,7 @@ function openTab(evt, tabName) {
 
 	} else if (tabName == "publish") {
 		let mans = document.getElementById("mandatories");
-		let innerhtml='';
+		let innerhtml='<ul>';
 		let displaytab = {
 			"mudhost" : "Manufacturer Domain",
 			"mfg-name" : "Manufacturer Name",
@@ -45,14 +45,14 @@ function openTab(evt, tabName) {
 			(k) => {
 				let v = document.getElementById(k);
 				if (v.validity.valid && v.value != null & v.value != '' ) {
-					innerhtml = innerhtml + '<div style="color: green">' + 
-						displaytab[k] + " : "  + v.value + " &#9989;</div>";
+					innerhtml = innerhtml + '<li>' + 
+						displaytab[k] + " : "  + v.value + "<span style='color: green'>&#9989;</span></li>";
 				} else {
-					innerhtml = innerhtml + '<div style="color: red">' +
-						displaytab[k] + " : not set &#10006;</div>" 
+					innerhtml = innerhtml + '<li>' +
+						displaytab[k] + " : not set <span style='color: red'>&#10006;</span></li>" 
 				}
 			});
-		mans.innerHTML = innerhtml;
+		mans.innerHTML = innerhtml + '</ul>';
 	}
 	// Get all elements with class="tablinks" and remove the class "active"
 	tablinks = document.getElementsByClassName("tablinks");
