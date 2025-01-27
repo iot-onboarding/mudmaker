@@ -27,6 +27,7 @@ function resetSite() {
 	[ "sbomany", "sbcloud", "sblocal", "sbtel", "sbinfourl","vulnview"].forEach((field) => {
 		document.getElementById(field).style.display='none';
 	});
+	document.getElementById('loadsaved').value = null;
 	Array.from(document.getElementsByTagName("details")).forEach((det) => {
 		det.open = false;
 	});
@@ -265,7 +266,7 @@ function clearAclUI(){
 		}
 		var thegroup = aclgroup.children[1];
 		if (thegroup.children[0].readOnly != true ) {
-			thegroup.children[0].value='';
+			thegroup.children[0].value=null;
 		}
 		thegroup.children[1].value = 'any'; // protocol
 		thegroup.children[4].children[0].value = 'any'; // lport
