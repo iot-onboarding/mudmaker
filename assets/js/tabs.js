@@ -45,10 +45,10 @@ function openTab(evt, tabName) {
 			(k) => {
 				let v = document.getElementById(k);
 				if (v.validity.valid && v.value != null & v.value != '' ) {
-					innerhtml = innerhtml + '<div color="green">' + 
-						displaytab[k] + " : "  + v.value + " &#2705;</div>";
+					innerhtml = innerhtml + '<div style="color: green">' + 
+						displaytab[k] + " : "  + v.value + " &#9989;</div>";
 				} else {
-					innerhtml = innerhtml + '<div color="red">' +
+					innerhtml = innerhtml + '<div style="color: red">' +
 						displaytab[k] + " : not set &#10006;</div>" 
 				}
 			});
