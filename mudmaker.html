@@ -71,7 +71,7 @@
     </div>
     <div id="create" class="tabcontent">
       <section id="two" class="wrapper">
-        <form method="POST" action="makemud2.php">
+        <form method="POST" action="makemud2.php" id="mudform">
           <p><em>Note:</em> No information collected on this form is saved beyond this session.  It is only used to generate the
           files that are returned to you, or to facilitate your visualization.</p>
           <fieldset>
@@ -689,7 +689,7 @@
             </div>
           </details>
           <br>
-          <input value="Submit" type="submit"> <input name="Reset" type="reset">
+          <input value="Submit" type="submit"> <input name="Reset" onclick="resetSite()">
       </form>
       </section>
     </div>

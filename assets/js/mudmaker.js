@@ -30,6 +30,7 @@ function resetSite() {
 	Array.from(document.getElementsByTagName("details")).forEach((det) => {
 		det.open = false;
 	});
+	document.getElementById('mudform').reset();
 }
 
 function removeIt(elemId) {
