@@ -49,7 +49,7 @@ function openTab(evt, tabName) {
 						displaytab[k] + " : "  + v.value + " &#2705;</div>";
 				} else {
 					innerhtml = innerhtml + '<div color="red">' +
-						displaytab[k] + " : not set &#2716;</div>" 
+						displaytab[k] + " : not set &#10006;</div>" 
 				}
 			});
 		mans.innerHTML = innerhtml;
