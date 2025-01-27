@@ -18,18 +18,15 @@ function openTab(evt, tabName) {
 	if (tabName == "viewmudfile"){
 		pre=document.getElementById("mudcontent");
 		pre.innerText = JSON.stringify(document.mudFile,null,2);
-	} else if (tabName == 'visualize') {
-	    vizdiv = document.getElementById("visualize");
-		if (typeof vizdiv.children[0] != 'undefined' && document.mfChanged == true) {
-			vizdiv.children[0].remove();
-			document.mfChanged = false;
-		}
+	} else if (tabName == 'visualize' && document.mfChanged == true) {
+	    document.getElementById("vis2").remove();
 	    iframe = document.createElement("iframe");
+		iframe.id="vis2";
 	    iframe.width = window.innerWidth - 20;
 	    iframe.height = window.innerHeight - 200;
 	    iframe.src = "mudjsvis.html";
-	    vizdiv.appendChild(iframe);
-
+	    document.getElementById("visualize").appendChild(iframe);
+		document.mfChanged = false;
 	} else if (tabName == "publish") {
 		let mans = document.getElementById("mandatories");
 		let gtg = true;
