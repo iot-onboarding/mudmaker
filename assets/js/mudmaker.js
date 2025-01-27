@@ -25,7 +25,7 @@ function resetSite() {
 	initMUDFile();
 	clearAclUI();
 	[ "sbomany", "sbcloud", "sblocal", "sbtel", "sbinfourl","vulnview"].forEach((field) => {
-		document.getElementById(field).style.display='hidden';
+		document.getElementById(field).style.display='none';
 	});
 	Array.from(document.getElementsByTagName("details")).forEach((det) => {
 		det.open = false;
