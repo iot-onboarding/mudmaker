@@ -48,7 +48,7 @@
         <details>
         <summary>Continue Earlier Work</summary>
             <label for="getSavedWork">Want to load saved work?<label>
-            <input type="file" accept="text/json, application/json" onchange="loadWork(this);"></input>
+            <input id="loadsaved" type="file" accept="text/json, application/json" onchange="loadWork(this);"></input>
         </details>
         <details>
           <summary>Download completed signed MUD file</summary>
@@ -71,7 +71,7 @@
     </div>
     <div id="create" class="tabcontent">
       <section id="two" class="wrapper">
-        <form method="POST" action="makemud2.php">
+        <form method="POST" action="makemud2.php" id="mudform">
           <p><em>Note:</em> No information collected on this form is saved beyond this session.  It is only used to generate the
           files that are returned to you, or to facilitate your visualization.</p>
           <fieldset>
@@ -444,7 +444,7 @@
               <span id="sbinfourl" style="display: none">
                 <label>Enter URL here:
                   <input
-                    name="contact-info"
+                    name="contact-info" id="'contact-info"
                     size="50"
                     placeholder="https://your-security-site..."
                     maxlength="200"
@@ -689,7 +689,7 @@
             </div>
           </details>
           <br>
-          <input value="Submit" type="submit"> <input name="Reset" type="reset">
+          <input value="Submit" type="submit"> <input name="Reset" type="reset" onclick="resetSite()">
       </form>
       </section>
     </div>

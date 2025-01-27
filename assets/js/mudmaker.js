@@ -20,7 +20,19 @@ function initMUDFile() {
 }
 
 
-
+function resetSite() {
+	window.sessionStorage.removeItem('mudFile');
+	initMUDFile();
+	clearAclUI();
+	[ "sbomany", "sbcloud", "sblocal", "sbtel", "sbinfourl","vulnview"].forEach((field) => {
+		document.getElementById(field).style.display='none';
+	});
+	document.getElementById('loadsaved').value = null;
+	Array.from(document.getElementsByTagName("details")).forEach((det) => {
+		det.open = false;
+	});
+	document.getElementById('mudform').reset();
+}
 
 function removeIt(elemId) {
     var elem=document.getElementById(elemId);
@@ -254,7 +266,10 @@ function clearAclUI(){
 		}
 		var thegroup = aclgroup.children[1];
 		if (thegroup.children[0].readOnly != true ) {
-			thegroup.children[0].value='';
+			thegroup.children[0].value=null;
+		}
+		if (typeof thegroup['aceBase'] != 'undefined') {
+			delete thegroup['aceBase'];
 		}
 		thegroup.children[1].value = 'any'; // protocol
 		thegroup.children[4].children[0].value = 'any'; // lport
@@ -386,7 +401,6 @@ function reloadFields(){
 
 				var nextAce;
 				let ipVer = null;
-				let inputVal = '';
 				// get aceBase value
 				let re = /^..(ace.*)/;
 				let aceBase = ace.name.match(re)[1];
