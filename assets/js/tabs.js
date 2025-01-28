@@ -30,7 +30,7 @@ function openTab(evt, tabName) {
 	} else if (tabName == "publish") {
 		let mans = document.getElementById("mandatories");
 		let gtg = true;
-		let innerhtml='<ul>';
+		let innerhtml='<ul style="list-style-type: none">';
 		let displaytab = {
 			"mudhost" : "Manufacturer Domain",
 			"mfg-name" : "Manufacturer Name",
@@ -44,10 +44,10 @@ function openTab(evt, tabName) {
 				let v = document.getElementById(k);
 				if (v.validity.valid && v.value != null & v.value != '' ) {
 					innerhtml = innerhtml + '<li>' + 
-						displaytab[k] + " : "  + v.value + "<span style='color: green'>&#9989;</span></li>";
+						"<span style='color: green'>&#9989;</span>&nbsp;" + displaytab[k] + ": "  + v.value +"</li>";
 				} else {
 					innerhtml = innerhtml + '<li>' +
-						displaytab[k] + " : not set <span style='color: red'>&#10006;</span></li>";
+						"<span style='color: red'>&#10006;</span>&nbsp;" + displaytab[k] + ": not set</li>";
 					gtg = false; 
 				}
 			});
