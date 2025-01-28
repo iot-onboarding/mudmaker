@@ -6,6 +6,39 @@ function getviz(){
 		.then(htmltxt => updateVis(htmltxt))
 }
 
+function refreshmans(){
+	let mans = document.getElementById("mandatories");
+	let gtg = true;
+	let innerhtml='<ul style="list-style-type: none">';
+	let displaytab = {
+		"mudhost" : "Manufacturer Domain",
+		"mfg-name" : "Manufacturer Name",
+		"model_name" : "Device Model",
+		"systeminfo" : "Device Description",
+		"documentation" : "Documentation URL",
+		"email_addr" : "EMail Address"
+	};
+	Object.keys(displaytab).forEach(
+		(k) => {
+			let v = document.getElementById(k);
+			if (v.validity.valid && v.value != null & v.value != '' ) {
+				innerhtml = innerhtml + '<li>' + 
+					"<span style='color: green'>&#9989;</span>&nbsp;" + displaytab[k] + ": "  + v.value +"</li>";
+			} else {
+				innerhtml = innerhtml + '<li>' +
+					"<span style='color: red'>&#10006;</span>&nbsp;" + displaytab[k] + ": not set</li>";
+				gtg = false; 
+			}
+		});
+	mans.innerHTML = innerhtml + '</ul>';
+	let but = document.getElementById("pubbutton");
+	if ( gtg ==  false ) {
+		but.disabled = true;
+	} else {
+		but.disabled = false;
+	}
+}
+
 function openTab(evt, tabName) {
 	// Declare all variables
 	var i, tabcontent, tablinks;
@@ -28,36 +61,7 @@ function openTab(evt, tabName) {
 	    document.getElementById("visualize").appendChild(iframe);
 		document.mfChanged = false;
 	} else if (tabName == "publish") {
-		let mans = document.getElementById("mandatories");
-		let gtg = true;
-		let innerhtml='<ul style="list-style-type: none">';
-		let displaytab = {
-			"mudhost" : "Manufacturer Domain",
-			"mfg-name" : "Manufacturer Name",
-			"model_name" : "Device Model",
-			"systeminfo" : "Device Description",
-			"documentation" : "Documentation URL",
-			"email_addr" : "EMail Address"
-		};
-		Object.keys(displaytab).forEach(
-			(k) => {
-				let v = document.getElementById(k);
-				if (v.validity.valid && v.value != null & v.value != '' ) {
-					innerhtml = innerhtml + '<li>' + 
-						"<span style='color: green'>&#9989;</span>&nbsp;" + displaytab[k] + ": "  + v.value +"</li>";
-				} else {
-					innerhtml = innerhtml + '<li>' +
-						"<span style='color: red'>&#10006;</span>&nbsp;" + displaytab[k] + ": not set</li>";
-					gtg = false; 
-				}
-			});
-		mans.innerHTML = innerhtml + '</ul>';
-		let but = document.getElementById("pubbutton");
-		if ( gtg ==  false ) {
-			but.disabled = true;
-		} else {
-			but.disabled = false;
-		}
+		refreshmans();
 	}
 	// Get all elements with class="tablinks" and remove the class "active"
 	tablinks = document.getElementsByClassName("tablinks");
