@@ -446,7 +446,9 @@ function loadWork(input) {
   
 	reader.onload = function() {
 		document.mudFile = JSON.parse(reader.result);
-	  	reloadFields();
+		reloadFields();
+		refreshmans();
+		saveMUD();
 	}
 }
 
