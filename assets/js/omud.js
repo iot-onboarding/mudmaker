@@ -1,6 +1,6 @@
 // mud oAuth flows.
 
-function oAuthMudFlowp1(){
+function oAuthP1(){
     const redirect_uri="https://www.ofcourseimright.com/test/mudmaker/mudpublish.html";
     const client_id = "Ov23licSoRbhBHkeDqPJ";
     const csrfkey = new Uint8Array(16);
