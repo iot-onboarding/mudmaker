@@ -14,12 +14,11 @@ function oAuthP1(){
 function oAuthP2(){ 
   // const { code, state } = queryString.parse(router.asPath.split("?")[1]);
   const myURL = new URL(window.location);
-  let params=myURL.searchParams();
-  if (typeof params.state == 'undefined' || typeof params.code == 'undefined') {
+  let state = myURL.searchParams.get("state");
+  let code = myURL.searchParams.get("code");
+  if (state == null||  code == null) {
     return;
   }
-  let state = params.state;
-  let code = params.code;
   // validate the state parameter
   if (state !== localStorage.getItem("latestCSRFToken")) {
     localStorage.removeItem("latestCSRFToken");
