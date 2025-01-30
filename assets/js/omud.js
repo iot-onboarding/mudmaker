@@ -11,7 +11,7 @@ function oAuthP1(){
     window.location.assign(link);
 }
 
-function oAuthP2(this){ 
+function oAuthP2(){ 
   // const { code, state } = queryString.parse(router.asPath.split("?")[1]);
   const myURL = new URL(window.location);
   let params=myURL.searchParams();
