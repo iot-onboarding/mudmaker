@@ -63,7 +63,7 @@
             </td>
           </tr>
           <tr>
-          <td><button id="pubbutton" name="Publish" onclick="oAuthMudFlow();">Publish</button></td>
+          <td><button id="pubbutton" name="Publish" onclick="oAuthMudFlowp1();">Publish</button></td>
           <td>
               You can publish your work to the <a href="https://github.com/iot-onboarding/mudfiles">
               IoT Onboarding</a> organization for review and publication.  This <em>must</em> 
@@ -94,7 +94,7 @@
     <div id="create" class="tabcontent">
       <section id="two" class="wrapper">
         <form method="POST" action="makemud2.php" id="mudform">
-          <p><em>Note:</em> No information collected on this form is saved beyond this session.  It is only used to generate the
+          <p onload="oauthp2(this)"><em>Note:</em> No information collected on this form is saved beyond this session.  It is only used to generate the
           files that are returned to you, or to facilitate your visualization.</p>
           <fieldset>
             <legend>Please enter the host and model to build a MUD-URL for this device:</legend>

@@ -6,9 +6,8 @@
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
     <title>How Devices Can Emit MUD URLs</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!--[if lte IE 8]><script src="assets/js/ie/html5shiv.js"></script><![endif]-->
     <link rel="stylesheet" href="assets/css/main.css">
-    <!--[if lte IE 9]><link rel="stylesheet" href="assets/css/ie9.css" /><![endif]-->
+    <script src="assets/js/omud.js"></script>
   </head>
   <body>
     <!-- Banner -->
@@ -24,6 +23,32 @@
             </ul>
           </section>
         </div>
+      </section>
+      <section id="one" onload="oAuthP2(this)">
+        <h2>
+          Publishing your work to Github.
+        </h2>
+        <p>
+          When you click on the publish button, you will be redirected to Github, which will request
+          your username and password.  The following actions will then take place:          
+        </p>
+        <ul>
+          <li>
+            The <b>iot-onboarding/mudfiles</b> repository will be cloned into your directory.
+          </li>
+          <li>
+            A new entry will be committed in mudfiles/{yourmanufacter}/{yourmodel}.  This signed
+            entry will have a new mudurl location and appropriate signature.
+          </li>
+          <li>
+            A pull request will be generated.
+          </li>
+          <li>
+            The request will be reviewed for incorporation into the main branch.
+          </li>
+        </ul>
+        <p>Click the "publish" button if you are ready.</p>
+        <button name="GhPublish">Publish</button>
       </section>
          <!-- Footer -->
     <footer id="footer">
