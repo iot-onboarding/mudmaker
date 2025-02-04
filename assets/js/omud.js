@@ -7,7 +7,7 @@ function oAuthP1(){
     self.crypto.getRandomValues(csrfkey);
     const state = csrfkey.toHex();
     localStorage.setItem("latestCSRFToken", state);
-    localStorage.setItem("email",document.getElementById("email_addr"))
+    localStorage.setItem("email",document.getElementById("email_addr").value)
     const link = `https://github.com/login/oauth/authorize?client_id=${client_id}&response_type=code&scope=repo&redirect_uri=${redirect_uri}&state=${state}`;
     window.location.assign(link);
 }
