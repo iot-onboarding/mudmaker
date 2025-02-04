@@ -18,7 +18,7 @@ function oAuthP2(){
   
   let state = myURL.searchParams.get("state");
   let code = myURL.searchParams.get("code");
-  if (state != null||  code != null) {
+  if (state != null &&  code != null) {
     document.getElementById("two").style.visibility = "inherit"
       // validate the state parameter
     if (state !== localStorage.getItem("latestCSRFToken")) {
@@ -55,7 +55,7 @@ function oAuthP2(){
     });
     return;
   }
-  document.getElementById("one").style.visibility = "inhereit";
+  document.getElementById("one").style.visibility = "inherit";
   return;
  
 }
