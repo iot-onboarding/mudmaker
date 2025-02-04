@@ -34,7 +34,7 @@ function oAuthP2(){
       "email" : email,
       "next-redirect" : "https://" + window.location.hostname
     };
-    fetch("/test/mudmaker/gitmud", {
+    fetch("/gitShovel", {
       method : "POST",
       body : JSON.stringify(jsonbody),
       headers :{
