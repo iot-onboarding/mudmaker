@@ -42,19 +42,25 @@ function oAuthP2(){
     })
     .then(response => {
       if ( ! response.ok ) {
-        throw("Bad response");
+        return response.text();
       }
-      let results=response.json();
-      let innerhtml = '<h2>Yay!  Your PR has been created</h2><p>You can click' +
-        '<a href="https://github.com/' + user + '/mudfiles">here</a> to take you' +
-        'to your repo, which is ' + user + '/mudfiles.</p>';
+      return response.json();
+    })
+    .then ( jsonortext => {
       let s = document.getElementById("two");
-      s.innerHTML = innerhtml;
-      return;
-    });
+      if (typeof jsonortext == "object") {
+        let user = jsonortext['user'];
+        let innerhtml = '<h2>Yay!  Your PR has been created</h2><p>You can click' +
+          '<a href="https://github.com/' + user + '/mudfiles">here</a> to take you' +
+          'to your repo, which is ' + user + '/mudfiles.</p>';
+
+        s.innerHTML = innerhtml;
+        return;
+      }
+      s.innerHTML = jsonortext;
+    }
+  );
     return;
   }
   document.getElementById("one").style.visibility = "inherit";
-  return;
- 
 }
