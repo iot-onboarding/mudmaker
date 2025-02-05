@@ -30,7 +30,7 @@ function oAuthP2(){
     localStorage.removeItem("latestCSRFToken");
     // send the code to the backend
     email = localStorage.getItem("email")
-    let s = document.getElementById("two");
+    let s = document.getElementById("status");
     s.innerHTML = "Completing authorization...";
     fetch("/gitShove/completeAuth",{
       method: "POST",
