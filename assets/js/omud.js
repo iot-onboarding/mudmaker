@@ -2,7 +2,7 @@
 
 function oAuthP1(){
     const re = /(?<dirname>.*)\/[^\/]+.html/;
-    const redirect_uri=window.location.pathname.match(re)[1] + "mudpublish.html";
+    const redirect_uri=window.location.href.match(re)[1] + "mudpublish.html";
     const client_id = "Ov23licSoRbhBHkeDqPJ";
     const csrfkey = new Uint8Array(16);
     self.crypto.getRandomValues(csrfkey);
