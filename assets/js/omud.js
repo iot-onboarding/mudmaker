@@ -5,6 +5,11 @@ function oAuthP1(){
     const redirect_uri=window.location.href.match(re)[1] + "/mudpublish.html";
     const client_id = "Ov23licSoRbhBHkeDqPJ";
     const csrfkey = new Uint8Array(16);
+    let tok = sessionStorage.getItem("gottoken");
+    if (tok == "true") {
+      // skip git.  we're already there.
+      window.location.assign(redirect_uri + "?got_token=true");
+    }
     self.crypto.getRandomValues(csrfkey);
     const state = csrfkey.toHex();
     localStorage.setItem("latestCSRFToken", state);
@@ -16,24 +21,28 @@ function oAuthP1(){
 function oAuthP2(){ 
   // const { code, state } = queryString.parse(router.asPath.split("?")[1]);
   const myURL = new URL(window.location);
-  
+  let got_tok = myURL.searchParams("got_token");
   let state = myURL.searchParams.get("state");
   let code = myURL.searchParams.get("code");
-  if (state != null &&  code != null) {
-      // validate the state parameter
-    if (state !== localStorage.getItem("latestCSRFToken")) {
-      localStorage.removeItem("latestCSRFToken");
-      return;
-    }
-    localStorage.removeItem("latestCSRFToken");
-    // send the code to the backend
+  if (got_tok != null || (state != null &&  code != null)) {
     email = localStorage.getItem("email")
-    jsonbody = {
+      // validate the state parameter
+    let jsonbody = {
       mudFile : b64_encode(sessionStorage.getItem("mudfile")),
-      "code" : code,
-      "email" : email,
-      "next-redirect" : "https://" + window.location.hostname
-    };
+      email : email
+    }
+    if ( got_tok != null ) {
+      jsonbody["got_tok"] = true;
+    } else {
+      if (state !== localStorage.getItem("latestCSRFToken")) {
+        localStorage.removeItem("latestCSRFToken");
+        return;
+      }
+      localStorage.removeItem("latestCSRFToken");
+      jsonbody["code"] = code;
+      jsonbody["next-redirect"] = "https://" + window.location.hostname;
+    }
+    // send the code to the backend
     fetch("/gitShovel", {
       method : "POST",
       body : JSON.stringify(jsonbody),
