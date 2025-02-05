@@ -18,7 +18,7 @@ function oAuthP2(){
   
   let state = myURL.searchParams.get("state");
   let code = myURL.searchParams.get("code");
-  let mudFile = sessionStorage.getItem("mudfile");
+  let mudFile = json.parse(sessionStorage.getItem("mudfile"));
   let mudurl = mudFile["ietf-mud:mud"]["mud-url"];
 
   if (state != null &&  code != null) {
