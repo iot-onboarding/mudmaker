@@ -6,6 +6,15 @@ function getviz(){
 		.then(htmltxt => updateVis(htmltxt))
 }
 
+
+function b64_encode(str) {
+	return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,
+        function toSolidBytes(match, p1) {
+            return String.fromCharCode('0x' + p1);
+		}
+	))
+}
+
 function refreshmans(){
 	let mans = document.getElementById("mandatories");
 	let gtg = true;
@@ -53,7 +62,7 @@ function openTab(evt, tabName) {
 		pre.innerText = JSON.stringify(document.mudFile,null,2);
 	} else if (tabName == 'visualize' && document.mfChanged == true) {
 	    document.getElementById("vis2").remove();
-	    iframe = document.createElement("iframe");
+	    let iframe = document.createElement("iframe");
 		iframe.id="vis2";
 	    iframe.width = window.innerWidth - 20;
 	    iframe.height = window.innerHeight - 200;
@@ -62,6 +71,23 @@ function openTab(evt, tabName) {
 		document.mfChanged = false;
 	} else if (tabName == "publish") {
 		refreshmans();
+		let mud=document.mudFile["ietf-mud:mud"]
+		if ( typeof mud["mud-url"] == 'undefined' ) {
+			return;
+		}
+		fetch("/gitShovel/gottoken?mudurl=" + mud["mud-url"], {
+			method : "GET",
+			headers :{
+			  "Accept" : "application/json"
+			}
+		  })
+		  .then(response => {
+			if ( ! response.ok ) {
+			  return;
+			}
+			sessionStorage.setItem("gottoken","true");
+		  })
+	
 	}
 	// Get all elements with class="tablinks" and remove the class "active"
 	tablinks = document.getElementsByClassName("tablinks");
