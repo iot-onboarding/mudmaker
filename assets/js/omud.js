@@ -50,10 +50,12 @@ function oAuthP2(){
       let s = document.getElementById("two");
       if (typeof jsonortext == "object") {
         let user = jsonortext['user'];
-        let innerhtml = '<h2>Yay!  Your PR has been created</h2><p>You can click' +
+        let innerhtml = '<h2>PR Created</h2>' +
+          '<p>Your PR has been created.  You can click on ' +
           '<a href="https://github.com/' + user + '/mudfiles">here</a> to take you' +
-          'to your repo, which is ' + user + '/mudfiles.</p>';
-
+          'to your repo, which is ' + user + '/mudfiles.</p>' + 
+          '<h2>Next Steps</h2><p>Someone will review your PR.  If it needs changes,' +
+          ' you will see a notification from Github.</p>';
         s.innerHTML = innerhtml;
         return;
       }
