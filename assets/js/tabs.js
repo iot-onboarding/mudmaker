@@ -72,22 +72,20 @@ function openTab(evt, tabName) {
 	} else if (tabName == "publish") {
 		refreshmans();
 		let mud=document.mudFile["ietf-mud:mud"]
-		if ( typeof mud["mud-url"] == 'undefined' ) {
-			return;
+		if ( typeof mud["mud-url"] != 'undefined' ) {
+			fetch("/gitShovel/gottoken?mudurl=" + mud["mud-url"], {
+				method : "GET",
+				headers :{
+				"Accept" : "application/json"
+				}
+			})
+			.then(response => {
+				if ( ! response.ok ) {
+				return;
+				}
+				sessionStorage.setItem("gottoken","true");
+			})
 		}
-		fetch("/gitShovel/gottoken?mudurl=" + mud["mud-url"], {
-			method : "GET",
-			headers :{
-			  "Accept" : "application/json"
-			}
-		  })
-		  .then(response => {
-			if ( ! response.ok ) {
-			  return;
-			}
-			sessionStorage.setItem("gottoken","true");
-		  })
-	
 	}
 	// Get all elements with class="tablinks" and remove the class "active"
 	tablinks = document.getElementsByClassName("tablinks");
