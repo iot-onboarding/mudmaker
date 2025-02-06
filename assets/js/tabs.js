@@ -61,7 +61,7 @@ function openTab(evt, tabName) {
 		pre=document.getElementById("mudcontent");
 		pre.innerText = JSON.stringify(document.mudFile,null,2);
 		let mud=document.mudFile;
-		if ( typeof mud['ietf-mud:mud']['mud-url'] == 'undefined' &&
+		if ( typeof mud['ietf-mud:mud']['mud-url'] != 'undefined' &&
 			mud['ietf-mud:mud']['mud-url'].length > 0) {
 				mudcode = new QRCode(document.getElementById("qrcontent"), {
 					text: mud['ietf-mud:mud']['mud-url'],
