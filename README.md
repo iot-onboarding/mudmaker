@@ -13,8 +13,9 @@ from this project.
 
 ## Requirements
 
-This tool has been tested with PHP 8.3, php-zip, as well as composer with chillerlan/php-qrcode, using Apache 2.
-For pretty printing of access lists, mudpp must be installed and exposed at /mudrest/mudpp.
+This version of MUD Maker is based on Python3, JavaScript and Go.  Signing
+is supported with the [mudcerts](https://github.com/iot-onboarding/mudcerts) package.
+At this time, the GitHub PR integration is not publicly available.
 
 ### mud-visualizer submodule
 
@@ -33,3 +34,14 @@ To update the visualizer:
 $ cd mudmaker/mud-visualizer
 $ git pull origin master
 ```
+
+## ToDo
+
+The following items are on the ToDo List:
+
+* Better integration with visualizer.
+* Ability to edit MUD file and have it properly represented in the builder
+* Uploading of PCAP files
+* Interactive building of MUD files with those PCAP files (a'la mudgee)
+
+
