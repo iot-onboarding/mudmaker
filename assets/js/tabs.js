@@ -63,7 +63,7 @@ function openTab(evt, tabName) {
 		let mud=document.mudFile;
 		if (typeof(mud) != "undefined" && typeof mud['ietf-mud:mud']['mud-url'] != 'undefined' &&
 			mud['ietf-mud:mud']['mud-url'].length > 0) {
-				if (typeof(mudcode) == 'undefined' ) {
+				if (typeof(mudcode) != 'undefined' ) {
 					mudcode.clear();
 				}
 				document.getElementById("qrcontent").innerHTML='';
