@@ -71,6 +71,7 @@ function openTab(evt, tabName) {
 					colorLight : "#ffffff",
 					correctLevel : QRCode.CorrectLevel.H
 				});
+			document.getElementById("content-overlay").display = "inherit";
 			} else {
 				if (typeof mudcode != 'undefined') {
 					mudcode.clear();
