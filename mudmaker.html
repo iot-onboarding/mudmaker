@@ -16,6 +16,7 @@
 />
     <link rel='stylesheet' href='css/tooltip.css' type='text/css' media='all'/>
     <link rel='stylesheet' href='css/introjs.css'>  </head>
+    <script type="text/javascript" src="qrcodejs/qrcode.js"></script>
   <body>
     <!-- Banner -->
     <section id="banner">
@@ -94,7 +95,11 @@
       </div>
     </div>
     <div id="viewmudfile" class="tabcontent">
-      <pre id="mudcontent" style="line-height: 1.2"></pre>
+      <div id="content-overlay">
+        <div id="qrcontent" style="display: none">
+        </div>
+        <pre id="mudcontent" style="line-height: 1.2"></pre>
+    </div>
     </div>
     <div id="create" class="tabcontent">
       <section id="two" class="wrapper">
