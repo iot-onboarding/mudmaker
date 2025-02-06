@@ -1,6 +1,6 @@
-[submodule "mud-visualizer"]
-	path = mud-visualizer
-	url = https://github.com/iot-onboarding/mud-visualizer
 [submodule "qrcodejs"]
 	path = qrcodejs
 	url = https://github.com/davidshimjs/qrcodejs
+[submodule "mud-visualizer"]
+	path = mud-visualizer
+	url = https://github.com/iot-onboarding/mud-visualizer
