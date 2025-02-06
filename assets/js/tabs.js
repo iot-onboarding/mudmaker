@@ -60,6 +60,23 @@ function openTab(evt, tabName) {
 	if (tabName == "viewmudfile"){
 		pre=document.getElementById("mudcontent");
 		pre.innerText = JSON.stringify(document.mudFile,null,2);
+		let mud=document.mudFile;
+		if ( typeof mud['ietf-mud:mud']['mud-url'] == 'undefined' &&
+			mud['ietf-mud:mud']['mud-url'].length > 0) {
+				mudcode = new QRCode(document.getElementById("qrcode"), {
+					text: mud['ietf-mud:mud']['mud-url'],
+					width: 128,
+					height: 128,
+					colorDark: "#000000",
+					colorLight : "#ffffff",
+					correctLevel : QRCode.CorrectLevel.H
+				});
+			} else {
+				if (typeof mudcode != 'undefined') {
+					mudcode.clear();
+				}
+			}
+
 	} else if (tabName == 'visualize' && document.mfChanged == true) {
 	    document.getElementById("vis2").remove();
 	    let iframe = document.createElement("iframe");
