@@ -80,7 +80,7 @@ function openTab(evt, tabName) {
 			document.getElementById("qrcontent").style.position="relative";
 
 			document.getElementById("qrcontent").style.top = 0;
-			document.getElementById("qrcontent").style.top = 0;
+			document.getElementById("qrcontent").style.right = 0;
 			} else {
 				if (typeof mudcode != 'undefined') {
 					mudcode.clear();
