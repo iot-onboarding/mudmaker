@@ -72,7 +72,7 @@ function openTab(evt, tabName) {
 					correctLevel : QRCode.CorrectLevel.H
 				});
 			document.getElementById("qrcontent").style.display = "inherit";
-			document.getElementById("qrcontent").position="sticky";
+			document.getElementById("qrcontent").style.position="sticky";
 			document.getElementById("qrcontent").style.top = 0;
 			} else {
 				if (typeof mudcode != 'undefined') {
