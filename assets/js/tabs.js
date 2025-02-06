@@ -63,6 +63,10 @@ function openTab(evt, tabName) {
 		let mud=document.mudFile;
 		if (typeof(mud) != "undefined" && typeof mud['ietf-mud:mud']['mud-url'] != 'undefined' &&
 			mud['ietf-mud:mud']['mud-url'].length > 0) {
+				if (typeof(mudcode) == 'undefined' ) {
+					mudcode.clear();
+				}
+				document.getElementById("qrcontent").innerHTML='';
 				mudcode = new QRCode(document.getElementById("qrcontent"), {
 					text: mud['ietf-mud:mud']['mud-url'],
 					width: 128,
@@ -71,8 +75,11 @@ function openTab(evt, tabName) {
 					colorLight : "#ffffff",
 					correctLevel : QRCode.CorrectLevel.H
 				});
+			document.getElementById("qrcontent").align = "right";
 			document.getElementById("qrcontent").style.display = "inherit";
-			document.getElementById("qrcontent").style.position="sticky";
+			document.getElementById("qrcontent").style.position="relative";
+
+			document.getElementById("qrcontent").style.top = 0;
 			document.getElementById("qrcontent").style.top = 0;
 			} else {
 				if (typeof mudcode != 'undefined') {
