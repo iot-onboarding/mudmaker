@@ -61,7 +61,7 @@ function openTab(evt, tabName) {
 		pre=document.getElementById("mudcontent");
 		pre.innerText = JSON.stringify(document.mudFile,null,2);
 		let mud=document.mudFile;
-		if ( typeof mud['ietf-mud:mud']['mud-url'] != 'undefined' &&
+		if (typeof(mud) != "undefined" && typeof mud['ietf-mud:mud']['mud-url'] != 'undefined' &&
 			mud['ietf-mud:mud']['mud-url'].length > 0) {
 				mudcode = new QRCode(document.getElementById("qrcontent"), {
 					text: mud['ietf-mud:mud']['mud-url'],
@@ -71,7 +71,9 @@ function openTab(evt, tabName) {
 					colorLight : "#ffffff",
 					correctLevel : QRCode.CorrectLevel.H
 				});
-			document.getElementById("content-overlay").display = "inherit";
+			document.getElementById("content-overlay").style.display = "inherit";
+			document.getElementById("content-overlay").position="sticky";
+			document.getElementById("content-overlay").style.top = 0;
 			} else {
 				if (typeof mudcode != 'undefined') {
 					mudcode.clear();
