@@ -58,29 +58,24 @@ function openTab(evt, tabName) {
 	  tabcontent[i].style.display = "none";
 	}
 	if (tabName == "viewmudfile"){
-		pre=document.getElementById("mudcontent");
-		pre.innerHTML = JSON.stringify(document.mudFile,null,2);
+		let mc = document.getElementById("mudcontent");
 		let mud=document.mudFile;
 		if (typeof(mud) != "undefined" && typeof mud['ietf-mud:mud']['mud-url'] != 'undefined' &&
 			mud['ietf-mud:mud']['mud-url'].length > 0) {
 				if (typeof(mudcode) != 'undefined' ) {
 					mudcode.clear();
-				}
-				document.getElementById("qrcontent").innerHTML='';
-				mudcode = new QRCode(document.getElementById("qrcontent"), {
+				}				
+				mc.innerHTML='';
+				mudcode = new QRCode(mc, {
 					text: mud['ietf-mud:mud']['mud-url'],
 					width: 128,
 					height: 128,
 					colorDark: "#000000",
 					colorLight : "#ffffff",
 					correctLevel : QRCode.CorrectLevel.H
+				mc.children[0].float = "right";
 				});
-			document.getElementById("qrcontent").align = "right";
-			document.getElementById("qrcontent").style.display = "inherit";
-			document.getElementById("qrcontent").style.position="relative";
-
-			document.getElementById("qrcontent").style.top = 0;
-			document.getElementById("qrcontent").style.right = 0;
+			mc.innerHTML = mc innerHTML +'<pre>' + JSON.stringify(document.mudFile,null,2) + '</pre>';
 			} else {
 				if (typeof mudcode != 'undefined') {
 					mudcode.clear();
