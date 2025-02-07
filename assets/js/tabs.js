@@ -73,9 +73,9 @@ function openTab(evt, tabName) {
 					colorDark: "#000000",
 					colorLight : "#ffffff",
 					correctLevel : QRCode.CorrectLevel.H
-				mc.children[0].float = "right";
 				});
-			mc.innerHTML = mc innerHTML +'<pre>' + JSON.stringify(document.mudFile,null,2) + '</pre>';
+			mc.children[0].float = "right";
+			mc.innerHTML = mc.innerHTML +'<pre>' + JSON.stringify(document.mudFile,null,2) + '</pre>';
 			} else {
 				if (typeof mudcode != 'undefined') {
 					mudcode.clear();
