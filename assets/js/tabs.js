@@ -59,7 +59,7 @@ function openTab(evt, tabName) {
 	}
 	if (tabName == "viewmudfile"){
 		pre=document.getElementById("mudcontent");
-		pre.innerText = JSON.stringify(document.mudFile,null,2);
+		pre.innerHTML = JSON.stringify(document.mudFile,null,2);
 		let mud=document.mudFile;
 		if (typeof(mud) != "undefined" && typeof mud['ietf-mud:mud']['mud-url'] != 'undefined' &&
 			mud['ietf-mud:mud']['mud-url'].length > 0) {
