@@ -21,7 +21,7 @@ function oAuthP1(){
 function oAuthP2(){ 
   // const { code, state } = queryString.parse(router.asPath.split("?")[1]);
   const myURL = new URL(window.location);
-  let got_tok = myURL.searchParams("got_token");
+  let got_tok = myURL.searchParams.get("got_token");
   let state = myURL.searchParams.get("state");
   let code = myURL.searchParams.get("code");
   if (got_tok != null || (state != null &&  code != null)) {
