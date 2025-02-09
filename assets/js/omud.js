@@ -62,7 +62,7 @@ function oAuthP2(){
         return "Oauth Fail";
       }
       gitstat.innerHTML += '<span color="green">[ok]</span>.<br>Checking/creating a repo...';
-      return fetch('/gitShovel/dorep', {
+      return fetch('/gitShovel/dorepo', {
         method : "POST",
         body : JSON.stringify({ 'mudurl' : mudurl }),
         headers :{
