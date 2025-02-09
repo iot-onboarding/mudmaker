@@ -25,12 +25,16 @@ function oAuthP2(){
   let state = myURL.searchParams.get("state");
   let code = myURL.searchParams.get("code");
   let gitstat = document.getElementById("gitstatus");
+  let mudFile = sessionStorage.getItem("mudfile");
+  let mudurl = mudFile['ietf-mud:mud']['mud-url'];
+  let user='';
+
   gitstat.innerHTML = "Authenticating..."
   if (got_tok != null || (state != null &&  code != null)) {
     email = localStorage.getItem("email")
       // validate the state parameter
     let jsonbody = {
-      mudFile : b64_encode(sessionStorage.getItem("mudfile")),
+      mudurl : mudurl,
       email : email
     }
     if ( got_tok != null ) {
@@ -57,17 +61,38 @@ function oAuthP2(){
         gitstat.innerHTML +='<span style="color: red">failed</span>';
         return "Oauth Fail";
       }
-      gitstat.innerHTML += '<span color="green">[ok]</span>.<br>Doing the rest...'
-      return fetch("/gitShovel/therest", {
-      method : "POST",
-      body : JSON.stringify({
-        mudFile : b64_encode(sessionStorage.getItem("mudfile")),
-        email : email
-      }),
-      headers :{
+      gitstat.innerHTML += '<span color="green">[ok]</span>.<br>Checking/creating a repo...';
+      return fetch('/gitShovel/dorep', {
+        method : "POST",
+        body : JSON.stringify({ 'mudurl' : mudurl }),
+        headers :{
         "Content-type" : "application/json"
-      }
-      })})
+      }})
+      .then(response => {
+        if (! response.ok ) {
+          gitstat.innerHTML += '<span style="color: red">failed</span>';
+          return "repo check / fork failed";
+        }
+        
+        return response.json();
+      })
+      .then(responsejson => {
+        if (typeof responsejson == 'undefined') {
+          return responsejson;
+        }
+        user = responsejson['user'];
+        gitstat.innerHTML += '<span color="green">[ok]</span>.<br>created ' + user + '/mudfiles... Doing the rest...';
+        return fetch("/gitShovel/therest", {
+          method : "POST",
+          body : JSON.stringify({
+            mudFile : b64_encode(mudFile),
+            email : email
+          }),
+          headers :{
+            "Content-type" : "application/json"
+          }
+          })})
+      }) 
     .then(response => {
       if ( typeof response != 'object') {
         return response;
