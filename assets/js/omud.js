@@ -24,6 +24,8 @@ function oAuthP2(){
   let got_tok = myURL.searchParams.get("got_token");
   let state = myURL.searchParams.get("state");
   let code = myURL.searchParams.get("code");
+  let gitstat = document.getElementById("gitstatus");
+  gitstat.innerHTML = "Authenticating..."
   if (got_tok != null || (state != null &&  code != null)) {
     email = localStorage.getItem("email")
       // validate the state parameter
@@ -43,14 +45,33 @@ function oAuthP2(){
       jsonbody["next-redirect"] = "https://" + window.location.hostname;
     }
     // send the code to the backend
-    fetch("/gitShovel", {
+    fetch("/gitShovel/oAuthv2",{
       method : "POST",
       body : JSON.stringify(jsonbody),
       headers :{
-        "Content-type" : "application/json"
+        "Content-type" : "application/json",
       }
     })
+    .then(response=> {
+      if (! response.ok) {
+        gitstat +='<span style="color: red">failed</span>';
+        return "Oauth Fail";
+      }
+      gitstat += '<span color="green">[ok]</span>.<br>Doing the rest...'
+      return fetch("/gitShovel/therest", {
+      method : "POST",
+      body : JSON.stringify({
+        mudFile : b64_encode(sessionStorage.getItem("mudfile")),
+        email : email
+      }),
+      headers :{
+        "Content-type" : "application/json"
+      }
+      })})
     .then(response => {
+      if ( typeof "response" != 'object') {
+        return response;
+      }
       if ( ! response.ok ) {
         return response.text();
       }
