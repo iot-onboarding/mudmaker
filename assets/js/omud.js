@@ -26,7 +26,7 @@ function oAuthP2(){
   let code = myURL.searchParams.get("code");
   let gitstat = document.getElementById("gitstatus");
   let mudFile = sessionStorage.getItem("mudfile");
-  let mudurl = mudFile['ietf-mud:mud']['mud-url'];
+  let mudurl = JSON.parse(mudFile['ietf-mud:mud']['mud-url']);
   let user='';
 
   gitstat.innerHTML = "Authenticating..."
