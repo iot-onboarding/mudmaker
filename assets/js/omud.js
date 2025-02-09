@@ -81,7 +81,7 @@ function oAuthP2(){
           return responsejson;
         }
         user = responsejson['user'];
-        let m64=b64_encode(mudFile);
+        let m64=b64_encode(JSON.stringify(mudFile));
         gitstat.innerHTML += '<span color="green">[ok]</span>.<br>created ' + user + '/mudfiles... Doing the rest...';
         return fetch("/gitShovel/therest", {
           method : "POST",
