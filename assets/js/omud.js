@@ -87,7 +87,7 @@ function oAuthP2(){
           body : JSON.stringify({
             mudFile : b64_encode(mudFile),
             email : email,
-	    user : user
+	          user : user
           }),
           headers :{
             "Content-type" : "application/json"
