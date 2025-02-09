@@ -54,10 +54,10 @@ function oAuthP2(){
     })
     .then(response=> {
       if (! response.ok) {
-        gitstat +='<span style="color: red">failed</span>';
+        gitstat.innerHTML +='<span style="color: red">failed</span>';
         return "Oauth Fail";
       }
-      gitstat += '<span color="green">[ok]</span>.<br>Doing the rest...'
+      gitstat.innerHTML += '<span color="green">[ok]</span>.<br>Doing the rest...'
       return fetch("/gitShovel/therest", {
       method : "POST",
       body : JSON.stringify({
