@@ -431,6 +431,7 @@ function reloadFields(){
 	}
 }
 
+// js update
 function loadWork(input) {
 	let file = input.files[0];
 	let reader = new FileReader();
@@ -445,7 +446,16 @@ function loadWork(input) {
 	}
 }
 
-  
+ // js update
+ function loadPCAP(input) {
+	let file = input.files[0];
+	let reader = new FileReader();
+
+	reader.readAsDataURL(file);
+	reader.onload = function () {
+		document.PCAP = reader.result;
+	}
+ }
 
 
 // js update
