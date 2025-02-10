@@ -111,13 +111,17 @@ function oAuthP2(){
           branch_name = responsejson['branch'];
           gitstat.innerHTML += '<br>Branch is called ' + branch_name + '.  Now creating PR...';
           let m64=b64_encode(JSON.stringify(mudFile));
-          return fetch("/gitShovel/therest", {
-            method : "POST",
-            body : JSON.stringify({
+          let jsonbody = {
               mudFile : m64,
               email : email,
               user : user
-            }),
+          }
+          if (typeof document.PCAP != 'undefined') {
+            jsonbody['pcap'] = document.PCAP;
+          }
+          return fetch("/gitShovel/therest", {
+            method : "POST",
+            body : JSON.stringify(jsonbody),
             headers :{
               "Content-type" : "application/json"
             }
