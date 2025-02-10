@@ -135,7 +135,6 @@ function oAuthP2(){
       return response.json();
     })
     .then ( jsonortext => {
-      let s = document.getElementById("two");
       if (typeof jsonortext == "object") {
         gitstat.innerHTML += '<h2>PR Created</h2>' +
           '<p>Your PR has been created.  You can click on ' +
@@ -143,10 +142,9 @@ function oAuthP2(){
           'to your repo, which is ' + user + '/mudfiles.</p>' + 
           '<h2>Next Steps</h2><p>Someone will review your PR.  If it needs changes,' +
           ' you will see a notification from Github.</p>';
-        s.innerHTML = innerhtml;
         return;
       }
-      s.innerHTML = jsonortext;
+      gitstat.innerHTML = +jsonortext;
     }
   );
     return;
