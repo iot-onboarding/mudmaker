@@ -120,6 +120,7 @@ function oAuthP2(){
             jsonbody['pcap'] = document.PCAP;
             gitstat.innerHTML+= "Will also include PCAP file.  Uploading/creating PR...";
           }
+          console.debug(jsonbody);
           return fetch("/gitShovel/therest", {
             method : "POST",
             body : JSON.stringify(jsonbody),
