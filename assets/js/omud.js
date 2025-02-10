@@ -131,9 +131,6 @@ function oAuthP2(){
         }) 
       })
     .then(response => {
-      if ( typeof response != 'object') {
-        return response;
-      }
       if ( ! response.ok ) {
         return response.text();
       }
