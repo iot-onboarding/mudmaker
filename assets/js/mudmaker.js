@@ -455,8 +455,7 @@ function loadWork(input) {
 	reader.onload = function () {
 		let pcap = reader.result;
 		re= /.*,/;
-		pcap.replace(re,'');
-		sessionStorage.setItem('pcap',pcap);
+		sessionStorage.setItem('pcap',pcap.replace(re,''));
 	}
  }
 
