@@ -454,6 +454,8 @@ function loadWork(input) {
 	reader.readAsDataURL(file);
 	reader.onload = function () {
 		document.PCAP = reader.result;
+		re= /octet-stream/;
+		document.PCAP.replace(re,'vnd.tcpdump.pcap');
 	}
  }
 
