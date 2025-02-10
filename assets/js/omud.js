@@ -77,24 +77,53 @@ function oAuthP2(){
         return response.json();
       })
       .then(responsejson => {
-        if (typeof responsejson == 'undefined') {
-          return responsejson;
+        if (typeof responsejson != 'object') {
+          return "Failed: " + responsejson;
         }
         user = responsejson['user'];
-        let m64=b64_encode(JSON.stringify(mudFile));
-        gitstat.innerHTML += '<span color="green">[ok]</span>.<br>created ' + user + '/mudfiles... Doing the rest...';
-        return fetch("/gitShovel/therest", {
+        mfg = mudFile['ietf-mud:mud']['mfg-name'];
+        model = mudfile['ietf-mud:mud']['systeminfo'];
+        gitstat.innerHTML += '<span color="green">[ok]</span>.<br>created ' + user + '/mudfiles<br>';
+        gitstat.innerHTML += 'Lookiong for/creating a branch...';
+        return fetch("/gitShovel/branch",{
           method : "POST",
           body : JSON.stringify({
-            mudFile : m64,
-            email : email,
+            mfg : mfg,
+            model : model,
 	          user : user
           }),
           headers :{
             "Content-type" : "application/json"
           }
-          })})
-      }) 
+        })
+        .then(response=>{
+          if ( typeof response != 'object') {
+            gitstat.innerHTML += "Failed: " + response;
+            return;
+          }
+          return response.json();
+        })
+        .then(responsejson=> {
+          if (typeof responsejson != 'object') {
+            return responsejson;
+          }
+          branch_name = responsejson['branch'];
+          gitstat.innerHTML += '<br>Branch is called ' + branch_name + '.  Now creating PR...';
+          let m64=b64_encode(JSON.stringify(mudFile));
+          return fetch("/gitShovel/therest", {
+            method : "POST",
+            body : JSON.stringify({
+              mudFile : m64,
+              email : email,
+              user : user
+            }),
+            headers :{
+              "Content-type" : "application/json"
+            }
+            })
+          })
+        }) 
+      })
     .then(response => {
       if ( typeof response != 'object') {
         return response;
@@ -107,8 +136,7 @@ function oAuthP2(){
     .then ( jsonortext => {
       let s = document.getElementById("two");
       if (typeof jsonortext == "object") {
-        let user = jsonortext['user'];
-        let innerhtml = '<h2>PR Created</h2>' +
+        gitstat.innerHTML += '<h2>PR Created</h2>' +
           '<p>Your PR has been created.  You can click on ' +
           '<a href="https://github.com/' + user + '/mudfiles">here</a> to take you' +
           'to your repo, which is ' + user + '/mudfiles.</p>' + 
@@ -122,5 +150,5 @@ function oAuthP2(){
   );
     return;
   }
-  document.getElementById("one").style.visibility = "inherit";
+  //document.getElementById("one").style.visibility = "inherit";
 }
