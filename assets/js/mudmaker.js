@@ -453,9 +453,10 @@ function loadWork(input) {
 
 	reader.readAsDataURL(file);
 	reader.onload = function () {
-		document.PCAP = reader.result;
+		let pcap = reader.result;
 		re= /.*,/;
-		document.PCAP.replace(re,'');
+		pcap.replace(re,'');
+		sessionStorage.setItem('pcap',pcap);
 	}
  }
 

@@ -116,11 +116,11 @@ function oAuthP2(){
               email : email,
               user : user
           }
-          if (typeof document.PCAP != 'undefined') {
-            jsonbody['pcap'] = document.PCAP;
+          let pcap = sessionStorage.getItem('pcap');
+          if ( pcap ) {
+            jsonbody['pcap'] = pcap;
             gitstat.innerHTML+= "Will also include PCAP file.  Uploading/creating PR...";
           }
-          console.debug(jsonbody);
           return fetch("/gitShovel/therest", {
             method : "POST",
             body : JSON.stringify(jsonbody),
