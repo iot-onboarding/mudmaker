@@ -61,6 +61,13 @@ function oAuthP2(){
         gitstat.innerHTML +='<span style="color: red">failed</span>';
         return "Oauth Fail";
       }
+      return response.json();
+    })
+    .then(resporjson=> {
+      if (typeof resporjson != 'object') {
+        return resporjson;
+      }
+      user = resporjson['user'];
       gitstat.innerHTML += '<span color="green">[ok]</span>.<br>Checking/creating a repo...';
       return fetch('/gitShovel/dorepo', {
         method : "POST",
