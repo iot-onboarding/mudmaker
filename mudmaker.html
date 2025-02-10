@@ -65,7 +65,7 @@
           <tr>
             <td>
             <label for="pcapfile">Upload PCAP</label>
-            <input id="pcapfile" type="file" accept=".pcap,.pcapng,application/vnd.tcpdump.pcap,">
+            <input id="pcapfile" type="file" accept=".pcap,.pcapng,application/vnd.tcpdump.pcap" onchange="loadPCAP(this)">
             </td>
             <td>
               If you are planning to publish your MUD file to GitHub, you may include
