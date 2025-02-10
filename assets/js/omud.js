@@ -109,7 +109,7 @@ function oAuthP2(){
             return responsejson;
           }
           branch_name = responsejson['branch'];
-          gitstat.innerHTML += '<br>Branch is called ' + branch_name + '.  Now creating PR...';
+          gitstat.innerHTML += '<br>Branch is called ' + branch_name + '.<br>';
           let m64=b64_encode(JSON.stringify(mudFile));
           let jsonbody = {
               mudFile : m64,
@@ -118,6 +118,7 @@ function oAuthP2(){
           }
           if (typeof document.PCAP != 'undefined') {
             jsonbody['pcap'] = document.PCAP;
+            gitstat.innerHTML+= "Will also include PCAP file.  Uploading/creating PR...";
           }
           return fetch("/gitShovel/therest", {
             method : "POST",
