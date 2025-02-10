@@ -82,7 +82,7 @@ function oAuthP2(){
         }
         user = responsejson['user'];
         mfg = mudFile['ietf-mud:mud']['mfg-name'];
-        model = mudfile['ietf-mud:mud']['systeminfo'];
+        model = mudFile['ietf-mud:mud']['systeminfo'];
         gitstat.innerHTML += '<span color="green">[ok]</span>.<br>created ' + user + '/mudfiles<br>';
         gitstat.innerHTML += 'Lookiong for/creating a branch...';
         return fetch("/gitShovel/branch",{
