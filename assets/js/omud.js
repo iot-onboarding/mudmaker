@@ -146,7 +146,7 @@ function oAuthP2(){
           ' you will see a notification from Github.</p>';
         return;
       }
-      gitstat.innerHTML = +jsonortext;
+      gitstat.innerHTML += jsonortext;
     }
   );
     return;
