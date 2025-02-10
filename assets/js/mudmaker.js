@@ -336,7 +336,7 @@ function reloadFields(){
 	const inbasic = ['mfg-name', 'systeminfo', 'documentation'];
 	document.getElementById('country').value=document.mudFile['country'];
 	delete document.mudFile['country'];
-	document.getElementById('email_addr').value=document.mudFile['email_addr'];
+	document.getElementById('email_addr').value=document.mudFile['email_addr'] || '';
 	delete document.mudFile['email_addr'];
 	document.getElementById('sbom').value = document.mudFile['sbomtype'];
 	var sbomtype = document.mudFile['sbomtype'];
