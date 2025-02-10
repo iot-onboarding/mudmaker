@@ -88,6 +88,7 @@ function oAuthP2(){
         return fetch("/gitShovel/branch",{
           method : "POST",
           body : JSON.stringify({
+            mudurl: mudurl,
             mfg : mfg,
             model : model,
 	          user : user
