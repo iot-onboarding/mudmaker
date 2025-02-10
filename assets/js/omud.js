@@ -84,7 +84,7 @@ function oAuthP2(){
         mfg = mudFile['ietf-mud:mud']['mfg-name'];
         model = mudFile['ietf-mud:mud']['systeminfo'];
         gitstat.innerHTML += '<span color="green">[ok]</span>.<br>created ' + user + '/mudfiles<br>';
-        gitstat.innerHTML += 'Lookiong for/creating a branch...';
+        gitstat.innerHTML += 'Looking for/creating a branch...';
         return fetch("/gitShovel/branch",{
           method : "POST",
           body : JSON.stringify({
@@ -136,9 +136,9 @@ function oAuthP2(){
     })
     .then ( jsonortext => {
       if (typeof jsonortext == "object") {
-        gitstat.innerHTML += '<h2>PR Created</h2>' +
+        gitstat.innerHTML += '<br><h2>PR Created</h2>' +
           '<p>Your PR has been created.  You can click on ' +
-          '<a href="https://github.com/' + user + '/mudfiles">here</a> to take you' +
+          '<a href="https://github.com/' + user + '/mudfiles">here</a> to take you ' +
           'to your repo, which is ' + user + '/mudfiles.</p>' + 
           '<h2>Next Steps</h2><p>Someone will review your PR.  If it needs changes,' +
           ' you will see a notification from Github.</p>';
