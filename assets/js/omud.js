@@ -24,11 +24,17 @@ function oAuthP2(){
   let got_tok = myURL.searchParams.get("got_token");
   let state = myURL.searchParams.get("state");
   let code = myURL.searchParams.get("code");
+  let gitstat = document.getElementById("gitstatus");
+  let mudFile = JSON.parse(sessionStorage.getItem("mudfile"));
+  let mudurl = mudFile['ietf-mud:mud']['mud-url'];
+  let user='';
+
+  gitstat.innerHTML = "Authenticating..."
   if (got_tok != null || (state != null &&  code != null)) {
     email = localStorage.getItem("email")
       // validate the state parameter
     let jsonbody = {
-      mudFile : b64_encode(sessionStorage.getItem("mudfile")),
+      mudurl : mudurl,
       email : email
     }
     if ( got_tok != null ) {
@@ -43,36 +49,105 @@ function oAuthP2(){
       jsonbody["next-redirect"] = "https://" + window.location.hostname;
     }
     // send the code to the backend
-    fetch("/gitShovel", {
+    fetch("/gitShovel/oAuthv2",{
       method : "POST",
       body : JSON.stringify(jsonbody),
       headers :{
-        "Content-type" : "application/json"
+        "Content-type" : "application/json",
       }
     })
+    .then(response=> {
+      if (! response.ok) {
+        gitstat.innerHTML +='<span style="color: red">failed</span>';
+        return "Oauth Fail";
+      }
+      gitstat.innerHTML += '<span color="green">[ok]</span>.<br>Checking/creating a repo...';
+      return fetch('/gitShovel/dorepo', {
+        method : "POST",
+        body : JSON.stringify({ 'mudurl' : mudurl }),
+        headers :{
+        "Content-type" : "application/json"
+      }})
+      .then(response => {
+        if (! response.ok ) {
+          gitstat.innerHTML += '<span style="color: red">failed</span>';
+          return "repo check / fork failed";
+        }
+        
+        return response.json();
+      })
+      .then(responsejson => {
+        if (typeof responsejson != 'object') {
+          return "Failed: " + responsejson;
+        }
+        user = responsejson['user'];
+        mfg = mudFile['ietf-mud:mud']['mfg-name'];
+        model = mudFile['ietf-mud:mud']['systeminfo'];
+        gitstat.innerHTML += '<span color="green">[ok]</span>.<br>created ' + user + '/mudfiles<br>';
+        gitstat.innerHTML += 'Looking for/creating a branch...';
+        return fetch("/gitShovel/branch",{
+          method : "POST",
+          body : JSON.stringify({
+            mudurl: mudurl,
+            mfg : mfg,
+            model : model,
+	          user : user
+          }),
+          headers :{
+            "Content-type" : "application/json"
+          }
+        })
+        .then(response=>{
+          if ( typeof response != 'object') {
+            gitstat.innerHTML += "Failed: " + response;
+            return;
+          }
+          return response.json();
+        })
+        .then(responsejson=> {
+          if (typeof responsejson != 'object') {
+            return responsejson;
+          }
+          branch_name = responsejson['branch'];
+          gitstat.innerHTML += '<br>Branch is called ' + branch_name + '.  Now creating PR...';
+          let m64=b64_encode(JSON.stringify(mudFile));
+          return fetch("/gitShovel/therest", {
+            method : "POST",
+            body : JSON.stringify({
+              mudFile : m64,
+              email : email,
+              user : user
+            }),
+            headers :{
+              "Content-type" : "application/json"
+            }
+            })
+          })
+        }) 
+      })
     .then(response => {
+      if ( typeof response != 'object') {
+        return response;
+      }
       if ( ! response.ok ) {
         return response.text();
       }
       return response.json();
     })
     .then ( jsonortext => {
-      let s = document.getElementById("two");
       if (typeof jsonortext == "object") {
-        let user = jsonortext['user'];
-        let innerhtml = '<h2>PR Created</h2>' +
+        gitstat.innerHTML += '<br><h2>PR Created</h2>' +
           '<p>Your PR has been created.  You can click on ' +
-          '<a href="https://github.com/' + user + '/mudfiles">here</a> to take you' +
+          '<a href="https://github.com/' + user + '/mudfiles">here</a> to take you ' +
           'to your repo, which is ' + user + '/mudfiles.</p>' + 
           '<h2>Next Steps</h2><p>Someone will review your PR.  If it needs changes,' +
           ' you will see a notification from Github.</p>';
-        s.innerHTML = innerhtml;
         return;
       }
-      s.innerHTML = jsonortext;
+      gitstat.innerHTML = +jsonortext;
     }
   );
     return;
   }
-  document.getElementById("one").style.visibility = "inherit";
+  //document.getElementById("one").style.visibility = "inherit";
 }
