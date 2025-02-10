@@ -109,15 +109,21 @@ function oAuthP2(){
             return responsejson;
           }
           branch_name = responsejson['branch'];
-          gitstat.innerHTML += '<br>Branch is called ' + branch_name + '.  Now creating PR...';
+          gitstat.innerHTML += '<br>Branch is called ' + branch_name + '.<br>';
           let m64=b64_encode(JSON.stringify(mudFile));
-          return fetch("/gitShovel/therest", {
-            method : "POST",
-            body : JSON.stringify({
+          let jsonbody = {
               mudFile : m64,
               email : email,
               user : user
-            }),
+          }
+          let pcap = sessionStorage.getItem('pcap');
+          if ( pcap ) {
+            jsonbody['pcap'] = pcap;
+            gitstat.innerHTML+= "Will also include PCAP file.  Uploading/creating PR...";
+          }
+          return fetch("/gitShovel/therest", {
+            method : "POST",
+            body : JSON.stringify(jsonbody),
             headers :{
               "Content-type" : "application/json"
             }
@@ -126,9 +132,6 @@ function oAuthP2(){
         }) 
       })
     .then(response => {
-      if ( typeof response != 'object') {
-        return response;
-      }
       if ( ! response.ok ) {
         return response.text();
       }
@@ -144,7 +147,7 @@ function oAuthP2(){
           ' you will see a notification from Github.</p>';
         return;
       }
-      gitstat.innerHTML = +jsonortext;
+      gitstat.innerHTML += jsonortext;
     }
   );
     return;
