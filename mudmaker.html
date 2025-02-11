@@ -87,6 +87,13 @@
                 <b>Note:</b> By clicking "Publish", your work will be published (shocking!) to GitHub
                 initially as a Pull Request, from a fork that will be created on your GitHub account.
               </p>
+              <p>
+                It is <b>not</b> necessary to use this interface to create a PR to iot-onboarding/mudfiles,
+                nor is it necessary to use GitHub to store MUD files.  This is a simple convenience offered
+                to those looking to store files and those looking to find them.  Please be aware, using this
+                interface requires access to your git account.  Once files are published, you can remove
+                that access at any time through your git preferences.
+              </p>
           </td>
         </tr>
         <tr>
@@ -111,7 +118,8 @@
     <div id="create" class="tabcontent">
       <section id="two" class="wrapper">
         <form method="POST" action="makemud2.php" id="mudform">
-          <p onload="oauthp2(this)"><em>Note:</em> No information collected on this form is saved beyond this session.  It is only used to generate the
+          <p onload="oauthp2(this)"><em>Note:</em> Unless you publish to GitHub through this interface,  no information
+          collected on this form is saved beyond this session.  It is only used to generate the
           files that are returned to you, or to facilitate your visualization.</p>
           <fieldset>
             <legend>Please enter the host and model to build a MUD-URL for this device:</legend>

@@ -334,9 +334,9 @@ function setProto(nextAce,ace,ipVer) {
 function reloadFields(){
 	var mf = document.mudFile['ietf-mud:mud'];
 	const inbasic = ['mfg-name', 'systeminfo', 'documentation'];
-	document.getElementById('country').value=document.mudFile['country'];
+	document.getElementById('country').value=document.mudFile['country'] || 0;
 	delete document.mudFile['country'];
-	document.getElementById('email_addr').value=document.mudFile['email_addr'];
+	document.getElementById('email_addr').value=document.mudFile['email_addr'] || '';
 	delete document.mudFile['email_addr'];
 	document.getElementById('sbom').value = document.mudFile['sbomtype'];
 	var sbomtype = document.mudFile['sbomtype'];
@@ -408,6 +408,7 @@ function reloadFields(){
 				if (typeof ace['matches']["ietf-mud:mud"] != 'undefined'){
 					for (let val in mudtypes ) {
 						if ( typeof ace['matches']["ietf-mud:mud"][mudtypes[val]] != 'undefined') {
+							document.getElementById(val).open = true;
 							nextAce = findNextAce(val);
 							if (! nextAce.children[0].readOnly) {
 								nextAce.children[0].value = ace['matches']["ietf-mud:mud"][mudtypes[va]];
