@@ -77,7 +77,7 @@ function oAuthP2(){
     .then(response=> {
       if (! response.ok) {
         gitstat.innerHTML +='<span style="color: red">failed</span>';
-        return "Oauth Fail";
+        return response.text();
       }
       return response.json();
     })
