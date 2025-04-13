@@ -112,7 +112,7 @@ function addEntry(entry){
 		}
 		 else {
 		     hidden="' style='visibility: hidden'";
-		     fieldinfo="maxlength='120'";
+		     fieldinfo="maxlength='255'";
 		 }
 	    }
 	}
