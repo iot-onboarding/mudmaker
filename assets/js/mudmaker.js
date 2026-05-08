@@ -327,12 +327,15 @@ function setProto(nextAce,ace,ipVer) {
 		cominit.style.visibility = "inherit";
 		pstring = 'tcp';
 		nextAce.children[1].value='tcp';
-		if (typeof matches['tcp']["ietf-mud:direction-initiated"] != 'undefined') {
+		if (typeof matches['tcp'] != 'undefined' &&
+			typeof matches['tcp']["ietf-mud:direction-initiated"] != 'undefined') {
 			cominit.children[0].value = matches['tcp']["ietf-mud:direction-initiated"];
 		}
-	} else {
+	} else if ( matches[ipVer]['protocol'] == 17 ){
 		pstring = 'udp';
-		nextAce.children[1].value = 'tcp';
+		nextAce.children[1].value = 'udp';
+	} else {
+		return;
 	}
 	if ( tofro == 'to' ) {
 		p1 = 1;
@@ -341,10 +344,12 @@ function setProto(nextAce,ace,ipVer) {
 		p1 = 0;
 		p0 = 1;
 	}
-	if (typeof matches[pstring]['source-port'] != 'undefined') {
+	if (typeof matches[pstring] != 'undefined' &&
+		typeof matches[pstring]['source-port'] != 'undefined') {
 		proto.children[p1].value = matches[pstring]['source-port']['port'];
 	}
-	if (typeof matches[pstring]['destination-port'] != 'undefined') {
+	if (typeof matches[pstring] != 'undefined' &&
+		typeof matches[pstring]['destination-port'] != 'undefined') {
 		proto.children[p0].value = matches[pstring]['destination-port']['port'];
 	}
 }
@@ -613,7 +618,7 @@ function makeproto(acl_entry,proto,sport,dport,cominit){
 
 
 
-	if (proto = 'tcp' && cominit != 'either'){
+	if (proto === 'tcp' && cominit != 'either'){
 		ret['ietf-mud:direction-initiated'] = cominit;
 		hasval = true;
 	}
