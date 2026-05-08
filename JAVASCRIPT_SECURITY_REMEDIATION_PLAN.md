@@ -7,8 +7,8 @@ This plan addresses the JavaScript and JavaScript-adjacent vulnerabilities found
 ## Plan
 
 
-3. Fix OAuth status rendering in `assets/js/omud.js`.
-   Replace `innerHTML` concatenation for `user`, `branch_name`, and backend error text with safe DOM construction. Build the GitHub repository link with `document.createElement("a")` and a validated URL.
+3. Completed: Fix OAuth status rendering in `assets/js/omud.js`.
+   Replaced `innerHTML` concatenation for `user`, `branch_name`, and backend error text with safe DOM construction. Built the GitHub repository link through `MudSafeDom.link()` with a validated URL.
 
 4. Fix PHP-to-JavaScript escaping in `mudvisualizer.php`.
    Emit `incoming_mudfile` with `json_encode($mudfile, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT)` instead of interpolating data into a quoted JavaScript string.
