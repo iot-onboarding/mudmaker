@@ -19,21 +19,27 @@
 // mud oAuth flows.
 
 function oAuthP1(){
-    const re = /(?<dirname>.*)\/[^\/]+.html/;
-    const redirect_uri=window.location.href.match(re)[1] + "/mudpublish.html";
+    const redirectURL = new URL("mudpublish.html", window.location.href);
+    const redirect_uri = redirectURL.href;
     const client_id = "Ov23licSoRbhBHkeDqPJ";
     const csrfkey = new Uint8Array(16);
     let tok = sessionStorage.getItem("gottoken");
     if (tok == "true") {
       // skip git.  we're already there.
-      window.location.assign(redirect_uri + "?got_token=true");
+      redirectURL.searchParams.set("got_token", "true");
+      window.location.assign(redirectURL.href);
     }
     self.crypto.getRandomValues(csrfkey);
     const state = csrfkey.toHex();
     localStorage.setItem("latestCSRFToken", state);
     localStorage.setItem("email",document.getElementById("email_addr").value)
-    const link = `https://github.com/login/oauth/authorize?client_id=${client_id}&response_type=code&scope=repo&redirect_uri=${redirect_uri}&state=${state}`;
-    window.location.assign(link);
+    const authURL = new URL("https://github.com/login/oauth/authorize");
+    authURL.searchParams.set("client_id", client_id);
+    authURL.searchParams.set("response_type", "code");
+    authURL.searchParams.set("scope", "repo");
+    authURL.searchParams.set("redirect_uri", redirect_uri);
+    authURL.searchParams.set("state", state);
+    window.location.assign(authURL.href);
 }
 
 function oAuthP2(){ 
