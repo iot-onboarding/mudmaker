@@ -34,9 +34,10 @@ function b64_encode(str) {
 }
 
 function refreshmans(){
-	let mans = document.getElementById("mandatories");
+	let dom = window.MudSafeDom;
+	let mans = dom.clear("mandatories");
 	let gtg = true;
-	let innerhtml='<ul style="list-style-type: none">';
+	let list = dom.element("ul", { style: { listStyleType: "none" } });
 	let displaytab = {
 		"mudhost" : "Manufacturer Domain",
 		"mfg-name" : "Manufacturer Name",
@@ -48,16 +49,29 @@ function refreshmans(){
 	Object.keys(displaytab).forEach(
 		(k) => {
 			let v = document.getElementById(k);
-			if (v.validity.valid && v.value != null & v.value != '' ) {
-				innerhtml = innerhtml + '<li>' + 
-					"<span style='color: green'>&#9989;</span>&nbsp;" + displaytab[k] + ": "  + v.value +"</li>";
+			let item = dom.element("li");
+			if (v && v.validity.valid && v.value != null && v.value != '' ) {
+				dom.append(
+					item,
+					dom.statusText("\u2713", { style: { color: "green" } }),
+					" ",
+					displaytab[k],
+					": ",
+					v.value
+				);
 			} else {
-				innerhtml = innerhtml + '<li>' +
-					"<span style='color: red'>&#10006;</span>&nbsp;" + displaytab[k] + ": not set</li>";
+				dom.append(
+					item,
+					dom.statusText("\u2717", { style: { color: "red" } }),
+					" ",
+					displaytab[k],
+					": not set"
+				);
 				gtg = false; 
 			}
+			dom.append(list, item);
 		});
-	mans.innerHTML = innerhtml + '</ul>';
+	dom.append(mans, list);
 	let but = document.getElementById("pubbutton");
 	if ( gtg ==  false ) {
 		but.disabled = true;
