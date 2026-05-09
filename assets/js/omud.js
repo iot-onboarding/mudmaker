@@ -18,22 +18,71 @@
 
 // mud oAuth flows.
 
+function gitStatusClear(gitstat) {
+  window.MudSafeDom.clear(gitstat);
+}
+
+function gitStatusAppend(gitstat) {
+  window.MudSafeDom.append.apply(window.MudSafeDom, [gitstat].concat(Array.prototype.slice.call(arguments, 1)));
+}
+
+function gitStatusOK(gitstat) {
+  gitStatusAppend(gitstat, window.MudSafeDom.statusText("[ok]", { style: { color: "green" } }));
+}
+
+function gitStatusFailed(gitstat) {
+  gitStatusAppend(gitstat, window.MudSafeDom.statusText("failed", { style: { color: "red" } }));
+}
+
+function appendPRCreated(gitstat, user) {
+  const dom = window.MudSafeDom;
+  const repoURL = new URL("https://github.com/");
+  repoURL.pathname = "/" + encodeURIComponent(user) + "/mudfiles";
+
+  gitStatusAppend(
+    gitstat,
+    dom.element("br"),
+    dom.element("h2", null, "PR Created"),
+    dom.element(
+      "p",
+      null,
+      "Your PR has been created. You can click on ",
+      dom.link(repoURL.href, "here"),
+      " to take you to your repo, which is ",
+      user,
+      "/mudfiles."
+    ),
+    dom.element("h2", null, "Next Steps"),
+    dom.element(
+      "p",
+      null,
+      "Someone will review your PR. If it needs changes, you will see a notification from Github."
+    )
+  );
+}
+
 function oAuthP1(){
-    const re = /(?<dirname>.*)\/[^\/]+.html/;
-    const redirect_uri=window.location.href.match(re)[1] + "/mudpublish.html";
+    const redirectURL = new URL("mudpublish.html", window.location.href);
+    const redirect_uri = redirectURL.href;
     const client_id = "Ov23licSoRbhBHkeDqPJ";
     const csrfkey = new Uint8Array(16);
     let tok = sessionStorage.getItem("gottoken");
     if (tok == "true") {
       // skip git.  we're already there.
-      window.location.assign(redirect_uri + "?got_token=true");
+      redirectURL.searchParams.set("got_token", "true");
+      window.location.assign(redirectURL.href);
     }
     self.crypto.getRandomValues(csrfkey);
     const state = csrfkey.toHex();
     localStorage.setItem("latestCSRFToken", state);
     localStorage.setItem("email",document.getElementById("email_addr").value)
-    const link = `https://github.com/login/oauth/authorize?client_id=${client_id}&response_type=code&scope=repo&redirect_uri=${redirect_uri}&state=${state}`;
-    window.location.assign(link);
+    const authURL = new URL("https://github.com/login/oauth/authorize");
+    authURL.searchParams.set("client_id", client_id);
+    authURL.searchParams.set("response_type", "code");
+    authURL.searchParams.set("scope", "repo");
+    authURL.searchParams.set("redirect_uri", redirect_uri);
+    authURL.searchParams.set("state", state);
+    window.location.assign(authURL.href);
 }
 
 function oAuthP2(){ 
@@ -47,7 +96,8 @@ function oAuthP2(){
   let mudurl = mudFile['ietf-mud:mud']['mud-url'];
   let user='';
 
-  gitstat.innerHTML = "Authenticating..."
+  gitStatusClear(gitstat);
+  gitStatusAppend(gitstat, "Authenticating...");
   if (got_tok != null || (state != null &&  code != null)) {
     email = localStorage.getItem("email")
       // validate the state parameter
@@ -76,7 +126,7 @@ function oAuthP2(){
     })
     .then(response=> {
       if (! response.ok) {
-        gitstat.innerHTML +='<span style="color: red">failed</span>';
+        gitStatusFailed(gitstat);
         return response.text();
       }
       return response.json();
@@ -86,7 +136,8 @@ function oAuthP2(){
         return resporjson;
       }
       user = resporjson['user'];
-      gitstat.innerHTML += '<span color="green">[ok]</span>.<br>Checking/creating a repo...';
+      gitStatusOK(gitstat);
+      gitStatusAppend(gitstat, ".", window.MudSafeDom.element("br"), "Checking/creating a repo...");
       return fetch('/gitShovel/dorepo', {
         method : "POST",
         body : JSON.stringify({ 'mudurl' : mudurl }),
@@ -95,7 +146,7 @@ function oAuthP2(){
       }})
       .then(response => {
         if (! response.ok ) {
-          gitstat.innerHTML += '<span style="color: red">failed</span>';
+          gitStatusFailed(gitstat);
           return "repo check / fork failed";
         }
         
@@ -108,8 +159,9 @@ function oAuthP2(){
         user = responsejson['user'];
         mfg = mudFile['ietf-mud:mud']['mfg-name'];
         model = mudFile['ietf-mud:mud']['systeminfo'];
-        gitstat.innerHTML += '<span color="green">[ok]</span>.<br>created ' + user + '/mudfiles<br>';
-        gitstat.innerHTML += 'Looking for/creating a branch...';
+        gitStatusOK(gitstat);
+        gitStatusAppend(gitstat, ".", window.MudSafeDom.element("br"), "created ", user, "/mudfiles", window.MudSafeDom.element("br"));
+        gitStatusAppend(gitstat, "Looking for/creating a branch...");
         return fetch("/gitShovel/branch",{
           method : "POST",
           body : JSON.stringify({
@@ -124,7 +176,7 @@ function oAuthP2(){
         })
         .then(response=>{
           if ( typeof response != 'object') {
-            gitstat.innerHTML += "Failed: " + response;
+            gitStatusAppend(gitstat, "Failed: ", response);
             return;
           }
           return response.json();
@@ -134,7 +186,7 @@ function oAuthP2(){
             return responsejson;
           }
           branch_name = responsejson['branch'];
-          gitstat.innerHTML += '<br>Branch is called ' + branch_name + '.<br>';
+          gitStatusAppend(gitstat, window.MudSafeDom.element("br"), "Branch is called ", branch_name, ".", window.MudSafeDom.element("br"));
           let m64=b64_encode(JSON.stringify(mudFile));
           let jsonbody = {
               mudFile : m64,
@@ -144,7 +196,7 @@ function oAuthP2(){
           let pcap = sessionStorage.getItem('pcap');
           if ( pcap ) {
             jsonbody['pcap'] = pcap;
-            gitstat.innerHTML+= "Will also include PCAP file.  Uploading/creating PR...";
+            gitStatusAppend(gitstat, "Will also include PCAP file. Uploading/creating PR...");
           }
           return fetch("/gitShovel/therest", {
             method : "POST",
@@ -167,15 +219,10 @@ function oAuthP2(){
     })
     .then ( jsonortext => {
       if (typeof jsonortext == "object") {
-        gitstat.innerHTML += '<br><h2>PR Created</h2>' +
-          '<p>Your PR has been created.  You can click on ' +
-          '<a href="https://github.com/' + user + '/mudfiles">here</a> to take you ' +
-          'to your repo, which is ' + user + '/mudfiles.</p>' + 
-          '<h2>Next Steps</h2><p>Someone will review your PR.  If it needs changes,' +
-          ' you will see a notification from Github.</p>';
+        appendPRCreated(gitstat, user);
         return;
       }
-      gitstat.innerHTML += jsonortext;
+      gitStatusAppend(gitstat, jsonortext);
     }
   );
     return;

@@ -103,9 +103,11 @@ function openTab(evt, tabName) {
 		document.mfChanged = false;
 	} else if (tabName == "publish") {
 		refreshmans();
-		let mud=document.mudFile["ietf-mud:mud"]
+		let mud=document.mudFile["ietf-mud:mud"];
 		if ( typeof mud["mud-url"] != 'undefined' ) {
-			fetch("/gitShovel/gottoken?mudurl=" + mud["mud-url"], {
+			let gotTokenURL = new URL("/gitShovel/gottoken", window.location.href);
+			gotTokenURL.searchParams.set("mudurl", mud["mud-url"]);
+			fetch(gotTokenURL.href, {
 				method : "GET",
 				headers :{
 				"Accept" : "application/json"
