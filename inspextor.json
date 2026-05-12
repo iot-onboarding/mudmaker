@@ -1,0 +1,139 @@
+{
+  "ietf-mud:mud": {
+    "mud-version": 1,
+    "cache-validity": 48,
+    "is-supported": true,
+    "mud-url": "https://mht-technologies.com/lighting//inspextor.json",
+    "mud-signature": "https://mht-technologies.com/lighting//inspextor.p7s",
+    "mfg-name": "MHT Technologies",
+    "systeminfo": "Controls the lights",
+    "documentation": "https://mht-technologies.com/lighting/",
+    "from-device-policy": {
+      "access-lists": {
+        "access-list": [
+          {
+            "name": "fripv4-acl69621"
+          }
+        ]
+      }
+    },
+    "to-device-policy": {
+      "access-lists": {
+        "access-list": [
+          {
+            "name": "toipv4-acl69621"
+          }
+        ]
+      }
+    },
+    "last-update": "2026-05-12T15:01:30.263Z"
+  },
+  "ietf-access-control-list:acls": {
+    "acl": [
+      {
+        "name": "toipv4-acl69621",
+        "type": "ipv4-acl-type",
+        "aces": {
+          "ace": [
+            {
+              "name": "toace3784",
+              "matches": {
+                "ietf-mud:mud": {
+                  "my-controller": [
+                    null
+                  ]
+                },
+                "ipv4": {
+                  "protocol": 17
+                },
+                "udp": {
+                  "source-port": {
+                    "operator": "eq",
+                    "port": 4683
+                  }
+                }
+              },
+              "actions": {
+                "forwarding": "accept"
+              }
+            },
+            {
+              "name": "toace40325",
+              "matches": {
+                "ietf-mud:mud": {
+                  "my-controller": [
+                    null
+                  ]
+                },
+                "ipv4": {
+                  "protocol": 17
+                },
+                "udp": {
+                  "destination-port": {
+                    "operator": "eq",
+                    "port": 5683
+                  }
+                }
+              },
+              "actions": {
+                "forwarding": "accept"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "fripv4-acl69621",
+        "type": "ipv4-acl-type",
+        "aces": {
+          "ace": [
+            {
+              "name": "frace3784",
+              "matches": {
+                "ietf-mud:mud": {
+                  "my-controller": [
+                    null
+                  ]
+                },
+                "ipv4": {
+                  "protocol": 17
+                },
+                "udp": {
+                  "destination-port": {
+                    "operator": "eq",
+                    "port": 4683
+                  }
+                }
+              },
+              "actions": {
+                "forwarding": "accept"
+              }
+            },
+            {
+              "name": "frace40325",
+              "matches": {
+                "ietf-mud:mud": {
+                  "my-controller": [
+                    null
+                  ]
+                },
+                "ipv4": {
+                  "protocol": 17
+                },
+                "udp": {
+                  "source-port": {
+                    "operator": "eq",
+                    "port": 5683
+                  }
+                }
+              },
+              "actions": {
+                "forwarding": "accept"
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

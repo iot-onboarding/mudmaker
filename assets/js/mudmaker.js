@@ -24,15 +24,117 @@ var nref = [ 0, 0, 0, 0 ];
 var prev_sbom = 'none';
 var limit = 50;
 
+function normalizeDirection(direction) {
+	if (direction == 'thing') {
+		return 'from-device';
+	}
+	if (direction == 'remote') {
+		return 'to-device';
+	}
+	return direction;
+}
+
+function normalizePort(port) {
+	var parsed = Number(port);
+	if (!Number.isInteger(parsed) || parsed < 0 || parsed > 65535) {
+		return null;
+	}
+	return parsed;
+}
+
+function normalizePortMatch(match) {
+	if (typeof match == 'undefined' || typeof match.port == 'undefined') {
+		return;
+	}
+	var port = normalizePort(match.port);
+	if (port != null) {
+		match.port = port;
+	}
+}
+
+function normalizeAcls(acls) {
+	if (typeof acls == 'undefined' || !Array.isArray(acls.acl)) {
+		return;
+	}
+	acls.acl.forEach(function(acl) {
+		if (typeof acl.aces == 'undefined' || !Array.isArray(acl.aces.ace)) {
+			return;
+		}
+		acl.aces.ace.forEach(function(ace) {
+			var matches = ace.matches || {};
+			['tcp', 'udp'].forEach(function(proto) {
+				if (typeof matches[proto] == 'undefined') {
+					return;
+				}
+				normalizePortMatch(matches[proto]['source-port']);
+				normalizePortMatch(matches[proto]['destination-port']);
+			});
+			if (typeof matches.tcp != 'undefined' &&
+				typeof matches.tcp['ietf-mud:direction-initiated'] != 'undefined') {
+				matches.tcp['ietf-mud:direction-initiated'] =
+					normalizeDirection(matches.tcp['ietf-mud:direction-initiated']);
+			}
+		});
+	});
+}
+
+function normalizeMUDFile(mudFile) {
+	if (typeof mudFile == 'undefined' ||
+		typeof mudFile['ietf-mud:mud'] == 'undefined') {
+		return mudFile;
+	}
+	var mud = mudFile['ietf-mud:mud'];
+	if (Array.isArray(mud['extensions'])) {
+		mud['extensions'] = mud['extensions'].filter(function(extension) {
+			return extension != 'ol';
+		});
+		if (mud['extensions'].length == 0) {
+			delete mud['extensions'];
+		}
+	}
+	delete mud['ol'];
+	if (typeof mud['last-update'] == 'undefined' &&
+		typeof mud['last-change'] != 'undefined') {
+		mud['last-update'] = mud['last-change'];
+	}
+	delete mud['last-change'];
+	if (typeof mud['ietf-access-control-list:acls'] != 'undefined') {
+		if (typeof mudFile['ietf-access-control-list:acls'] == 'undefined') {
+			mudFile['ietf-access-control-list:acls'] = mud['ietf-access-control-list:acls'];
+		}
+		delete mud['ietf-access-control-list:acls'];
+	}
+	normalizeAcls(mudFile['ietf-access-control-list:acls']);
+	return mudFile;
+}
+
+function getAcls() {
+	normalizeMUDFile(document.mudFile);
+	return document.mudFile['ietf-access-control-list:acls'];
+}
+
+function ensureAcls() {
+	normalizeMUDFile(document.mudFile);
+	if (typeof document.mudFile['ietf-access-control-list:acls'] == 'undefined') {
+		document.mudFile['ietf-access-control-list:acls'] = {"acl": []};
+	}
+	return document.mudFile['ietf-access-control-list:acls'];
+}
+
+function updateLastUpdate(mudFile) {
+	mudFile['ietf-mud:mud']['last-update'] = new Date().toISOString();
+	delete mudFile['ietf-mud:mud']['last-change'];
+}
+
 function initMUDFile() {
 	document.mudFile=window.sessionStorage.getItem("mudfile");
 	if ( document.mudFile == null ) {
-		var d = new Date()
-		document.mudFile = JSON.parse('{"ietf-mud:mud" : {"mud-version" : 1, "extensions" : [ "ol"], "ol" : { "spdx-tag" : "0BSD"}, "cache-validity": 48, "is-supported" : true}}');
-		document.mudFile['ietf-mud:mud']["last-change"] = d.toISOString();
+		document.mudFile = JSON.parse('{"ietf-mud:mud" : {"mud-version" : 1, "cache-validity": 48, "is-supported" : true}}');
+		updateLastUpdate(document.mudFile);
 		window.sessionStorage.setItem('mudfile',JSON.stringify(document.mudFile));
 	} else {
 		document.mudFile=JSON.parse(document.mudFile);
+		normalizeMUDFile(document.mudFile);
 	}
 	document.mfChanged = false;
 }
@@ -144,8 +246,8 @@ function addEntry(entry){
 	    + "&nbsp;&nbsp;&nbsp;" + 
 	    "Initiated by&nbsp; <select "  + 'name="direction" value="any">' +
 	    "<option value='either'>Either</option>" +
-	    "<option value='thing'>Thing</option>" +
-	    "<option value='remote'>Remote</option>" +
+	    "<option value='from-device'>Thing</option>" +
+	    "<option value='to-device'>Remote</option>" +
 	    "</select></span>";
 
         entry.appendChild(newdiv);
@@ -199,26 +301,20 @@ function fillpub(cur) {
     var p=document.getElementById('pub_name');
     if (p.value == '') {
 		p.value = cur.value;
-		document.mudFile['ietf-mud:mud']['ol']['owners'] = [ cur.value ];
     }
 }
 
 // js update
 function saveMUD() {
-	var d = new Date();
-	document.mudFile['ietf-mud:mud']["last-change"] = d.toISOString();
+	normalizeMUDFile(document.mudFile);
+	updateLastUpdate(document.mudFile);
 	window.sessionStorage.setItem('mudfile',JSON.stringify(document.mudFile));
 	document.mfChanged = true;
 }
 
 function savework(){
-	// we may need to add some extras
+	normalizeMUDFile(document.mudFile);
 	var toSave = structuredClone(document.mudFile);
-	toSave['country'] = document.getElementById('country').value;
-	toSave['email_addr'] = document.getElementById('email_addr').value || '';
-	toSave['sbomtype'] = document.getElementById('sbom').value;
-	toSave['sbomcc'] = document.getElementById('sbomcc').value || '';
-	toSave['sbomnr'] = document.getElementById('sbomnr').value || '';
 
 	var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(toSave));
 	var dlAnchorElem = document.getElementById('downloadAnchorElem');
@@ -237,6 +333,7 @@ function getSignedMUDfile(){
 	let country = document.getElementById('country').value;
 	let email = document.getElementById('email_addr').value || '';
 	let mfgr = document.getElementById('mfg-name').value || '';
+	normalizeMUDFile(document.mudFile);
 	let mudb64 = b64_encode(JSON.stringify(document.mudFile,null,2));
 
 	if ( country == '0' || email == '' || mfgr == '' || 
@@ -363,17 +460,18 @@ function setProto(nextAce,ace,ipVer) {
 }
 
 function reloadFields(){
+	normalizeMUDFile(document.mudFile);
 	var mf = document.mudFile['ietf-mud:mud'];
 	const inbasic = ['mfg-name', 'systeminfo', 'documentation'];
 	document.getElementById('country').value=document.mudFile['country'] || 0;
 	delete document.mudFile['country'];
 	document.getElementById('email_addr').value=document.mudFile['email_addr'] || '';
 	delete document.mudFile['email_addr'];
-	document.getElementById('sbom').value = document.mudFile['sbomtype'];
-	var sbomtype = document.mudFile['sbomtype'];
+	document.getElementById('sbom').value = document.mudFile['sbomtype'] || 'none';
+	var sbomtype = document.mudFile['sbomtype'] || 'none';
 	delete document.mudFile['sbomtype'];
-	var sbomcc = document.mudFile['sbomcc'];
-	var sbomnr = document.mudFile['sbomnr'];
+	var sbomcc = document.mudFile['sbomcc'] || '';
+	var sbomnr = document.mudFile['sbomnr'] || '';
 	delete document.mudFile['sbomcc'];
 	delete document.mudFile['sbomnr'];
 
@@ -382,7 +480,7 @@ function reloadFields(){
 			document.getElementById(item).value = mf[item];
 		}
 	});
-	if (typeof mf['ol']['owners'] != 'undefined') {
+	if (typeof mf['ol'] != 'undefined' && typeof mf['ol']['owners'] != 'undefined') {
 		document.getElementById('pub_name').value = mf['ol']['owners'][0];
 	}
 	if ( typeof mf['mud-url'] != 'undefined') {
@@ -391,7 +489,7 @@ function reloadFields(){
 		document.getElementById('mudhost').value = matchres.groups.hostname;
 		document.getElementById('model_name').value = matchres.groups.model_name;
 	}
-	if (mf['extensions'].includes('transparency')){
+	if (Array.isArray(mf['extensions']) && mf['extensions'].includes('transparency')){
 		var tx= mf['mudtx:transparency'];
 		if (sbomtype == 'local') {
 			document.getElementById('sbom-local-well-known').value=tx['sbom-local-well-known'];
@@ -414,9 +512,10 @@ function reloadFields(){
 		setVisibility(document.getElementById('sbom'));
 	}
 	clearAclUI();
-	if (typeof mf['ietf-access-control-list:acls'] != 'undefined'){
+	var acls = getAcls();
+	if (typeof acls != 'undefined'){
 		// we only need to look at one ACL/one set of ACEs.
-		document.mudFile['ietf-mud:mud']['ietf-access-control-list:acls'].acl[0].aces.ace.forEach(
+		acls.acl[0].aces.ace.forEach(
 			function(ace){
 				mudtypes = {
 					'myctl' : 'my-controller',
@@ -442,7 +541,7 @@ function reloadFields(){
 							document.getElementById(val).open = true;
 							nextAce = findNextAce(val);
 							if (! nextAce.children[0].readOnly) {
-								nextAce.children[0].value = ace['matches']["ietf-mud:mud"][mudtypes[va]];
+								nextAce.children[0].value = ace['matches']["ietf-mud:mud"][mudtypes[val]];
 							}
 						}
 					}
@@ -581,7 +680,7 @@ function addbasics(cur) {
 }
 
 function makeAcl(name,atype){
-	document.mudFile['ietf-mud:mud']['ietf-access-control-list:acls']['acl'].push({ "name" : name, "type" : atype + "-acl-type", "aces" : { "ace": []}});
+	ensureAcls()['acl'].push({ "name" : name, "type" : atype + "-acl-type", "aces" : { "ace": []}});
 }
 
 function makeAcls(){
@@ -594,7 +693,7 @@ function makeAcls(){
 	if (typeof document.aclBase != 'undefined') {
 		return;
 	}
-	mud["ietf-access-control-list:acls"] = {"acl": []};
+	document.mudFile["ietf-access-control-list:acls"] = {"acl": []};
 
 	document.aclBase= 'acl' + Math.floor(Math.random()*100000);
 	bn = document.aclBase;
@@ -627,23 +726,29 @@ function makeproto(acl_entry,proto,sport,dport,cominit){
 
 
 	if (proto === 'tcp' && cominit != 'either'){
-		ret['ietf-mud:direction-initiated'] = cominit;
+		ret['ietf-mud:direction-initiated'] = normalizeDirection(cominit);
 		hasval = true;
 	}
 
 	if ( sport != "any" ) {
-		ret['source-port'] = {
-			"operator" : "eq",
-			"port" : sport
-		};
-		hasval = true;
+		var sportNum = normalizePort(sport);
+		if (sportNum != null) {
+			ret['source-port'] = {
+				"operator" : "eq",
+				"port" : sportNum
+			};
+			hasval = true;
+		}
 	}
 	if (dport != "any") {
-		ret['destination-port'] = {
-			"operator" : "eq",
-			"port" : dport
-		};
-		hasval= true;
+		var dportNum = normalizePort(dport);
+		if (dportNum != null) {
+			ret['destination-port'] = {
+				"operator" : "eq",
+				"port" : dportNum
+			};
+			hasval= true;
+		}
 	}
 	if (hasval) {
 		return ret;	
@@ -771,7 +876,7 @@ function updateAces(p,ace_entry) {
 		return;
 	}
 	makeAcls();
-	acls=document.mudFile['ietf-mud:mud']['ietf-access-control-list:acls']['acl'];
+	acls=ensureAcls()['acl'];
 	for (i in acls) {
 		updateAce(acls[i],ace_entry,aceBase,p);
 	}
@@ -787,14 +892,15 @@ function updateOneAceGroup(p,ace_entry) {
 }
 
 function removeAces(cur){
-	if ( typeof document.mudFile['ietf-mud:mud']['ietf-access-control-list:acls'] == 'undefined' ){
+	var aclContainer = getAcls();
+	if ( typeof aclContainer == 'undefined' ){
 		return;
 	}
 	if (typeof cur.aceBase == 'undefined') {
 		return;
 	}
 	const re=new RegExp('.*' + cur.aceBase + '.*');
-	var acls=document.mudFile['ietf-mud:mud']['ietf-access-control-list:acls']['acl'];
+	var acls=aclContainer['acl'];
 	var cleanup=false;
 	for (i in acls) {
 		if (acls[i].aces.ace.length == 0 ){
@@ -810,7 +916,7 @@ function removeAces(cur){
 		}
 	}
 	if (cleanup == true){
-		delete document.mudFile['ietf-mud:mud']["ietf-access-control-list:acls"];
+		delete document.mudFile["ietf-access-control-list:acls"];
 		delete document.mudFile['ietf-mud:mud']['to-device-policy'];
 		delete document.mudFile['ietf-mud:mud']['from-device-policy'];
 		delete document.aclBase;
@@ -828,7 +934,7 @@ function sbomify(cur) {
 	mf = document.mudFile['ietf-mud:mud'];
 
 	if (typeof mf['mudtx:transparency'] == 'undefined') {
-		mf['extensions'] = [ "ol", "transparency" ];
+		mf['extensions'] = [ "transparency" ];
 	} else {
 		if ( cur.name == "sbom-local-well-known"  && 
 			typeof mf['mudtx:transparency']['vuln-url'] != undefined ) {

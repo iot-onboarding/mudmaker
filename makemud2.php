@@ -608,29 +608,20 @@ if ( $fail ) {
     }
     $vuln_add = $vuln_add . '"vuln-url" : [ "' . htmlspecialchars($_POST['vulninfo']) . '" ]';
   }
-  $exts = '"ol"';
+  $exts = '';
+  $transparency = '';
   if ( $sbom_add != '' || $vuln_add != '' ) {
-    $exts = $exts . ' , ' . '"transparency"' ;
+    $exts = '"extensions": [ "transparency" ],';
     $transparency = '"mudtx:transparency" : { ' . $sbom_add . $vuln_add . '},';
   }
 
-  $exts = '"extensions": [ ' . $exts . '],';
   if( isset($_POST['man_name']) && strlen(htmlspecialchars($_POST['man_name'],ENT_QUOTES)) > 0) {
     $man_name = htmlspecialchars($_POST['man_name'],ENT_QUOTES);
     $mfg_info = '"mfg-name": "' . $man_name . '",' . "\n";
   } else {
     $mfg_info = '';
   }
-  if ( isset($_POST['pubsame'])) {
-    $d = new DateTime('NOW');
-    $year = $d->format('Y');
-    $publisher = "Copyright (c) " . $man_name . " " . $year . ". All Rights Reserved";
-  } else {
-    $publisher = htmlspecialchars($_POST['pub_name']);
-  }
-  $olstring = '"ol" : { "owners" : [ "' . $publisher . '" ],' .
-  	    '"spdx-tag" : "0BSD" },';
-  $supportInfo = $actxt0 . $exts . $olstring . $transparency .
+  $supportInfo = $actxt0 . $exts . $transparency .
   	       '"mud-url" : "' . $mudurl . '",
   	       "mud-signature" : "' . $mudsig . '",
   	       "last-update" : "' . $time . '",' . "\n" .
