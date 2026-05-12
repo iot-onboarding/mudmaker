@@ -3,7 +3,7 @@
 This package provides a browser-based workflow for creating, viewing, visualizing, saving, signing, and optionally publishing Manufacturer Usage Description (MUD) files.
 
 1. Open `mudmaker.html`.
-   The page opens on the Create tab and initializes a working MUD object in browser session storage. The initial object includes defaults such as MUD version, cache validity, and support status.
+
 
 2. Enter the device identity.
    In the Create tab, the user provides the manufacturer domain, device model, manufacturer name, short device description, documentation URL, email address, country, IP mode, and publisher name.
@@ -34,7 +34,6 @@ This package provides a browser-based workflow for creating, viewing, visualizin
    The user can open the Visualize Network tab to render the generated MUD file through the visualizer iframe.
 
 8. Save or continue work.
-   In the Publish/Save/Continue Work tab, the user can save the current MUD file as a local JSON file. Later, the user can upload that saved JSON file through Continue Earlier Work to reload the MUD fields and continue editing.
 
 9. Sign the completed MUD file.
    The user can click Sign to send the generated MUD file to the `/mudzip` endpoint. The response is downloaded as a ZIP file containing a sample signed MUD file and certificates. Signing requires the manufacturer name, model, country, email address, and MUD URL to be set.
