@@ -78,21 +78,57 @@ function normalizeAcls(acls) {
 	});
 }
 
+function addMudExtension(mudFile, extension) {
+	if (typeof mudFile == 'undefined' ||
+		typeof mudFile['ietf-mud:mud'] == 'undefined') {
+		return;
+	}
+	var mud = mudFile['ietf-mud:mud'];
+	if (!Array.isArray(mud['extensions'])) {
+		mud['extensions'] = [];
+	}
+	if (!mud['extensions'].includes(extension)) {
+		mud['extensions'].push(extension);
+	}
+}
+
+function ensureOlExtension(mudFile) {
+	if (typeof mudFile == 'undefined' ||
+		typeof mudFile['ietf-mud:mud'] == 'undefined') {
+		return;
+	}
+	var mud = mudFile['ietf-mud:mud'];
+	addMudExtension(mudFile, 'ol');
+	if (typeof mud['ol'] == 'undefined') {
+		mud['ol'] = {};
+	}
+	if (typeof mud['ol']['spdx-tag'] == 'undefined') {
+		mud['ol']['spdx-tag'] = '0BSD';
+	}
+}
+
+function setOlOwner(owner) {
+	if (typeof owner == 'undefined' || owner == '') {
+		return;
+	}
+	ensureOlExtension(document.mudFile);
+	document.mudFile['ietf-mud:mud']['ol']['owners'] = [ owner ];
+}
+
+function syncOlOwnerFromForm() {
+	var publisher = document.getElementById('pub_name');
+	if (publisher != null && publisher.value != '') {
+		setOlOwner(publisher.value);
+	}
+}
+
 function normalizeMUDFile(mudFile) {
 	if (typeof mudFile == 'undefined' ||
 		typeof mudFile['ietf-mud:mud'] == 'undefined') {
 		return mudFile;
 	}
 	var mud = mudFile['ietf-mud:mud'];
-	if (Array.isArray(mud['extensions'])) {
-		mud['extensions'] = mud['extensions'].filter(function(extension) {
-			return extension != 'ol';
-		});
-		if (mud['extensions'].length == 0) {
-			delete mud['extensions'];
-		}
-	}
-	delete mud['ol'];
+	ensureOlExtension(mudFile);
 	if (typeof mud['last-update'] == 'undefined' &&
 		typeof mud['last-change'] != 'undefined') {
 		mud['last-update'] = mud['last-change'];
@@ -129,7 +165,7 @@ function updateLastUpdate(mudFile) {
 function initMUDFile() {
 	document.mudFile=window.sessionStorage.getItem("mudfile");
 	if ( document.mudFile == null ) {
-		document.mudFile = JSON.parse('{"ietf-mud:mud" : {"mud-version" : 1, "cache-validity": 48, "is-supported" : true}}');
+		document.mudFile = JSON.parse('{"ietf-mud:mud" : {"mud-version" : 1, "extensions" : [ "ol"], "ol" : { "spdx-tag" : "0BSD"}, "cache-validity": 48, "is-supported" : true}}');
 		updateLastUpdate(document.mudFile);
 		window.sessionStorage.setItem('mudfile',JSON.stringify(document.mudFile));
 	} else {
@@ -302,11 +338,13 @@ function fillpub(cur) {
     if (p.value == '') {
 		p.value = cur.value;
     }
+	setOlOwner(p.value);
 }
 
 // js update
 function saveMUD() {
 	normalizeMUDFile(document.mudFile);
+	syncOlOwnerFromForm();
 	updateLastUpdate(document.mudFile);
 	window.sessionStorage.setItem('mudfile',JSON.stringify(document.mudFile));
 	document.mfChanged = true;
@@ -314,6 +352,7 @@ function saveMUD() {
 
 function savework(){
 	normalizeMUDFile(document.mudFile);
+	syncOlOwnerFromForm();
 	var toSave = structuredClone(document.mudFile);
 
 	var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(toSave));
@@ -334,6 +373,7 @@ function getSignedMUDfile(){
 	let email = document.getElementById('email_addr').value || '';
 	let mfgr = document.getElementById('mfg-name').value || '';
 	normalizeMUDFile(document.mudFile);
+	syncOlOwnerFromForm();
 	let mudb64 = b64_encode(JSON.stringify(document.mudFile,null,2));
 
 	if ( country == '0' || email == '' || mfgr == '' || 
@@ -934,7 +974,7 @@ function sbomify(cur) {
 	mf = document.mudFile['ietf-mud:mud'];
 
 	if (typeof mf['mudtx:transparency'] == 'undefined') {
-		mf['extensions'] = [ "transparency" ];
+		addMudExtension(document.mudFile, 'transparency');
 	} else {
 		if ( cur.name == "sbom-local-well-known"  && 
 			typeof mf['mudtx:transparency']['vuln-url'] != undefined ) {
@@ -1043,6 +1083,11 @@ $(document).on('change','.addable',function(e){
 
 $(document).on('change','.addbasics',function(e){
 	addbasics(e.target);
+})
+
+$(document).on('change','#pub_name',function(e){
+	setOlOwner(e.target.value);
+	saveMUD();
 })
 
 
