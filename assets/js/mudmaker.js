@@ -70,6 +70,14 @@ function addEntry(entry){
 	var fieldinfo;
 	var dnsorurl='';
 	var entryType = entry.id;
+	var fieldName = {
+		'cl': 'ietf-acldns:src-dnsname',
+		'myctl': 'my-controller',
+		'loc': 'local-networks',
+		'ctl': 'controller',
+		'mymfg': 'same-manufacturer',
+		'mfg': 'manufacturer'
+	}[entryType] || entryType + 'name';
 	
 	if (entry.id == 'cl' || entry.id == 'mfg') {
 		dnsorurl = 'dns';
@@ -118,7 +126,7 @@ function addEntry(entry){
 	}
 
         newdiv.innerHTML = 
-            "<input type=" + typefield + "name='" + entryType  + "name'" + pattern +
+            "<input type=" + typefield + " name='" + fieldName + "'" + pattern +
 	    " size='40' " + placeholder + fieldinfo + ">&nbsp;&nbsp;&nbsp;" +
 	    " Protocol&nbsp;&nbsp;<select class='proto' name='proto'>" +
 	    "<option value='any'>Any</option>" +
