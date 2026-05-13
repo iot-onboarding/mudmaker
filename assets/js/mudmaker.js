@@ -810,6 +810,14 @@ function updateAce(acl,ace_entry,aceBase,p){
 	var rport;
 	var ace;
 	var aIndex;
+	var mudMatchNames = {
+		'myctl': 'my-controller',
+		'loc': 'local-networks',
+		'ctl': 'controller',
+		'mymfg': 'same-manufacturer',
+		'mfg': 'manufacturer'
+	};
+	var mudMatchName = mudMatchNames[p.id] || ace_entry.children[0].name;
 
 	if (acl["type"] == "ipv4-acl-type"){
 		ipver = "ipv4";
@@ -839,9 +847,9 @@ function updateAce(acl,ace_entry,aceBase,p){
 			}
 		}
 		if (p.id == 'myctl' || p.id == 'loc' || p.id == 'mymfg') {
-			matchobj['ietf-mud:mud'][ace_entry.children[0].name] = [ null ];
+			matchobj['ietf-mud:mud'][mudMatchName] = [ null ];
 		} else if ( p.id == 'ctl' || p.id == 'mfg') {
-			matchobj['ietf-mud:mud'][ace_entry.children[0].name] = ace_entry.children[0].value;
+			matchobj['ietf-mud:mud'][mudMatchName] = ace_entry.children[0].value;
 		}
 	}
 
