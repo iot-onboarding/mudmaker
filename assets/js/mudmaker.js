@@ -52,6 +52,47 @@ function normalizePortMatch(match) {
 	}
 }
 
+function canonicalValue(value) {
+	var normalized = {};
+
+	if (Array.isArray(value)) {
+		return value.map(canonicalValue);
+	}
+	if (value != null && typeof value == 'object') {
+		Object.keys(value).sort().forEach(function(key) {
+			normalized[key] = canonicalValue(value[key]);
+		});
+		return normalized;
+	}
+	return value;
+}
+
+function aceSemanticKey(ace) {
+	return JSON.stringify({
+		matches: canonicalValue(ace && ace.matches || {}),
+		actions: canonicalValue(ace && ace.actions || {})
+	});
+}
+
+function removeDuplicateAces(acl) {
+	var seen = {};
+
+	if (typeof acl == 'undefined' ||
+		typeof acl.aces == 'undefined' ||
+		!Array.isArray(acl.aces.ace)) {
+		return;
+	}
+	acl.aces.ace = acl.aces.ace.filter(function(ace) {
+		var key = aceSemanticKey(ace);
+
+		if (seen[key]) {
+			return false;
+		}
+		seen[key] = true;
+		return true;
+	});
+}
+
 function normalizeAcls(acls) {
 	if (typeof acls == 'undefined' || !Array.isArray(acls.acl)) {
 		return;
@@ -75,6 +116,7 @@ function normalizeAcls(acls) {
 					normalizeDirection(matches.tcp['ietf-mud:direction-initiated']);
 			}
 		});
+		removeDuplicateAces(acl);
 	});
 }
 
@@ -157,12 +199,36 @@ function ensureAcls() {
 	return document.mudFile['ietf-access-control-list:acls'];
 }
 
+function mudFileHasAcls(mudFile) {
+	var aclContainer;
+
+	normalizeMUDFile(mudFile);
+	aclContainer = mudFile && mudFile['ietf-access-control-list:acls'];
+	return typeof aclContainer != 'undefined' &&
+		Array.isArray(aclContainer.acl) &&
+		aclContainer.acl.length > 0;
+}
+
+function restoreAclBaseFromMUDFile() {
+	if (!mudFileHasAcls(document.mudFile)) {
+		return false;
+	}
+	document.aclBase = document.aclBase || 'loaded';
+	return true;
+}
+
+function resetAclBaseFromMUDFile() {
+	delete document.aclBase;
+	return restoreAclBaseFromMUDFile();
+}
+
 function updateLastUpdate(mudFile) {
 	mudFile['ietf-mud:mud']['last-update'] = new Date().toISOString();
 	delete mudFile['ietf-mud:mud']['last-change'];
 }
 
 function initMUDFile() {
+	delete document.aclBase;
 	document.mudFile=window.sessionStorage.getItem("mudfile");
 	if ( document.mudFile == null ) {
 		document.mudFile = JSON.parse('{"ietf-mud:mud" : {"mud-version" : 1, "extensions" : [ "ol"], "ol" : { "spdx-tag" : "0BSD"}, "cache-validity": 48, "is-supported" : true}}');
@@ -172,13 +238,15 @@ function initMUDFile() {
 		document.mudFile=JSON.parse(document.mudFile);
 		normalizeMUDFile(document.mudFile);
 	}
+	restoreAclBaseFromMUDFile();
 	document.mfChanged = false;
 }
 
 
 function resetSite() {
 	window.sessionStorage.clear();
-	delete document.mudFie;
+	delete document.mudFile;
+	delete document.aclBase;
 	delete document.mfChanged;
 	initMUDFile();
 	clearAclUI();
@@ -501,6 +569,7 @@ function setProto(nextAce,ace,ipVer) {
 
 function reloadFields(){
 	normalizeMUDFile(document.mudFile);
+	resetAclBaseFromMUDFile();
 	var mf = document.mudFile['ietf-mud:mud'];
 	const inbasic = ['mfg-name', 'systeminfo', 'documentation'];
 	document.getElementById('country').value=document.mudFile['country'] || 0;
@@ -731,6 +800,9 @@ function makeAcls(){
 	var fracls;
 
 	if (typeof document.aclBase != 'undefined') {
+		return;
+	}
+	if (restoreAclBaseFromMUDFile()) {
 		return;
 	}
 	document.mudFile["ietf-access-control-list:acls"] = {"acl": []};
@@ -972,6 +1044,26 @@ function removeAces(cur){
 	saveMUD();
 }
 
+function forEachAceEntry(parent, callback) {
+	Array.from(parent.children).slice(1).forEach(function(entry) {
+		if (entry && entry.children && entry.children.length) {
+			callback(entry);
+		}
+	});
+}
+
+function updateAceGroupEntries(parent) {
+	forEachAceEntry(parent, function(entry) {
+		updateAces(parent, entry);
+	});
+}
+
+function removeAceGroupEntries(parent) {
+	forEachAceEntry(parent, function(entry) {
+		removeAces(entry);
+	});
+}
+
 function sbomify(cur) {
 	var whichsbom = document.getElementById("sbom").value;
 	var mf;
@@ -1036,13 +1128,11 @@ $('summary').click(function() {
 	}
     if ( parent.open == false ) {
 		document.getElementById(pbox).checked = true;
-		if ( parent.id == "myctl" || parent.id == "loc" || parent.id == 'mymfg') {
-			updateOneAceGroup(parent,parent.children[1]);
-		}
+		updateAceGroupEntries(parent);
     } else {
 		document.getElementById(pbox).checked = false;
 		if ( parent.nodeName == "DETAILS" ) {
-			removeAces(parent.children[1]);
+			removeAceGroupEntries(parent);
 		}
     }
 });

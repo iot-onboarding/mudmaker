@@ -1,0 +1,321 @@
+/**
+ * Copyright 2017-2025 Eliot Lear
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+.maker-live-wrapper {
+	padding-top: 2em;
+}
+
+.maker-live-layout {
+	display: grid;
+	grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+	gap: 1.5em;
+	align-items: start;
+	max-width: 1500px;
+	margin: 0 auto;
+}
+
+.maker-live-form {
+	min-width: 0;
+}
+
+.maker-live-visualizer {
+	position: sticky;
+	top: 1em;
+	min-width: 0;
+	border: 1px solid #d7dee8;
+	border-radius: 6px;
+	background: #fff;
+	padding: 1em;
+	box-shadow: 0 1px 3px rgba(31, 41, 55, 0.12);
+}
+
+.maker-live-visualizer-header {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 1em;
+	margin-bottom: 0.75em;
+}
+
+.maker-live-visualizer-header h3 {
+	margin: 0;
+	font-size: 1.05em;
+}
+
+.maker-live-visualizer-header p {
+	margin: 0;
+	color: #536271;
+	font-size: 0.9em;
+	text-align: right;
+}
+
+.maker-live-canvas {
+	border: 1px solid #e4e9f0;
+	border-radius: 6px;
+	background: #f8fafc;
+	overflow: hidden;
+}
+
+.mud-live-svg {
+	display: block;
+	width: 100%;
+	min-height: 420px;
+}
+
+.maker-live-details {
+	display: grid;
+	gap: 0.45em;
+	margin-top: 0.75em;
+	color: #425466;
+	font-size: 0.9em;
+	line-height: 1.35;
+}
+
+.maker-live-detail-row {
+	display: flex;
+	justify-content: space-between;
+	gap: 1em;
+	border-top: 1px solid #edf1f5;
+	padding-top: 0.45em;
+}
+
+.maker-live-detail-row:first-child {
+	border-top: 0;
+	padding-top: 0;
+}
+
+.maker-live-detail-name {
+	min-width: 0;
+	overflow-wrap: anywhere;
+	color: #1f2937;
+}
+
+.maker-live-detail-meta {
+	flex: 0 0 auto;
+	color: #687789;
+}
+
+.mud-live-edge {
+	fill: none;
+	stroke: #5e6d7c;
+	stroke-width: 3;
+	stroke-linecap: round;
+	opacity: 0.88;
+	pointer-events: stroke;
+	cursor: help;
+}
+
+.mud-live-edge:hover,
+.mud-live-edge:focus {
+	stroke: #243447;
+	stroke-width: 4;
+	opacity: 1;
+	outline: none;
+}
+
+.mud-live-tooltip {
+	background: #17202a;
+	border: 1px solid rgba(255, 255, 255, 0.16);
+	border-radius: 6px;
+	box-shadow: 0 10px 24px rgba(20, 31, 43, 0.24);
+	color: #fff;
+	display: none;
+	font-size: 13px;
+	font-weight: 400;
+	letter-spacing: 0;
+	line-height: 1.35;
+	max-width: 620px;
+	padding: 0.65em 0.75em;
+	pointer-events: none;
+	position: fixed;
+	z-index: 1000;
+}
+
+.mud-live-tooltip-title {
+	font-weight: 400;
+	margin-bottom: 0.25em;
+}
+
+.mud-live-tooltip-between {
+	color: #d7dee8;
+	font-weight: 400;
+	margin-bottom: 0.55em;
+}
+
+.mud-live-tooltip table {
+	border-collapse: collapse;
+	font-weight: 400;
+	min-width: 420px;
+}
+
+.mud-live-tooltip th,
+.mud-live-tooltip td {
+	border-top: 1px solid rgba(255, 255, 255, 0.14);
+	font-weight: 400;
+	padding: 0.35em 0.55em;
+	text-align: left;
+	vertical-align: top;
+	white-space: nowrap;
+}
+
+.mud-live-tooltip th {
+	color: #cbd5e1;
+}
+
+.mud-live-tooltip th:first-child,
+.mud-live-tooltip td:first-child {
+	padding-left: 0;
+}
+
+.mud-live-tooltip th:last-child,
+.mud-live-tooltip td:last-child {
+	padding-right: 0;
+	white-space: normal;
+}
+
+.mud-live-enterprise-border {
+	fill: #f2f7f5;
+	stroke: #7a8f83;
+	stroke-dasharray: 10 7;
+	stroke-width: 2;
+}
+
+.mud-live-border-label {
+	fill: #44534a;
+	font-size: 17px;
+	font-weight: 700;
+	letter-spacing: 0;
+}
+
+.mud-live-internet-label {
+	fill: #41536b;
+}
+
+.mud-live-legend-bg {
+	fill: #fff;
+	stroke: #d9e1ea;
+	stroke-width: 1;
+}
+
+.mud-live-legend-title {
+	fill: #263241;
+	font-size: 15px;
+	font-weight: 700;
+	letter-spacing: 0;
+}
+
+.mud-live-legend-text {
+	fill: #425466;
+	font-size: 13px;
+	font-weight: 600;
+	letter-spacing: 0;
+}
+
+.mud-live-icon {
+	color: #5f735f;
+}
+
+.mud-live-icon-device {
+	color: #263849;
+}
+
+.mud-live-icon-enterprise {
+	color: #5f735f;
+}
+
+.mud-live-icon-internet {
+	color: #496b91;
+}
+
+.mud-live-node-icon {
+	fill: none;
+	stroke: currentColor;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+	stroke-width: 3.4;
+}
+
+.mud-live-node-icon-fill {
+	fill: currentColor;
+	stroke: none;
+}
+
+.mud-live-node-label-bg {
+	fill: rgba(255, 255, 255, 0.92);
+	stroke: #e0e6ee;
+	stroke-width: 1;
+}
+
+.mud-live-node-label {
+	fill: #17202a;
+	font-size: 16px;
+	font-weight: 700;
+	text-anchor: middle;
+}
+
+.mud-live-node-subtitle {
+	fill: #64748b;
+	font-size: 13px;
+	text-anchor: middle;
+}
+
+.mud-live-empty-title {
+	fill: #263241;
+	font-size: 22px;
+	font-weight: 700;
+	text-anchor: middle;
+}
+
+.mud-live-empty-copy {
+	fill: #64748b;
+	font-size: 16px;
+	text-anchor: middle;
+}
+
+@media screen and (max-width: 1120px) {
+	.maker-live-layout {
+		grid-template-columns: 1fr;
+	}
+
+	.maker-live-visualizer {
+		position: static;
+	}
+}
+
+@media screen and (max-width: 640px) {
+	.maker-live-wrapper {
+		padding-top: 1em;
+	}
+
+	.maker-live-visualizer {
+		padding: 0.75em;
+	}
+
+	.maker-live-visualizer-header {
+		display: block;
+	}
+
+	.maker-live-visualizer-header p {
+		margin-top: 0.25em;
+		text-align: left;
+	}
+
+	.mud-live-svg {
+		min-height: 340px;
+	}
+}
