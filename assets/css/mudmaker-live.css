@@ -116,15 +116,25 @@
 	stroke-width: 3;
 	stroke-linecap: round;
 	opacity: 0.88;
+	pointer-events: none;
+}
+
+.mud-live-edge-hit {
+	fill: none;
+	stroke: transparent;
+	stroke-width: 18;
+	stroke-linecap: round;
 	pointer-events: stroke;
 	cursor: help;
 }
 
-.mud-live-edge:hover,
-.mud-live-edge:focus {
+.mud-live-edge.mud-live-edge-active {
 	stroke: #243447;
-	stroke-width: 4;
+	stroke-width: 4px;
 	opacity: 1;
+}
+
+.mud-live-edge-hit:focus {
 	outline: none;
 }
 

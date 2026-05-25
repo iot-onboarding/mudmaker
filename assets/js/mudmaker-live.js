@@ -22,7 +22,8 @@
 	var SVG_NS = "http://www.w3.org/2000/svg";
 	var state = {
 		initialized: false,
-		timer: null
+		timer: null,
+		activeEdge: null
 	};
 
 	function byId(id) {
@@ -498,10 +499,16 @@
 	}
 
 	function drawEdge(svg, from, to, edge, offset, fromMargin, toMargin, tooltip) {
+		var d = pathBetween(from, to, offset, fromMargin, toMargin);
 		var path = createSvg("path", {
-			d: pathBetween(from, to, offset, fromMargin, toMargin),
-			class: "mud-live-edge",
+			d: d,
+			class: "mud-live-edge"
+		});
+		var hitPath = createSvg("path", {
+			d: d,
+			class: "mud-live-edge-hit",
 			tabindex: "0",
+			focusable: "true",
 			"data-mud-live-tooltip": "true",
 			"data-mud-live-tooltip-title": tooltip.title,
 			"data-mud-live-tooltip-between": tooltip.between,
@@ -509,7 +516,9 @@
 			"aria-label": tooltip ? accessTooltipText(tooltip) : "Allowed access"
 		});
 
+		hitPath._mudLiveVisibleEdge = path;
 		svg.appendChild(path);
+		svg.appendChild(hitPath);
 	}
 
 	function iconKind(kind) {
@@ -921,6 +930,7 @@
 			return null;
 		}
 		model = buildModel(mudFile || {});
+		clearActiveEdge();
 		clearNode(svg);
 		svg.appendChild(textNode("title", { id: "mud-live-title" }, "MUD access list visualization"));
 		svg.appendChild(textNode("desc", { id: "mud-live-desc" }, "Live visualization of access-list entries added to the MUD file."));
@@ -1055,13 +1065,30 @@
 
 		while (node && node !== document) {
 			className = node.getAttribute && node.getAttribute("class");
-			if (className && className.indexOf("mud-live-edge") !== -1 &&
+			if (className && className.indexOf("mud-live-edge-hit") !== -1 &&
 				node.getAttribute("data-mud-live-tooltip")) {
 				return node;
 			}
 			node = node.parentNode;
 		}
 		return null;
+	}
+
+	function clearActiveEdge() {
+		if (!state.activeEdge) {
+			return;
+		}
+		state.activeEdge.setAttribute("class", "mud-live-edge");
+		state.activeEdge = null;
+	}
+
+	function setActiveEdge(target) {
+		clearActiveEdge();
+		if (!target || !target._mudLiveVisibleEdge) {
+			return;
+		}
+		state.activeEdge = target._mudLiveVisibleEdge;
+		state.activeEdge.setAttribute("class", "mud-live-edge mud-live-edge-active");
 	}
 
 	function positionTooltip(event, target) {
@@ -1112,7 +1139,7 @@
 		var thead = document.createElement("thead");
 		var tbody = document.createElement("tbody");
 		var headRow = document.createElement("tr");
-		var headers = [ "#", "Protocol", "Family", "Device port", "Endpoint port", "Initiated by", "ACE" ];
+		var headers = [ "#", "Protocol", "Family", "Thing Port", "Remote Port", "Initiated by", "ACE" ];
 
 		clearNode(tooltip);
 		title.className = "mud-live-tooltip-title";
@@ -1145,6 +1172,7 @@
 	function showEdgeTooltip(event, target) {
 		var tooltip = tooltipElement();
 
+		setActiveEdge(target);
 		renderTooltipTable(tooltip, target);
 		tooltip.style.display = "block";
 		tooltip.setAttribute("aria-hidden", "false");
@@ -1155,10 +1183,12 @@
 		var tooltip = byId("mud-live-tooltip");
 
 		if (!tooltip) {
+			clearActiveEdge();
 			return;
 		}
 		tooltip.style.display = "none";
 		tooltip.setAttribute("aria-hidden", "true");
+		clearActiveEdge();
 	}
 
 	function hasAncestor(node, selector) {
