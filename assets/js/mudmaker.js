@@ -242,6 +242,64 @@ function initMUDFile() {
 	document.mfChanged = false;
 }
 
+function mudUrlPartsFromMudUrl(mudUrl) {
+	var matchres;
+
+	if (typeof mudUrl == 'undefined' || mudUrl == '') {
+		return null;
+	}
+	matchres = String(mudUrl).match(/^https:\/\/([^\/]+)\/(.+)\.json$/);
+	if (matchres == null) {
+		return null;
+	}
+	return {
+		hostname: matchres[1],
+		model_name: matchres[2]
+	};
+}
+
+function updateMudUrlPreview(host, model, fallbackUrl) {
+	var preview = document.getElementById('mud-url-preview');
+
+	if (preview == null) {
+		return;
+	}
+	if (host != '' && model != '') {
+		preview.textContent = 'https://' + host + '/' + model + '.json';
+	} else if (typeof fallbackUrl != 'undefined' && fallbackUrl != '') {
+		preview.textContent = fallbackUrl;
+	} else {
+		preview.textContent = 'MUD URL preview';
+	}
+}
+
+function syncMudUrlPreviewFromForm() {
+	var mh = document.getElementById('mudhost');
+	var mm = document.getElementById('model_name');
+
+	updateMudUrlPreview(mh != null ? mh.value : '', mm != null ? mm.value : '');
+}
+
+function syncMudUrlPreviewFromMudFile() {
+	var mf;
+	var parts;
+
+	if (typeof document.mudFile == 'undefined' ||
+		typeof document.mudFile['ietf-mud:mud'] == 'undefined') {
+		syncMudUrlPreviewFromForm();
+		return;
+	}
+	mf = document.mudFile['ietf-mud:mud'];
+	parts = mudUrlPartsFromMudUrl(mf['mud-url']);
+	if (parts != null) {
+		document.getElementById('mudhost').value = parts.hostname;
+		document.getElementById('model_name').value = parts.model_name;
+		updateMudUrlPreview(parts.hostname, parts.model_name);
+	} else {
+		updateMudUrlPreview('', '', mf['mud-url']);
+	}
+}
+
 
 function resetSite() {
 	window.sessionStorage.clear();
@@ -258,6 +316,7 @@ function resetSite() {
 		det.open = false;
 	});
 	document.getElementById('mudform').reset();
+	updateMudUrlPreview('', '');
 }
 
 function removeIt(elemId) {
@@ -593,10 +652,9 @@ function reloadFields(){
 		document.getElementById('pub_name').value = mf['ol']['owners'][0];
 	}
 	if ( typeof mf['mud-url'] != 'undefined') {
-		re = /https:\/\/(?<hostname>[^\/]+)\/(?<model_name>.*)\.json/;
-		matchres= mf['mud-url'].match(re);
-		document.getElementById('mudhost').value = matchres.groups.hostname;
-		document.getElementById('model_name').value = matchres.groups.model_name;
+		syncMudUrlPreviewFromMudFile();
+	} else {
+		syncMudUrlPreviewFromForm();
 	}
 	if (Array.isArray(mf['extensions']) && mf['extensions'].includes('transparency')){
 		var tx= mf['mudtx:transparency'];
@@ -705,6 +763,7 @@ function makemudurl() {
     p=document.getElementById('controller');
     mh=document.getElementById('mudhost');
 	mm=document.getElementById('model_name');
+	updateMudUrlPreview(mh.value, mm.value);
     if (mh.value != '') {
 		p.placeholder = 'https://' + mh.value + '/controllers';
 		if (mm.value != '') {
@@ -1188,6 +1247,14 @@ $(document).on('change','#pub_name',function(e){
 	saveMUD();
 })
 
+$(document).on('input','#mudhost, #model_name',function(e){
+	syncMudUrlPreviewFromForm();
+})
+
+$(document).on('change','#mudhost, #model_name',function(e){
+	makemudurl();
+})
+
 
 $(document).on('change','.sbomstuff',function(e){
 	sbomify(e.target);
@@ -1196,3 +1263,4 @@ $(document).on('change','.sbomstuff',function(e){
 ////// initialize
 
 initMUDFile();
+syncMudUrlPreviewFromMudFile();

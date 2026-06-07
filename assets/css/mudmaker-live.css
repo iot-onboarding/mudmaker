@@ -33,6 +33,58 @@
 	min-width: 0;
 }
 
+.maker-live-form fieldset {
+	min-width: 0;
+}
+
+.maker-live-url-row {
+	align-items: end;
+	display: grid;
+	gap: 0.35em 0.75em;
+	grid-template-columns: minmax(13rem, 1.4fr) minmax(9rem, 0.8fr);
+	max-width: 100%;
+}
+
+.maker-live-url-part,
+.maker-live-field {
+	min-width: 0;
+}
+
+.maker-live-url-part label,
+.maker-live-field-row label {
+	display: block;
+	line-height: 1.35;
+	margin-bottom: 0.1em;
+	overflow-wrap: anywhere;
+}
+
+.maker-live-url-part input,
+.maker-live-field-row input,
+.maker-live-field-row select {
+	max-width: 100%;
+	min-width: 0;
+	width: 100%;
+}
+
+.maker-live-field-row {
+	column-count: auto;
+	display: grid;
+	gap: 0 1.25em;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+	list-style: none;
+	margin: 0;
+	padding-left: 0;
+}
+
+.maker-live-field-row li {
+	min-width: 0;
+	padding-left: 0;
+}
+
+.maker-live-field-compact select {
+	width: auto;
+}
+
 .maker-live-visualizer {
 	position: sticky;
 	top: 1em;
@@ -55,6 +107,10 @@
 .maker-live-visualizer-header h3 {
 	margin: 0;
 	font-size: 1.05em;
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 .maker-live-visualizer-header p {
@@ -310,6 +366,15 @@
 @media screen and (max-width: 640px) {
 	.maker-live-wrapper {
 		padding-top: 1em;
+	}
+
+	.maker-live-url-row,
+	.maker-live-field-row {
+		grid-template-columns: 1fr;
+	}
+
+	.maker-live-field-row {
+		gap: 0.35em;
 	}
 
 	.maker-live-visualizer {
