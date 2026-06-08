@@ -239,7 +239,6 @@ function initMUDFile() {
 		normalizeMUDFile(document.mudFile);
 	}
 	restoreAclBaseFromMUDFile();
-	document.mfChanged = false;
 }
 
 function mudUrlPartsFromMudUrl(mudUrl) {
@@ -305,7 +304,6 @@ function resetSite() {
 	window.sessionStorage.clear();
 	delete document.mudFile;
 	delete document.aclBase;
-	delete document.mfChanged;
 	initMUDFile();
 	clearAclUI();
 	[ "sbomany", "sbcloud", "sblocal", "sbtel", "sbinfourl","vulnview"].forEach((field) => {
@@ -474,7 +472,6 @@ function saveMUD() {
 	syncOlOwnerFromForm();
 	updateLastUpdate(document.mudFile);
 	window.sessionStorage.setItem('mudfile',JSON.stringify(document.mudFile));
-	document.mfChanged = true;
 }
 
 function savework(){

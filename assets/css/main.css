@@ -2571,15 +2571,6 @@
 	    width: 100%;
 	}
 
-		/* the next two definitions are for the help page of the mudvisualizer where the help is described in screenshots , so no content is required */
-	.spotlight .fullimage {
-	    width: 100%;
-	}
-
-	.spotlight .fullimage img {
-	    width: 100%;
-	}
-
 	.spotlight .content {
 	    padding: 2em 3em 0.1em 3em;
 			width: 60%;

@@ -58,8 +58,7 @@ $pretext=<<< DOWNLOAD
 <section id="banner_makemud">
 <h1>Your MUD file is ready!</h1>
 <p>Congratulations!  You've just created a MUD file.  Simply
-download the file after reviewing it below.  Next you can
-visualize the results.  You can also sign the file and place it in the location
+download the file after reviewing it below.  You can also sign the file and place it in the location
 that its corresponding MUD URL will find.  You can find instructions on how to sign your
 MUD file <a href="https://www.mudmaker.org/signing.html">here.</a>
 If you download the MUD file, it comes as a ZIP file with an example
@@ -67,7 +66,6 @@ set of certificates and a signature for testing purposes.
 </p><p>
 <form method="POST" action="download.php">
   <input type="submit" value="Download MUD file" formaction="download.php" class="button special">
-  <input type="submit" value="Visualize" formaction="mudvisualizer.php" class="button special">
    
 DOWNLOAD;
   
