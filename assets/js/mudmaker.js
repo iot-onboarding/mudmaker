@@ -497,22 +497,23 @@ function savework(){
 
 function getSignedMUDfile(){
 	let country = document.getElementById('country').value;
-	let email = document.getElementById('email_addr').value || '';
-	let mfgr = document.getElementById('mfg-name').value || '';
+	let email = (document.getElementById('email_addr').value || '').trim();
+	let mfgr = (document.getElementById('mfg-name').value || '').trim();
+	let model = (document.getElementById('model_name').value || '').trim();
 	normalizeMUDFile(document.mudFile);
 	syncOlOwnerFromForm();
 	let mudb64 = b64_encode(JSON.stringify(document.mudFile,null,2));
 
-	if ( country == '0' || email == '' || mfgr == '' || 
-		typeof document.mudFile['ietf-mud:mud']['mud-url'] == 'undefined' ) {
+	if ( country == '0' || email == '' || mfgr == '' || model == '' ||
+		!document.mudFile['ietf-mud:mud']['mud-url'] ) {
 		alert("Manufacturer Name, Model, Country, Email must all be set to retrieve a signed MUD file");
+		return;
 	}
-	let model = document.mudFile['ietf-mud:mud']['systeminfo'];
 	let pinfo = {
 		"Manufacturer" : mfgr,
 		"Model" : model,
 		"CountryCode" : country,
-		"MudURL" : document.mudFile['ietf-mud:mud']['mud-url'],
+		"MudUrl" : document.mudFile['ietf-mud:mud']['mud-url'],
 		'SerialNumber' : "Demo12345",
 		"Mudfile" : mudb64,
 		"EmailAddress" : email
