@@ -269,7 +269,7 @@ function updateMudUrlPreview(host, model, fallbackUrl) {
 	} else if (typeof fallbackUrl != 'undefined' && fallbackUrl != '') {
 		preview.textContent = fallbackUrl;
 	} else {
-		preview.textContent = 'MUD URL preview';
+	    preview.textContent = 'Your device in the network';
 	}
 }
 

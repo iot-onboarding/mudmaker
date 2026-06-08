@@ -3164,7 +3164,7 @@
 	    background-image: url("images/overlay.png"), linear-gradient(45deg, #4A4771 0%, #7C3875 100%);
 	    background-size: 100px 100px, cover;
 	    color: rgba(255, 255, 255, 0.5);
-	    padding: 14em 0 4em;
+	    padding: 7em 0 2em;
 	}
 
 	#banner_makemud {
@@ -3189,7 +3189,7 @@
 	    font-size: 1.15em;
 	    font-weight: bold;
 	    line-height: 1.5em;
-	    margin-bottom: 1.5em;
+	    margin-bottom: 0;
 	}
 
 	#banner > .inner {
@@ -3199,9 +3199,31 @@
 	    width: 100%;
 	}
 
+	#banner .split {
+	    align-items: center;
+	    padding-bottom: 1em;
+	}
+
+	#banner .split > :nth-child(even) {
+	    align-items: center;
+	    display: flex;
+	    flex-wrap: wrap;
+	    gap: 0.5em 1.25em;
+	}
+
+	#banner ul.actions {
+	    margin-bottom: 0;
+	}
+
+	#banner .button {
+	    height: 2.75em;
+	    line-height: 2.9em;
+	    padding: 0 2.25em;
+	}
+
 	@media screen and (max-width: 1366px) {
 	    #banner {
-		padding: 5em 2.5em 1em;
+		padding: 2.5em 2.5em 0.5em;
 	    }
 
 	    #banner h2 {
@@ -3211,13 +3233,13 @@
 
 	@media screen and (max-width: 980px) {
 	    #banner {
-		padding: 10em 2em 2em;
+		padding: 5em 2em 1em;
 	    }
 	}
 
 	@media screen and (max-width: 736px) {
 	    #banner {
-		padding: 8em 2em 2em;
+		padding: 4em 2em 1em;
 	    }
 
 	    #banner h2 {
@@ -3227,11 +3249,39 @@
 	    #banner p {
 		font-size: 1.1em;
 	    }
+
+	    #banner .split > * {
+		margin-bottom: 1em;
+	    }
+
+	    #banner .split > :last-child {
+		margin-bottom: 0;
+	    }
 	}
 
 	@media screen and (max-width: 480px) {
 	    #banner {
-		padding: 8em 2em 2em;
+		padding: 4em 2em 1em;
+	    }
+
+	    #banner .split > :nth-child(even) {
+		align-items: flex-start;
+		display: block;
+	    }
+
+	    #banner ul.actions {
+		margin-top: 0.5em;
+	    }
+
+	    #banner ul.actions li {
+		display: inline-block;
+		padding-top: 0;
+		width: auto;
+	    }
+
+	    #banner ul.actions li > * {
+		margin: 0 !important;
+		width: auto;
 	    }
 	}
 
