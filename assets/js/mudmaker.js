@@ -317,11 +317,6 @@ function resetSite() {
 	updateMudUrlPreview('', '');
 }
 
-function removeIt(elemId) {
-    var elem=document.getElementById(elemId);
-    elem.parentNode.removeChild(elem);
-}
-
 // js update
 function addEntry(entry){
     var newdiv= document.createElement('div');
@@ -430,30 +425,6 @@ function tcporudp(papa,val) {
 	   dir.style.visibility='inherit';
 	   ports.style.visibility='inherit';
 	}
-    }
-}
-
-function localcheck(one2check,lport) {
-    if (document.getElementById(one2check).value == 'local') {
-	document.getElementById(lport).style.visibility="hidden";
-    } else {
-	document.getElementById(lport).style.visibility="inherit";
-    }
-}
-
-function yesnoCheck(outer,inner,refind) {
-    var box = inner + "box";
-    if (document.getElementById(box).checked ) {
-        document.getElementById(outer).style.display = 'block';
-        document.getElementById(inner).style.display = 'block';
-	nref[refind]++;
-    } else {
-        document.getElementById(inner).style.display = 'none';
-	
-	nref[refind]--;
-        if ( nref[refind] < 1 ) {
-            document.getElementById(outer).style.display = 'none';
-        }
     }
 }
 
@@ -727,21 +698,6 @@ function reloadFields(){
 	}
 }
 
-// js update
-function loadWork(input) {
-	let file = input.files[0];
-	let reader = new FileReader();
-  
-	reader.readAsText(file);
-  
-	reader.onload = function() {
-		document.mudFile = JSON.parse(reader.result);
-		reloadFields();
-		refreshmans();
-		saveMUD();
-	}
-}
-
  // js update
  function loadPCAP(input) {
 	let file = input.files[0];
@@ -806,29 +762,6 @@ function setVisibility(outer) {
 		saveMUD();
     }
 }
-
-
-
-function j2pp(b64) {
-    var xhr = new XMLHttpRequest();
-    var url = "/mudrest/mudpp/";
-    var jsonText=atob(b64);
-    if (document.getElementById("mudframe") != null )
-        return;
-    xhr.open("POST", url, true);
-    xhr.setRequestHeader("Content-Type", "application/json");
-    xhr.onreadystatechange = function () {
-        if (this.readyState === 4 && this.status === 200) {
-            var iframe=document.createElement('iframe');
-            iframe.id = "mudframe";
-            iframe.src = "data:text/html;charset=utf-8," + this.responseText;
-            iframe.style.width = "70%";
-            document.body.insertBefore(iframe,document.getElementById('mudresults'));
-        }
-    };
-    xhr.send(jsonText);
-}
-
 // js update
 function addbasics(cur) {
 	if ( cur.value == '') {

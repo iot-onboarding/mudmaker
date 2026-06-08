@@ -16,15 +16,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-
-
-function getviz(){
-	fetch("mudvisjs.html")
-		.then(response => response.text())
-		.then(htmltxt => updateVis(htmltxt))
-}
-
-
 function b64_encode(str) {
 	return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,
         function toSolidBytes(match, p1) {
