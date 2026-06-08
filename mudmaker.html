@@ -22,19 +22,19 @@
 <html lang="en">
   <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
-    <title>Build a MUD file</title>
+    <title>Build and visualize a MUD file</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!--[if lte IE 8]><script src="assets/js/ie/html5shiv.js"></script><![endif]-->
     <link rel="stylesheet" href="assets/css/main.css" defer="defer">
+    <link rel="stylesheet" href="assets/css/mudmaker.css" defer="defer">
     <!--[if lte IE 9]><link rel="stylesheet" href="assets/css/ie9.css" /><![endif]-->
     <script type="text/javascript" src="assets/js/dom-safe.js"></script>
+    <script type="text/javascript" src="assets/js/mudmaker-reload.js"></script>
     <script type="text/javascript" src="assets/js/mudmaker.js" defer="defer"></script>
+    <script type="text/javascript" src="assets/js/mudmaker-visualizer.js" defer="defer"></script>
     <script type="text/javascript" src="assets/js/tabs.js"></script>
     <script type="text/javascript" src="assets/js/omud.js"></script>
-    <link rel='stylesheet' href='css/mainWindow.css' type='text/css' media='all'
-/>
-    <link rel='stylesheet' href='css/tooltip.css' type='text/css' media='all'/>
-    <link rel='stylesheet' href='css/introjs.css'>  </head>
+  </head>
   <body>
     <!-- Banner -->
     <section id="banner">
@@ -54,7 +54,6 @@
     <!-- One -->
     <div class="tab">
       <button id="createTab" class="tablinks" onclick="openTab(event, 'create')">Create</button>
-      <button class="tablinks" onclick="openTab(event, 'visualize')">Visualize Network</button>
       <button class="tablinks" onclick="openTab(event, 'viewmudfile')">View MUD File</button>
       <button class="tablinks" onclick="openTab(event, 'publish')">Publish/Save/Continue Work</button>
     </div>
@@ -69,7 +68,7 @@
           </tr>
           <tr><td>
               <!-- <label for="getSavedWork">Want to load saved work?<label> -->
-              <input id="loadsaved" type="file" accept="text/json, application/json" onchange="loadWork(this);"></input>
+              <input id="loadsaved" type="file" accept="text/json, application/json" onchange="MudMakerVisualizer.loadSavedWork(this);"></input>
             </td>
             <td>Continue Earlier Work</td>
             <td>
@@ -128,63 +127,64 @@
         </table>
       </section>
     </div>
-    <div id="visualize" class="tabcontent">
-      <div id="vis2">
-      </div>
-    </div>
     <div id="viewmudfile" class="tabcontent">
       <pre id="mudcontent" style="line-height: 1.2"></pre>
     </div>
     <div id="create" class="tabcontent">
-      <section id="two" class="wrapper">
+      <section id="two" class="wrapper maker-live-wrapper">
+        <div class="maker-live-layout">
+          <div class="maker-live-form">
         <form method="POST" action="makemud2.php" id="mudform">
           <p onload="oauthp2(this)"><em>Note:</em> Unless you publish to GitHub through this interface,  no information
           collected on this form is saved beyond this session.  It is only used to generate the
           files that are returned to you, or to facilitate your visualization.</p>
-          <fieldset>
+          <fieldset class="maker-live-url-fieldset">
             <legend>Please enter the host and model to build a MUD-URL for this device:</legend>
-            <label style="display: inline;">https://
-              <input id="mudhost" name="mudhost"  maxlength="50" size="40" required="yes"
-                  placeholder="hostname.manufacturer.com"
-                  onchange='makemudurl();'>
-            </label>
-            <label style="display: inline;">(model name here-&gt;)
-              <input id="model_name" maxlength="50" size="20" pattern=".+"
-              required="yes" placeholder="Device model" onchange='makemudurl();'>
-            </label>
+            <div class="maker-live-url-row">
+              <div class="maker-live-url-part maker-live-url-host">
+                <label for="mudhost">https://</label>
+                <input id="mudhost" name="mudhost" maxlength="50" required="yes"
+                  placeholder="hostname.manufacturer.com">
+              </div>
+              <div class="maker-live-url-part maker-live-url-model">
+                <label for="model_name">(model name here-&gt;)</label>
+                <input id="model_name" maxlength="50" pattern=".+"
+              required="yes" placeholder="Device model">
+              </div>
+            </div>
           </fieldset>
           <br>
           <fieldset>
           <legend>Basic Information</legend>
-          <ul class="twocol">
-            <li>
+          <ul class="twocol maker-live-field-row">
+            <li class="maker-live-field">
               <label for="mfg-name">Manufacturer Name</label>
-              <input class="addbasics" id='mfg-name' name="mfg-name" maxlength="40" size="40"
+              <input class="addbasics" id='mfg-name' name="mfg-name" maxlength="40"
               placeholder="Company, Inc." pattern="..*" required="true">
             </li>
-            <li>
+            <li class="maker-live-field">
               <label for="systeminfo">A short description for this device</label>
-              <input class="addbasics" id="systeminfo" name="systeminfo" maxlength="120" size="40" required="yes"
+              <input class="addbasics" id="systeminfo" name="systeminfo" maxlength="120" required="yes"
               placeholder="This device does.." pattern="..*" required="true">
             </li>
             </ul>
-            <ul class="twocol">
-            <li>
+            <ul class="twocol maker-live-field-row">
+            <li class="maker-live-field">
               <label for="documentation">Documentation URL</label>
-              <input class="addbasics" id="documentation" name="documentation" maxlength="60" size="40" required="yes"
+              <input class="addbasics" id="documentation" name="documentation" maxlength="200" required="yes"
               type="url"
               placeholder="https://documentation...">
             </li>
-            <li>
-                    <label for="email_addr">EMail</label></li><li>
-              <input id="email_addr" name="email_addr" maxlength="60" size="40" required="yes"
+            <li class="maker-live-field">
+              <label for="email_addr">EMail</label>
+              <input id="email_addr" name="email_addr" maxlength="60" required="yes"
               placeholder="someone@example.com" type="email">
             </li>
             </ul>
-            <ul class="twocol">
-              <li>
+            <ul class="twocol maker-live-field-row">
+              <li class="maker-live-field">
                 <label for="country">Country for demo CA</label>
-                <select name="country" id="country" style='width: 395px;'>
+                <select name="country" id="country">
                   <option value="0"  selected="selected">
                   Select a country ... </option>
                   <optgroup id="country-optgroup-Africa" label="Africa">
@@ -451,7 +451,7 @@
                   </optgroup>
                 </select>
               </li>
-              <li>
+              <li class="maker-live-field maker-live-field-compact">
                 <label for="ipchoice">This device speaks</label>
                 <select id="ipchoice" name="ipchoice" value="ipv4">
                   <option value="ipv4">IPv4</option>
@@ -460,11 +460,11 @@
                 </select>
               </li>
           </ul>
-          <ul class="twocol">
-          <li>
+          <ul class="twocol maker-live-field-row">
+          <li class="maker-live-field">
             <label for='pub_name'>MUD File Publisher Name</label>
             <input id="pub_name" name="pub_name" maxlength="80"
-            size="40" required=true
+            required=true
             placeholder="Your Name">
           </li>
         </ul>
@@ -757,6 +757,21 @@
           </details>
           <br>
       </form>
+          </div>
+          <aside id="mud-live-visualizer" class="maker-live-visualizer" aria-label="MUD visualizer">
+            <div class="maker-live-visualizer-header">
+              <h3 id="mud-url-preview">Your Device's Access</h3>
+              <p id="mud-live-summary">No access lists yet</p>
+            </div>
+            <div class="maker-live-canvas">
+              <svg id="mud-live-svg" class="mud-live-svg" viewBox="0 0 900 620" role="img" aria-labelledby="mud-live-title mud-live-desc">
+                <title id="mud-live-title">MUD access list visualization</title>
+                <desc id="mud-live-desc">Live visualization of access-list entries added to the MUD file.</desc>
+              </svg>
+            </div>
+            <div id="mud-live-details" class="maker-live-details"></div>
+          </aside>
+        </div>
       </section>
     </div>
     <!-- Footer -->

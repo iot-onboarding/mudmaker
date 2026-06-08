@@ -2,7 +2,7 @@
 
 ## Summary
 
-Finish the remaining Basic Information correctness issues in `mudmaker-live.html` and associated JavaScript. Preserve the generated MUD schema, use `model_name` as the device model for signing/publishing metadata, and keep `systeminfo` as the device description.
+Finish the remaining Basic Information correctness issues in `mudmaker.html` and associated JavaScript. Preserve the generated MUD schema, use `model_name` as the device model for signing/publishing metadata, and keep `systeminfo` as the device description.
 
 ## Key Changes
 
@@ -19,7 +19,7 @@ Finish the remaining Basic Information correctness issues in `mudmaker-live.html
 
 ## Test Plan
 
-1. Run Playwright desktop and mobile smoke checks against `mudmaker-live.html` as a regression check.
+1. Run Playwright desktop and mobile smoke checks against `mudmaker.html` as a regression check.
 2. Confirm the revised labels render in the Basic Information and MUD URL sections.
 3. Fill required fields, open Publish, and confirm the checklist includes publisher and excludes country.
 4. Confirm Sign with missing required fields alerts and does not issue `/mudzip`.

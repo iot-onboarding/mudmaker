@@ -1267,7 +1267,7 @@
 		render(currentMudFile());
 	}
 
-	global.MudMakerLiveVisualizer = {
+	global.MudMakerVisualizer = {
 		buildModel: buildModel,
 		currentMudFile: currentMudFile,
 		init: init,
