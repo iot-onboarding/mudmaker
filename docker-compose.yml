@@ -1,0 +1,19 @@
+services:
+  mudmaker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: mudmaker:latest
+    depends_on:
+      - mudzipserver
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+
+  mudzipserver:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: mudzipserver
+    image: mudmaker-mudzipserver:latest
+    restart: unless-stopped

@@ -52,6 +52,47 @@ function normalizePortMatch(match) {
 	}
 }
 
+function canonicalValue(value) {
+	var normalized = {};
+
+	if (Array.isArray(value)) {
+		return value.map(canonicalValue);
+	}
+	if (value != null && typeof value == 'object') {
+		Object.keys(value).sort().forEach(function(key) {
+			normalized[key] = canonicalValue(value[key]);
+		});
+		return normalized;
+	}
+	return value;
+}
+
+function aceSemanticKey(ace) {
+	return JSON.stringify({
+		matches: canonicalValue(ace && ace.matches || {}),
+		actions: canonicalValue(ace && ace.actions || {})
+	});
+}
+
+function removeDuplicateAces(acl) {
+	var seen = {};
+
+	if (typeof acl == 'undefined' ||
+		typeof acl.aces == 'undefined' ||
+		!Array.isArray(acl.aces.ace)) {
+		return;
+	}
+	acl.aces.ace = acl.aces.ace.filter(function(ace) {
+		var key = aceSemanticKey(ace);
+
+		if (seen[key]) {
+			return false;
+		}
+		seen[key] = true;
+		return true;
+	});
+}
+
 function normalizeAcls(acls) {
 	if (typeof acls == 'undefined' || !Array.isArray(acls.acl)) {
 		return;
@@ -75,6 +116,7 @@ function normalizeAcls(acls) {
 					normalizeDirection(matches.tcp['ietf-mud:direction-initiated']);
 			}
 		});
+		removeDuplicateAces(acl);
 	});
 }
 
@@ -157,12 +199,36 @@ function ensureAcls() {
 	return document.mudFile['ietf-access-control-list:acls'];
 }
 
+function mudFileHasAcls(mudFile) {
+	var aclContainer;
+
+	normalizeMUDFile(mudFile);
+	aclContainer = mudFile && mudFile['ietf-access-control-list:acls'];
+	return typeof aclContainer != 'undefined' &&
+		Array.isArray(aclContainer.acl) &&
+		aclContainer.acl.length > 0;
+}
+
+function restoreAclBaseFromMUDFile() {
+	if (!mudFileHasAcls(document.mudFile)) {
+		return false;
+	}
+	document.aclBase = document.aclBase || 'loaded';
+	return true;
+}
+
+function resetAclBaseFromMUDFile() {
+	delete document.aclBase;
+	return restoreAclBaseFromMUDFile();
+}
+
 function updateLastUpdate(mudFile) {
 	mudFile['ietf-mud:mud']['last-update'] = new Date().toISOString();
 	delete mudFile['ietf-mud:mud']['last-change'];
 }
 
 function initMUDFile() {
+	delete document.aclBase;
 	document.mudFile=window.sessionStorage.getItem("mudfile");
 	if ( document.mudFile == null ) {
 		document.mudFile = JSON.parse('{"ietf-mud:mud" : {"mud-version" : 1, "extensions" : [ "ol"], "ol" : { "spdx-tag" : "0BSD"}, "cache-validity": 48, "is-supported" : true}}');
@@ -172,14 +238,72 @@ function initMUDFile() {
 		document.mudFile=JSON.parse(document.mudFile);
 		normalizeMUDFile(document.mudFile);
 	}
-	document.mfChanged = false;
+	restoreAclBaseFromMUDFile();
+}
+
+function mudUrlPartsFromMudUrl(mudUrl) {
+	var matchres;
+
+	if (typeof mudUrl == 'undefined' || mudUrl == '') {
+		return null;
+	}
+	matchres = String(mudUrl).match(/^https:\/\/([^\/]+)\/(.+)\.json$/);
+	if (matchres == null) {
+		return null;
+	}
+	return {
+		hostname: matchres[1],
+		model_name: matchres[2]
+	};
+}
+
+function updateMudUrlPreview(host, model, fallbackUrl) {
+	var preview = document.getElementById('mud-url-preview');
+
+	if (preview == null) {
+		return;
+	}
+	if (host != '' && model != '') {
+		preview.textContent = 'https://' + host + '/' + model + '.json';
+	} else if (typeof fallbackUrl != 'undefined' && fallbackUrl != '') {
+		preview.textContent = fallbackUrl;
+	} else {
+	    preview.textContent = 'Your device in the network';
+	}
+}
+
+function syncMudUrlPreviewFromForm() {
+	var mh = document.getElementById('mudhost');
+	var mm = document.getElementById('model_name');
+
+	updateMudUrlPreview(mh != null ? mh.value : '', mm != null ? mm.value : '');
+}
+
+function syncMudUrlPreviewFromMudFile() {
+	var mf;
+	var parts;
+
+	if (typeof document.mudFile == 'undefined' ||
+		typeof document.mudFile['ietf-mud:mud'] == 'undefined') {
+		syncMudUrlPreviewFromForm();
+		return;
+	}
+	mf = document.mudFile['ietf-mud:mud'];
+	parts = mudUrlPartsFromMudUrl(mf['mud-url']);
+	if (parts != null) {
+		document.getElementById('mudhost').value = parts.hostname;
+		document.getElementById('model_name').value = parts.model_name;
+		updateMudUrlPreview(parts.hostname, parts.model_name);
+	} else {
+		updateMudUrlPreview('', '', mf['mud-url']);
+	}
 }
 
 
 function resetSite() {
 	window.sessionStorage.clear();
-	delete document.mudFie;
-	delete document.mfChanged;
+	delete document.mudFile;
+	delete document.aclBase;
 	initMUDFile();
 	clearAclUI();
 	[ "sbomany", "sbcloud", "sblocal", "sbtel", "sbinfourl","vulnview"].forEach((field) => {
@@ -190,11 +314,7 @@ function resetSite() {
 		det.open = false;
 	});
 	document.getElementById('mudform').reset();
-}
-
-function removeIt(elemId) {
-    var elem=document.getElementById(elemId);
-    elem.parentNode.removeChild(elem);
+	updateMudUrlPreview('', '');
 }
 
 // js update
@@ -308,30 +428,6 @@ function tcporudp(papa,val) {
     }
 }
 
-function localcheck(one2check,lport) {
-    if (document.getElementById(one2check).value == 'local') {
-	document.getElementById(lport).style.visibility="hidden";
-    } else {
-	document.getElementById(lport).style.visibility="inherit";
-    }
-}
-
-function yesnoCheck(outer,inner,refind) {
-    var box = inner + "box";
-    if (document.getElementById(box).checked ) {
-        document.getElementById(outer).style.display = 'block';
-        document.getElementById(inner).style.display = 'block';
-	nref[refind]++;
-    } else {
-        document.getElementById(inner).style.display = 'none';
-	
-	nref[refind]--;
-        if ( nref[refind] < 1 ) {
-            document.getElementById(outer).style.display = 'none';
-        }
-    }
-}
-
 // js update
 function fillpub(cur) {
     var p=document.getElementById('pub_name');
@@ -347,7 +443,6 @@ function saveMUD() {
 	syncOlOwnerFromForm();
 	updateLastUpdate(document.mudFile);
 	window.sessionStorage.setItem('mudfile',JSON.stringify(document.mudFile));
-	document.mfChanged = true;
 }
 
 function savework(){
@@ -370,22 +465,23 @@ function savework(){
 
 function getSignedMUDfile(){
 	let country = document.getElementById('country').value;
-	let email = document.getElementById('email_addr').value || '';
-	let mfgr = document.getElementById('mfg-name').value || '';
+	let email = (document.getElementById('email_addr').value || '').trim();
+	let mfgr = (document.getElementById('mfg-name').value || '').trim();
+	let model = (document.getElementById('model_name').value || '').trim();
 	normalizeMUDFile(document.mudFile);
 	syncOlOwnerFromForm();
 	let mudb64 = b64_encode(JSON.stringify(document.mudFile,null,2));
 
-	if ( country == '0' || email == '' || mfgr == '' || 
-		typeof document.mudFile['ietf-mud:mud']['mud-url'] == 'undefined' ) {
+	if ( country == '0' || email == '' || mfgr == '' || model == '' ||
+		!document.mudFile['ietf-mud:mud']['mud-url'] ) {
 		alert("Manufacturer Name, Model, Country, Email must all be set to retrieve a signed MUD file");
+		return;
 	}
-	let model = document.mudFile['ietf-mud:mud']['systeminfo'];
 	let pinfo = {
 		"Manufacturer" : mfgr,
 		"Model" : model,
 		"CountryCode" : country,
-		"MudURL" : document.mudFile['ietf-mud:mud']['mud-url'],
+		"MudUrl" : document.mudFile['ietf-mud:mud']['mud-url'],
 		'SerialNumber' : "Demo12345",
 		"Mudfile" : mudb64,
 		"EmailAddress" : email
@@ -501,6 +597,7 @@ function setProto(nextAce,ace,ipVer) {
 
 function reloadFields(){
 	normalizeMUDFile(document.mudFile);
+	resetAclBaseFromMUDFile();
 	var mf = document.mudFile['ietf-mud:mud'];
 	const inbasic = ['mfg-name', 'systeminfo', 'documentation'];
 	document.getElementById('country').value=document.mudFile['country'] || 0;
@@ -524,10 +621,9 @@ function reloadFields(){
 		document.getElementById('pub_name').value = mf['ol']['owners'][0];
 	}
 	if ( typeof mf['mud-url'] != 'undefined') {
-		re = /https:\/\/(?<hostname>[^\/]+)\/(?<model_name>.*)\.json/;
-		matchres= mf['mud-url'].match(re);
-		document.getElementById('mudhost').value = matchres.groups.hostname;
-		document.getElementById('model_name').value = matchres.groups.model_name;
+		syncMudUrlPreviewFromMudFile();
+	} else {
+		syncMudUrlPreviewFromForm();
 	}
 	if (Array.isArray(mf['extensions']) && mf['extensions'].includes('transparency')){
 		var tx= mf['mudtx:transparency'];
@@ -602,21 +698,6 @@ function reloadFields(){
 	}
 }
 
-// js update
-function loadWork(input) {
-	let file = input.files[0];
-	let reader = new FileReader();
-  
-	reader.readAsText(file);
-  
-	reader.onload = function() {
-		document.mudFile = JSON.parse(reader.result);
-		reloadFields();
-		refreshmans();
-		saveMUD();
-	}
-}
-
  // js update
  function loadPCAP(input) {
 	let file = input.files[0];
@@ -636,6 +717,7 @@ function makemudurl() {
     p=document.getElementById('controller');
     mh=document.getElementById('mudhost');
 	mm=document.getElementById('model_name');
+	updateMudUrlPreview(mh.value, mm.value);
     if (mh.value != '') {
 		p.placeholder = 'https://' + mh.value + '/controllers';
 		if (mm.value != '') {
@@ -680,29 +762,6 @@ function setVisibility(outer) {
 		saveMUD();
     }
 }
-
-
-
-function j2pp(b64) {
-    var xhr = new XMLHttpRequest();
-    var url = "/mudrest/mudpp/";
-    var jsonText=atob(b64);
-    if (document.getElementById("mudframe") != null )
-        return;
-    xhr.open("POST", url, true);
-    xhr.setRequestHeader("Content-Type", "application/json");
-    xhr.onreadystatechange = function () {
-        if (this.readyState === 4 && this.status === 200) {
-            var iframe=document.createElement('iframe');
-            iframe.id = "mudframe";
-            iframe.src = "data:text/html;charset=utf-8," + this.responseText;
-            iframe.style.width = "70%";
-            document.body.insertBefore(iframe,document.getElementById('mudresults'));
-        }
-    };
-    xhr.send(jsonText);
-}
-
 // js update
 function addbasics(cur) {
 	if ( cur.value == '') {
@@ -731,6 +790,9 @@ function makeAcls(){
 	var fracls;
 
 	if (typeof document.aclBase != 'undefined') {
+		return;
+	}
+	if (restoreAclBaseFromMUDFile()) {
 		return;
 	}
 	document.mudFile["ietf-access-control-list:acls"] = {"acl": []};
@@ -972,6 +1034,26 @@ function removeAces(cur){
 	saveMUD();
 }
 
+function forEachAceEntry(parent, callback) {
+	Array.from(parent.children).slice(1).forEach(function(entry) {
+		if (entry && entry.children && entry.children.length) {
+			callback(entry);
+		}
+	});
+}
+
+function updateAceGroupEntries(parent) {
+	forEachAceEntry(parent, function(entry) {
+		updateAces(parent, entry);
+	});
+}
+
+function removeAceGroupEntries(parent) {
+	forEachAceEntry(parent, function(entry) {
+		removeAces(entry);
+	});
+}
+
 function sbomify(cur) {
 	var whichsbom = document.getElementById("sbom").value;
 	var mf;
@@ -1036,13 +1118,11 @@ $('summary').click(function() {
 	}
     if ( parent.open == false ) {
 		document.getElementById(pbox).checked = true;
-		if ( parent.id == "myctl" || parent.id == "loc" || parent.id == 'mymfg') {
-			updateOneAceGroup(parent,parent.children[1]);
-		}
+		updateAceGroupEntries(parent);
     } else {
 		document.getElementById(pbox).checked = false;
 		if ( parent.nodeName == "DETAILS" ) {
-			removeAces(parent.children[1]);
+			removeAceGroupEntries(parent);
 		}
     }
 });
@@ -1098,6 +1178,14 @@ $(document).on('change','#pub_name',function(e){
 	saveMUD();
 })
 
+$(document).on('input','#mudhost, #model_name',function(e){
+	syncMudUrlPreviewFromForm();
+})
+
+$(document).on('change','#mudhost, #model_name',function(e){
+	makemudurl();
+})
+
 
 $(document).on('change','.sbomstuff',function(e){
 	sbomify(e.target);
@@ -1106,3 +1194,4 @@ $(document).on('change','.sbomstuff',function(e){
 ////// initialize
 
 initMUDFile();
+syncMudUrlPreviewFromMudFile();
