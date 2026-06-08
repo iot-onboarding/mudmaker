@@ -8,6 +8,12 @@ RUN git clone https://github.com/iot-onboarding/mudcerts.git /src/mudcerts && \
     go mod download && \
     CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o /out/mudzipserver ./web
 
+FROM scratch AS mudzipserver
+
+COPY --from=mudcerts-builder /out/mudzipserver /mudzipserver
+
+ENTRYPOINT ["/mudzipserver"]
+
 FROM php:7.3-apache
 
 ENV APACHE_DOCUMENT_ROOT=/mudmaker
@@ -22,11 +28,8 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-av
     sed -ri -e 's!80!8080!g' /etc/apache2/ports.conf && \
     a2enmod proxy proxy_http
 
-COPY --from=mudcerts-builder /out/mudzipserver /usr/local/bin/mudzipserver
 COPY docker/mudzip-proxy.conf /etc/apache2/conf-available/mudzip-proxy.conf
-COPY docker/start-mudmaker.sh /usr/local/bin/start-mudmaker
-RUN chmod +x /usr/local/bin/start-mudmaker && \
-    a2enconf mudzip-proxy
+RUN a2enconf mudzip-proxy
 
 COPY . /mudmaker/
 
@@ -38,4 +41,4 @@ RUN rm -rf /mudmaker/mud-visualizer /mudmaker/scripts /mudmaker/img /mudmaker/cs
     ln -s mud-visualizer/renderer.js /mudmaker/renderer.js
 
 ENTRYPOINT ["docker-php-entrypoint"]
-CMD ["start-mudmaker"]
+CMD ["apache2-foreground"]

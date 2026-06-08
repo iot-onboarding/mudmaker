@@ -3,19 +3,27 @@
 ### Building:
 
 ```bash
-docker build -t mudmaker .
+docker compose build
 ```
 
 ### Running:
 
 ```bash
-docker run -p 8080:8080 mudmaker
+docker compose up -d
 ```
 
-The image runs Apache/PHP on port `8080` and starts `mudzipserver` inside the
-same container on `127.0.0.1:8085`. Apache proxies same-origin `/mudzip`
-requests to that internal service, so only port `8080` should be published.
+The Compose setup publishes Apache/PHP on port `8080` through the `mudmaker`
+service. The `mudzipserver` service runs separately on the internal Compose
+network with no published ports. Apache proxies same-origin `/mudzip` requests
+to `http://mudzipserver:8085`, so the signing endpoint is reachable through
+`mudmaker` rather than directly from the host.
 
 The **Sign** action returns a zip file with a generated MUD file, detached CMS
 signature, and demonstration certificates/keys. Those keys and certificates are
 test material only.
+
+### Stopping:
+
+```bash
+docker compose down
+```
