@@ -87,13 +87,19 @@
 
 .maker-live-visualizer {
 	position: sticky;
-	top: 1em;
+	top: 3.5em;
 	min-width: 0;
 	border: 1px solid #d7dee8;
 	border-radius: 6px;
 	background: #fff;
 	padding: 1em;
 	box-shadow: 0 1px 3px rgba(31, 41, 55, 0.12);
+}
+
+@media screen and (min-width: 1121px) {
+	.maker-live-wrapper {
+		padding-bottom: 0.5em;
+	}
 }
 
 .maker-live-visualizer-header {
