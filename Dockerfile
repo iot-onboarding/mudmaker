@@ -14,20 +14,19 @@ COPY --from=mudcerts-builder /out/mudzipserver /mudzipserver
 
 ENTRYPOINT ["/mudzipserver"]
 
-FROM php:7.3-apache
+FROM httpd:2.4
 
 ENV APACHE_DOCUMENT_ROOT=/mudmaker
 
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf && \
-    sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf && \
-    sed -ri -e 's!80!8080!g' /etc/apache2/sites-available/000-default.conf && \
-    sed -ri -e 's!80!8080!g' /etc/apache2/ports.conf && \
-    a2enmod proxy proxy_http
+RUN sed -ri \
+    -e 's!^Listen 80!Listen 8080!' \
+    -e 's!^#(LoadModule proxy_module modules/mod_proxy.so)!\1!' \
+    -e 's!^#(LoadModule proxy_http_module modules/mod_proxy_http.so)!\1!' \
+    -e 's!DocumentRoot "/usr/local/apache2/htdocs"!DocumentRoot "/mudmaker"!' \
+    -e 's!<Directory "/usr/local/apache2/htdocs">!<Directory "/mudmaker">!' \
+    /usr/local/apache2/conf/httpd.conf && \
+    printf '\nServerName localhost\nInclude conf/extra/mudzip-proxy.conf\n' >> /usr/local/apache2/conf/httpd.conf
 
-COPY docker/mudzip-proxy.conf /etc/apache2/conf-available/mudzip-proxy.conf
-RUN a2enconf mudzip-proxy
+COPY docker/mudzip-proxy.conf /usr/local/apache2/conf/extra/mudzip-proxy.conf
 
 COPY . /mudmaker/
-
-ENTRYPOINT ["docker-php-entrypoint"]
-CMD ["apache2-foreground"]
