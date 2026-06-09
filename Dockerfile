@@ -29,4 +29,18 @@ RUN sed -ri \
 
 COPY docker/mudzip-proxy.conf /usr/local/apache2/conf/extra/mudzip-proxy.conf
 
-COPY . /mudmaker/
+# Restrict the container's document root to only the files the site actually
+# serves: HTML, JavaScript, and CSS, plus the assets they reference (images,
+# fonts, the JSON examples linked from examples.html, and the shell scripts
+# linked from signing.html / mudurl.html). Everything else in the repo
+# (README, LICENSE, Dockerfile, docker-compose.yml, docker/, Python utilities,
+# qrcodejs/, etc.) is deliberately excluded so it cannot be requested.
+COPY ./*.html /mudmaker/
+COPY ./sbom.js /mudmaker/
+COPY ./cloud-service.json /mudmaker/
+COPY ./my-controller.json /mudmaker/
+COPY ./same-manufacturer.json /mudmaker/
+COPY ./lldpmud.sh /mudmaker/
+COPY ./signmudfile.sh /mudmaker/
+COPY ./assets/ /mudmaker/assets/
+COPY ./images/ /mudmaker/images/
