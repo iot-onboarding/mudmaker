@@ -19,7 +19,7 @@ FROM httpd:2.4
 ENV APACHE_DOCUMENT_ROOT=/mudmaker
 
 RUN sed -ri \
-    -e 's!^Listen 80!Listen 8080!' \
+    -e 's!^Listen 80!Listen 8081!' \
     -e 's!^#(LoadModule proxy_module modules/mod_proxy.so)!\1!' \
     -e 's!^#(LoadModule proxy_http_module modules/mod_proxy_http.so)!\1!' \
     -e 's!DocumentRoot "/usr/local/apache2/htdocs"!DocumentRoot "/mudmaker"!' \
