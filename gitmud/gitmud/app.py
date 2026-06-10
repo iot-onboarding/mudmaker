@@ -3,6 +3,7 @@ App to manage oauth tokens for mud files, and to generate PRs.
 """
 
 import json
+import logging
 import os
 import re
 import sqlite3
@@ -12,6 +13,8 @@ from pathlib import Path
 from time import sleep
 from flask import Flask,request, jsonify
 import requests
+
+log = logging.getLogger("gitmud")
 
 
 def _load_config():
@@ -109,6 +112,18 @@ def token_in_db(mudurl):
     return ans[0]
 
 
+def delete_token(mudurl):
+    """
+    Drop any stored token for this mudurl. Used when GitHub rejects the
+    cached token (revoked, expired, wrong client, etc.) so the next request
+    falls through to a fresh OAuth dance.
+    """
+    con = sqlite3.connect(MUD_DB)
+    cur = con.cursor()
+    cur.execute("DELETE FROM gitmud WHERE mudurl = ?", (mudurl,))
+    con.commit()
+
+
 def git_get(endpoint, token, key = None):
     """
     Do a get and retrieve one or more objects.
@@ -120,10 +135,12 @@ def git_get(endpoint, token, key = None):
                                 "X-GitHub-Api-Version" : "2022-11-28"
                                 },
                             timeout = 10)
-    rsp_json = resp.json()
 
     if not resp.ok:
+        log.warning("git_get %s -> %s: %s",
+                    endpoint, resp.status_code, resp.text[:200])
         return False
+    rsp_json = resp.json()
     if key:
         if key in rsp_json:
             return rsp_json[key]
@@ -145,6 +162,8 @@ def git_putpost(which, endpoint, token, content):
                             )
 
     if not resp.ok:
+        log.warning("git_%s %s -> %s: %s",
+                    which.lower(), endpoint, resp.status_code, resp.text[:200])
         raise GithubProblem("request failed: " + resp.text)
     return resp.json()
 
@@ -273,6 +292,26 @@ def got_token():
     return jsonify({"answer" : "no"}), 400
 
 
+def _exchange_code(code, mudurl):
+    """
+    Run the GitHub OAuth code-for-token exchange, store the result, and
+    return (token, error_response). On success error_response is None; on
+    failure token is None and error_response is a (body, status) tuple
+    suitable for returning directly from a Flask view.
+    """
+    resp = github_dance(code)
+    if not resp.ok:
+        return None, ("github_dance: " + resp.text, 400)
+    response_json = resp.json()
+    if 'error' in response_json:
+        return None, ("github_dance: error " + response_json['error'], 400)
+    if 'access_token' not in response_json or not response_json['access_token']:
+        return None, ("github_dance: no access_token in response", 400)
+    if not db_store(response_json, mudurl):
+        return None, ("db_store fail", 500)
+    return response_json["access_token"], None
+
+
 @app.route('/oAuthv2',methods=['POST'])
 def complete_oauth():
     """
@@ -281,32 +320,41 @@ def complete_oauth():
         token: a token to commplete OAUTH
         OR
         got_token, signalling that no github dance is required.
-    Returns: 200/400
+    Returns: 200/400/401
     """
     req=request.json
 
     try:
         mudurl = req['mudurl']
-        if not "got_token" in req:
+        code = None
+        if "got_token" not in req:
             code = req["code"]
     except KeyError as e:
-        return 'KeyError: ' + str(e)
+        return 'KeyError: ' + str(e), 400
 
     token = token_in_db(mudurl)
-    if not token:
-        # we can safely disable the warning about code because we would have
-        # already thrown an exception above if it didn't exist.
-        # pylint: disable-next=possibly-used-before-assignment
-        resp = github_dance(code)
-        if not resp.ok:
-            return "github_dance: " + str(resp.data), 400
-        response_json = resp.json()
-        if 'error' in response_json:
-            return "github_dance: error " + response_json['error'], 400
-        if not db_store(response_json,mudurl):
-            return "db_store fail", 400
-        token = response_json["access_token"]
-    user = get_gituser(token)
+    user = get_gituser(token) if token else False
+
+    if not user:
+        # Either no row, or the cached token no longer works (revoked,
+        # expired, or minted by a different OAuth app). Drop it and try a
+        # fresh dance if the client supplied a fresh code.
+        if token:
+            log.info("stored token for %s rejected by GitHub; evicting", mudurl)
+            delete_token(mudurl)
+        if not code:
+            return "no valid token and no code to exchange", 401
+        token, err = _exchange_code(code, mudurl)
+        if err:
+            return err
+        user = get_gituser(token)
+        if not user:
+            # Token came back from GitHub but won't authenticate /user.
+            # Don't keep it.
+            log.warning("freshly minted token for %s failed /user lookup", mudurl)
+            delete_token(mudurl)
+            return "github token did not authenticate", 401
+
     return jsonify({"user" : user}), 200
 
 @app.route("/dorepo",methods=['POST'])
@@ -322,7 +370,13 @@ def do_repo():
         return "Repo Check: Bad Parameter: " + str(e), 400
 
     token = token_in_db(mudurl)
-    user=get_gituser(token)
+    if not token:
+        return "not authenticated", 401
+    user = get_gituser(token)
+    if not user:
+        log.info("do_repo: stored token for %s rejected; evicting", mudurl)
+        delete_token(mudurl)
+        return "github token did not authenticate", 401
     resp = repo_exists(user,token)
     if not resp:
         resp = fork_repo(token)
@@ -356,9 +410,23 @@ def do_branch():
         return "Parameter problem: " + str(e), 400
 
     token = token_in_db(mudurl)
+    if not token:
+        return "not authenticated", 401
+    # Confirm the caller-supplied user matches the token holder; otherwise
+    # an attacker who knows a mudurl could direct writes to an arbitrary
+    # account name.
+    token_user = get_gituser(token)
+    if not token_user:
+        log.info("do_branch: stored token for %s rejected; evicting", mudurl)
+        delete_token(mudurl)
+        return "github token did not authenticate", 401
+    if token_user != user:
+        return "user does not match token", 403
     # capture head
     ref_obj  = git_get("/repos/" + user + "/mudfiles/git/refs/heads/main",
                     token, "object")
+    if not ref_obj:
+        return "could not read repo head", 400
     head = ref_obj['sha']
     # branch name
     mfg = re.sub(' ','-',mfg)
@@ -396,6 +464,15 @@ def do_the_rest():
         return "Parameter problem: " + str(e), 400
 
     token = token_in_db(mudurl)
+    if not token:
+        return "not authenticated", 401
+    token_user = get_gituser(token)
+    if not token_user:
+        log.info("do_the_rest: stored token for %s rejected; evicting", mudurl)
+        delete_token(mudurl)
+        return "github token did not authenticate", 401
+    if token_user != user:
+        return "user does not match token", 403
 
     # branch name
     mfg = re.sub(' ','-',mud["ietf-mud:mud"]["mfg-name"])
