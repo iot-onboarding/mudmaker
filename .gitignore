@@ -2,3 +2,7 @@
 MUDZIPSERVER_INTEGRATION_PLAN.md
 sudi.py
 sudi.py~
+
+# gitmud runtime configuration (contains OAuth client secret and
+# Flask session key). Never commit.
+gitmud/config.ini

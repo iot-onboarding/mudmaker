@@ -6,6 +6,7 @@ services:
     image: mudmaker:latest
     depends_on:
       - mudzipserver
+      - gitmud
     ports:
       - "127.0.0.1:8081:8081"
     restart: unless-stopped
@@ -17,3 +18,21 @@ services:
       target: mudzipserver
     image: mudmaker-mudzipserver:latest
     restart: unless-stopped
+
+  gitmud:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: gitmud
+    image: mudmaker-gitmud:latest
+    restart: unless-stopped
+    volumes:
+      # Provide the runtime configuration (OAuth client secret, Flask session
+      # key, database path). The source-tree copy is gitignored; edit it in
+      # place or bind-mount an alternate file.
+      - ./gitmud/config.ini:/etc/gitmud/config.ini:ro
+      # Persist the SQLite token store across container rebuilds.
+      - gitmud-data:/var/lib/gitmud
+
+volumes:
+  gitmud-data:
