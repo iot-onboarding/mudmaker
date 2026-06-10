@@ -14,6 +14,43 @@ COPY --from=mudcerts-builder /out/mudzipserver /mudzipserver
 
 ENTRYPOINT ["/mudzipserver"]
 
+# ---------------------------------------------------------------------------
+# gitmud: builds the Flask OAuth shovel into an isolated virtualenv that the
+# runtime stage copies wholesale. Kept in its own builder stage so the final
+# image carries only the venv and the runtime files, not pip caches or build
+# tooling.
+# ---------------------------------------------------------------------------
+FROM python:3.12-slim AS gitmud-builder
+
+WORKDIR /build
+COPY gitmud/ /build/
+
+RUN python -m venv /opt/venv \
+    && /opt/venv/bin/pip install --no-cache-dir --upgrade pip \
+    && /opt/venv/bin/pip install --no-cache-dir -r requirements.txt gunicorn \
+    && /opt/venv/bin/pip install --no-cache-dir .
+
+FROM python:3.12-slim AS gitmud
+
+RUN useradd --system --create-home --home-dir /var/lib/gitmud --uid 1001 gitmud \
+    && mkdir -p /var/lib/gitmud /etc/gitmud \
+    && chown -R gitmud:gitmud /var/lib/gitmud
+
+COPY --from=gitmud-builder /opt/venv /opt/venv
+COPY gitmud/initdb.sql /usr/local/share/gitmud/initdb.sql
+COPY docker/gitmud-entrypoint.sh /usr/local/bin/gitmud-entrypoint.sh
+
+RUN chmod 0755 /usr/local/bin/gitmud-entrypoint.sh
+
+ENV PATH="/opt/venv/bin:${PATH}" \
+    GITMUD_CONFIG=/etc/gitmud/config.ini \
+    GITMUD_DB_PATH=/var/lib/gitmud/mudbase.db
+
+EXPOSE 8000
+USER gitmud
+ENTRYPOINT ["/usr/local/bin/gitmud-entrypoint.sh"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "2", "--access-logfile", "-", "gitmud.app:app"]
+
 FROM httpd:2.4
 
 ENV APACHE_DOCUMENT_ROOT=/mudmaker
