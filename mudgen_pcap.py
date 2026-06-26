@@ -19,17 +19,22 @@ Behaviour:
 
       * Private / link-local / multicast / broadcast addresses are
         treated as RFC 8520 ``local-networks``.
-      * Public addresses are reverse-resolved.  When the PTR record
-        looks like a residential / consumer-ISP record (it embeds the
-        IP octets or contains residential keywords such as ``dyn``,
-        ``dsl``, ``cable``, ``cpe`` …) the endpoint is treated as the
-        RFC 8520 ``my-controller`` abstraction.
-      * Public addresses with a "normal" PTR use that name via the
-        ``ietf-acldns:src-dnsname`` / ``ietf-acldns:dst-dnsname``
-        extension.
-      * Public addresses with no PTR at all fall back to an RFC 8519
-        ``destination-ipv4-network`` / ``source-ipv4-network`` (or the
-        IPv6 equivalent) match against the bare /32 or /128 prefix.
+      * For public addresses we first consult an ``IP -> name`` map
+        built from DNS responses observed *in the captures
+        themselves*.  When the IP appears in that map the queried
+        name is used directly via the ``ietf-acldns:src-dnsname`` /
+        ``ietf-acldns:dst-dnsname`` extension.
+      * Otherwise (and only when ``--no-dns`` is not set) we fall
+        back to a reverse-PTR lookup.  When the PTR record looks
+        like a residential / consumer-ISP record (it embeds the IP
+        octets or contains residential keywords such as ``dyn``,
+        ``dsl``, ``cable``, ``cpe`` …) the endpoint is treated as
+        the RFC 8520 ``my-controller`` abstraction; a "normal" PTR
+        is used as the DNS name.
+      * Public addresses with no name at all fall back to an
+        RFC 8519 ``destination-ipv4-network`` /
+        ``source-ipv4-network`` (or the IPv6 equivalent) match
+        against the bare /32 or /128 prefix.
 
 The output is a single MUD file (JSON) written to stdout or to the file
 named with ``--output``.  Only constructs defined by RFC 8520 and the
@@ -53,7 +58,9 @@ from collections import defaultdict
 from typing import Dict, Optional, Tuple
 
 try:
-    from scapy.all import ARP, IP, IPv6, TCP, UDP, Ether, ICMP, rdpcap  # type: ignore
+    from scapy.all import (  # type: ignore
+        ARP, DNS, DNSRR, IP, IPv6, TCP, UDP, Ether, ICMP, rdpcap,
+    )
 except ImportError:  # pragma: no cover
     sys.stderr.write(
         "scapy is required: install with `pip install scapy`\n"
@@ -275,6 +282,81 @@ def collect_flows(pcap_files, device_mac: str) -> Dict[Tuple, Flow]:
     return flows
 
 
+def collect_dns_map(pcap_files) -> Dict[str, str]:
+    """Build an ``IP -> hostname`` map by scanning DNS responses in
+    the supplied pcaps.
+
+    For every DNS response packet we look at the query (``qd.qname``)
+    and every ``A`` / ``AAAA`` resource record in the answer section.
+    Each answer IP is associated with the **query name** (not the
+    CNAME chain target), because the query name is what the device
+    actually asked for and is the most useful match in a MUD ACE.
+
+    When the same IP appears in multiple responses for different
+    names, the first one wins.  This is deterministic given a stable
+    pcap-file order.
+    """
+    mapping: Dict[str, str] = {}
+
+    def _decode(n) -> Optional[str]:
+        if n is None:
+            return None
+        if isinstance(n, bytes):
+            try:
+                n = n.decode("ascii", errors="ignore")
+            except Exception:  # noqa: BLE001
+                return None
+        n = str(n).strip().rstrip(".").lower()
+        return n or None
+
+    for path in pcap_files:
+        try:
+            pkts = rdpcap(path)
+        except Exception as exc:  # noqa: BLE001
+            sys.stderr.write(f"warning: skipping {path}: {exc}\n")
+            continue
+
+        for pkt in pkts:
+            if not pkt.haslayer(DNS):
+                continue
+            dns = pkt[DNS]
+            # Only look at responses with at least one answer.
+            if int(getattr(dns, "qr", 0)) != 1:
+                continue
+            if int(getattr(dns, "ancount", 0) or 0) == 0:
+                continue
+
+            qname = None
+            if dns.qd is not None:
+                qname = _decode(getattr(dns.qd, "qname", None))
+            if not qname:
+                continue
+
+            an = dns.an
+            if an is None:
+                continue
+            # ``dns.an`` is a scapy ``_list`` of DNSRR records; iterate
+            # by index up to ``ancount``.
+            try:
+                n = len(an)
+            except TypeError:
+                n = 0
+            for i in range(n):
+                try:
+                    rr = an[i]
+                except (IndexError, TypeError):
+                    break
+                rtype = int(getattr(rr, "type", 0) or 0)
+                rdata = getattr(rr, "rdata", None)
+                # type 1 = A, type 28 = AAAA
+                if rtype in (1, 28) and rdata:
+                    ip = str(rdata)
+                    if ip and ip not in mapping:
+                        mapping[ip] = qname
+
+    return mapping
+
+
 # ---------------------------------------------------------------------------
 # MUD document construction
 # ---------------------------------------------------------------------------
@@ -292,7 +374,8 @@ class Endpoint:
 
 def classify_endpoint(ip: str, do_dns: bool,
                       cache: Dict[str, Endpoint],
-                      *, local_use_networks: bool = True) -> Endpoint:
+                      *, local_use_networks: bool = True,
+                      dns_map: Optional[Dict[str, str]] = None) -> Endpoint:
     """Classify a remote IP.
 
     ``local_use_networks`` controls how local-network peers are
@@ -300,6 +383,11 @@ def classify_endpoint(ip: str, do_dns: bool,
     across all flows) we emit the RFC 8520 ``local-networks``
     abstraction.  When False (only a single local peer talks to the
     device) that peer is treated as the device's ``my-controller``.
+
+    ``dns_map`` is a precomputed ``IP -> hostname`` mapping derived
+    from DNS responses observed in the pcap captures.  When the
+    remote IP is present in the map, that name is used directly
+    (no PTR lookup is attempted).
     """
     if ip in cache:
         return cache[ip]
@@ -311,7 +399,10 @@ def classify_endpoint(ip: str, do_dns: bool,
         return ep
 
     hostname: Optional[str] = None
-    if do_dns:
+    # Prefer DNS answers observed in the captures themselves.
+    if dns_map and ip in dns_map:
+        hostname = dns_map[ip]
+    elif do_dns:
         try:
             hostname = socket.gethostbyaddr(ip)[0]
         except (socket.herror, socket.gaierror, OSError):
@@ -397,7 +488,8 @@ def build_ace(flow: Flow, endpoint: Endpoint, direction: str,
 def build_mud(flows: Dict[Tuple, Flow], do_dns: bool, *, mud_url: str,
               mfg: str, model: str, systeminfo: str,
               documentation: Optional[str],
-              cache_validity: int) -> dict:
+              cache_validity: int,
+              dns_map: Optional[Dict[str, str]] = None) -> dict:
     cache: Dict[str, Endpoint] = {}
 
     # The RFC 8520 ``local-networks`` abstraction is only meaningful
@@ -423,7 +515,8 @@ def build_mud(flows: Dict[Tuple, Flow], do_dns: bool, *, mud_url: str,
     counter = 0
     for flow in sorted_flows:
         endpoint = classify_endpoint(flow.remote_ip, do_dns, cache,
-                                     local_use_networks=local_use_networks)
+                                     local_use_networks=local_use_networks,
+                                     dns_map=dns_map)
         counter += 1
         base = f"ace{counter}"
         aces[("from", flow.ipver)].append(
@@ -487,14 +580,36 @@ def _read_mac_file(directory: str) -> Optional[str]:
     return line.lower()
 
 
+def _is_unicast_mac(mac: str) -> bool:
+    """True if *mac* is a real unicast Ethernet address.
+
+    Excludes broadcast (``ff:ff:ff:ff:ff:ff``), IPv4/IPv6 multicast
+    mappings, and any other multicast address (LSB of the first octet
+    set)."""
+    try:
+        first = int(mac.split(":", 1)[0], 16)
+    except ValueError:
+        return False
+    return (first & 0x01) == 0 and mac.lower() != "ff:ff:ff:ff:ff:ff"
+
+
 def _infer_device_mac(pcap_files) -> str:
-    """Find the single MAC address that appears (as src or dst) in
-    *every* Ethernet frame across all pcaps.  Raise SystemExit if no
-    such address exists, or if more than one address qualifies (in
-    which case the caller must disambiguate with ``--mac``).
+    """Pick the device MAC from the supplied pcaps.
+
+    Rules:
+      1. If exactly two unicast MACs appear across all captures, pick
+         the one that sources only a single distinct IP address (its
+         own).  The other MAC sources many IPs and is the access point
+         / gateway.
+      2. Otherwise, fall back to the MAC that appears (as Ethernet src
+         or dst) in *every* packet.  If exactly one MAC qualifies,
+         return it; otherwise raise SystemExit.
     """
     common: Optional[set] = None
     saw_frame = False
+    all_unicast: set = set()
+    src_ips_per_mac: Dict[str, set] = defaultdict(set)
+
     for path in pcap_files:
         try:
             pkts = rdpcap(path)
@@ -506,21 +621,47 @@ def _infer_device_mac(pcap_files) -> str:
                 continue
             saw_frame = True
             eth = pkt[Ether]
-            macs = {eth.src.lower(), eth.dst.lower()}
+            src = eth.src.lower()
+            dst = eth.dst.lower()
+            macs = {src, dst}
             common = macs if common is None else common & macs
-            if not common:
-                raise SystemExit(
-                    "could not infer device MAC: no single MAC address "
-                    "appears in every frame; create "
-                    "_iotdevice-mac.txt or pass --mac")
+            for m in macs:
+                if _is_unicast_mac(m):
+                    all_unicast.add(m)
+            if pkt.haslayer(IP):
+                src_ips_per_mac[src].add(pkt[IP].src)
+            elif pkt.haslayer(IPv6):
+                src_ips_per_mac[src].add(pkt[IPv6].src)
+
     if not saw_frame:
         raise SystemExit(
-            "could not infer device MAC: no Ethernet frames found")
+            "could not infer device MAC: no Ethernet frames found in "
+            "any pcap; supply --mac or create _iotdevice-mac.txt")
+
+    # Rule 1: exactly two unicast MACs → the one with a single source IP
+    # is the device; the multi-IP one is the AP.
+    if len(all_unicast) == 2:
+        scored = [(m, len(src_ips_per_mac.get(m, set())))
+                  for m in all_unicast]
+        singles = [m for m, n in scored if n == 1]
+        multi = [m for m, n in scored if n > 1]
+        if len(singles) == 1 and len(multi) == 1:
+            return singles[0]
+        # Ambiguous (both single-IP, both multi-IP, or one has zero
+        # source IPs): fall through to the "in every packet" rule.
+
+    # Rule 2: unique MAC present in every Ethernet frame.
+    if not common:
+        raise SystemExit(
+            "could not infer device MAC: no MAC appears in every "
+            "packet; supply --mac or create _iotdevice-mac.txt")
+
     if len(common) > 1:
         raise SystemExit(
             "could not infer device MAC: multiple MACs appear in every "
-            f"frame ({sorted(common)}); disambiguate with --mac or "
-            "create _iotdevice-mac.txt")
+            f"packet ({', '.join(sorted(common))}); disambiguate with "
+            "--mac or create _iotdevice-mac.txt")
+
     return next(iter(common))
 
 
@@ -545,7 +686,9 @@ def main(argv=None) -> int:
     p.add_argument("--cache-validity", type=int, default=48,
                    help="value for cache-validity (hours), default 48")
     p.add_argument("--no-dns", action="store_true",
-                   help="do not perform reverse DNS lookups")
+                   help="do not perform reverse PTR lookups; the "
+                        "name map built from DNS responses in the "
+                        "captures is still used")
     p.add_argument("--output", "-o",
                    help="write MUD JSON here (default: stdout)")
     args = p.parse_args(argv)
@@ -575,8 +718,39 @@ def main(argv=None) -> int:
 
     flows = collect_flows(pcap_files, mac)
     if not flows:
-        sys.stderr.write(
-            f"warning: no IP traffic involving {mac} found in any pcap\n")
+        # Help the user pick a different MAC: list every unicast MAC
+        # that actually has IP traffic in these pcaps.
+        try:
+            seen: Dict[str, int] = defaultdict(int)
+            for path in pcap_files:
+                try:
+                    pkts = rdpcap(path)
+                except Exception:  # noqa: BLE001
+                    continue
+                for pkt in pkts:
+                    if not pkt.haslayer(Ether):
+                        continue
+                    if not (pkt.haslayer(IP) or pkt.haslayer(IPv6)):
+                        continue
+                    eth = pkt[Ether]
+                    for m in (eth.src.lower(), eth.dst.lower()):
+                        try:
+                            unicast = (int(m.split(":")[0], 16) & 1) == 0
+                        except ValueError:
+                            unicast = False
+                        if unicast:
+                            seen[m] += 1
+            other = sorted(
+                ((m, c) for m, c in seen.items() if m != mac),
+                key=lambda kv: -kv[1])[:8]
+            hint = (
+                "; MACs with IP traffic: " +
+                ", ".join(f"{m} ({c} pkts)" for m, c in other)
+            ) if other else ""
+        except Exception:  # noqa: BLE001
+            hint = ""
+        raise SystemExit(
+            f"no IP traffic involving {mac} found in any pcap" + hint)
 
     mud = build_mud(
         flows,
@@ -587,6 +761,7 @@ def main(argv=None) -> int:
         systeminfo=systeminfo,
         documentation=args.documentation,
         cache_validity=args.cache_validity,
+        dns_map=collect_dns_map(pcap_files),
     )
 
     text = json.dumps(mud, indent=2) + "\n"

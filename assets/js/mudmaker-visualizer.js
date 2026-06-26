@@ -224,22 +224,36 @@
 
 	function endpointFromDns(ipMatch, direction) {
 		var name = "";
+		var fromNetwork = false;
 		if (direction === "to-device") {
-			name = ipMatch["ietf-acldns:src-dnsname"] || ipMatch["source-ipv4-network"] ||
-				ipMatch["source-ipv6-network"] || "";
+			name = ipMatch["ietf-acldns:src-dnsname"] || "";
+			if (!name) {
+				name = ipMatch["source-ipv4-network"] ||
+					ipMatch["source-ipv6-network"] || "";
+				if (name) { fromNetwork = true; }
+			}
 		} else {
-			name = ipMatch["ietf-acldns:dst-dnsname"] || ipMatch["destination-ipv4-network"] ||
-				ipMatch["destination-ipv6-network"] || "";
+			name = ipMatch["ietf-acldns:dst-dnsname"] || "";
+			if (!name) {
+				name = ipMatch["destination-ipv4-network"] ||
+					ipMatch["destination-ipv6-network"] || "";
+				if (name) { fromNetwork = true; }
+			}
 		}
 		if (!name) {
-			name = ipMatch["ietf-acldns:src-dnsname"] || ipMatch["ietf-acldns:dst-dnsname"] ||
-				ipMatch["source-ipv4-network"] || ipMatch["destination-ipv4-network"] ||
-				ipMatch["source-ipv6-network"] || ipMatch["destination-ipv6-network"] || "Network";
+			name = ipMatch["ietf-acldns:src-dnsname"] || ipMatch["ietf-acldns:dst-dnsname"] || "";
+			if (!name) {
+				name = ipMatch["source-ipv4-network"] ||
+					ipMatch["destination-ipv4-network"] ||
+					ipMatch["source-ipv6-network"] ||
+					ipMatch["destination-ipv6-network"] || "Network";
+				if (name && name !== "Network") { fromNetwork = true; }
+			}
 		}
 		return {
 			id: "endpoint:" + name,
 			label: name,
-			kind: "internet-host",
+			kind: fromNetwork ? "ipnet" : "internet-host",
 			zone: "internet"
 		};
 	}
@@ -528,7 +542,7 @@
 		if (kind === "my-controller" || kind === "controller") {
 			return "computer";
 		}
-		if (kind === "internet-host") {
+		if (kind === "internet-host" || kind === "ipnet") {
 			return "cloud";
 		}
 		return "enterprise";

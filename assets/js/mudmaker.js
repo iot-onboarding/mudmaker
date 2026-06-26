@@ -334,13 +334,16 @@ function addEntry(entry){
 		'loc': 'local-networks',
 		'ctl': 'controller',
 		'mymfg': 'same-manufacturer',
-		'mfg': 'manufacturer'
+		'mfg': 'manufacturer',
+		'net': 'destination-ipv4-network'
 	}[entryType] || entryType + 'name';
 	
 	if (entry.id == 'cl' || entry.id == 'mfg') {
 		dnsorurl = 'dns';
 	} else if (entry.id == 'ctl') {
 		dnsorurl = 'url';
+	} else if (entry.id == 'net') {
+		dnsorurl = 'prefix';
 	}
 
 
@@ -354,6 +357,11 @@ function addEntry(entry){
 	    pattern = "";
 	    placeholder=" placeholder='https://class name..'";
 	    readonly=0;
+	} else if ( dnsorurl == 'prefix' ) {
+	    typefield="'text'";
+	    pattern = " pattern='^(([0-9]{1,3}\\.){3}[0-9]{1,3}/(3[0-2]|[12]?[0-9]))|([0-9a-fA-F:]+/(12[0-8]|[1-9]?[0-9]))$'";
+	    readonly=0;
+	    placeholder=" placeholder='203.0.113.7/32 or 2001:db8::/64'";
 	} else {
 	    typefield="'text'";
 	    pattern="";
@@ -649,9 +657,16 @@ function reloadFields(){
 	}
 	clearAclUI();
 	var acls = getAcls();
-	if (typeof acls != 'undefined'){
-		// we only need to look at one ACL/one set of ACEs.
-		acls.acl[0].aces.ace.forEach(
+	if (typeof acls != 'undefined' && Array.isArray(acls.acl)){
+		// Walk every ACL so both from-device and to-device entries
+		// populate the form (some loaded MUD files only have policy in
+		// one direction).
+		var seenAceBases = {};
+		acls.acl.forEach(function(curAcl){
+			if (!curAcl || !curAcl.aces || !Array.isArray(curAcl.aces.ace)) {
+				return;
+			}
+			curAcl.aces.ace.forEach(
 			function(ace){
 				mudtypes = {
 					'myctl' : 'my-controller',
@@ -664,7 +679,14 @@ function reloadFields(){
 				let ipVer = null;
 				// get aceBase value
 				let re = /^..(ace.*)/;
-				let aceBase = ace.name.match(re)[1];
+				let aceMatch = ace.name && ace.name.match(re);
+				let aceBase = aceMatch ? aceMatch[1] : ace.name;
+				// Avoid creating duplicate UI rows for the matching
+				// from-/to-device ACE pair that mudgen_pcap emits.
+				if (seenAceBases[aceBase]) {
+					return;
+				}
+				seenAceBases[aceBase] = true;
 				// figure out type and then proceed.
 				if (typeof ace['matches']["ipv4"] != 'undefined') {
 					ipVer = 'ipv4';
@@ -683,18 +705,38 @@ function reloadFields(){
 					}
 				} else {
 					var hostname;
-					nextAce=findNextAce('cl');
-					if(typeof ace['matches'][ipVer]['ietf-acldns:src-dnsname'] != 'undefined') {
-						hostname = ace['matches'][ipVer]['ietf-acldns:src-dnsname'];
-					} else {
-						hostname =  ace['matches'][ipVer]['ietf-acldns:dst-dnsname'];
+					var ipMatch = ace['matches'][ipVer] || {};
+					var prefixKey = null;
+					var prefixKeys = [
+						'destination-ipv4-network',
+						'source-ipv4-network',
+						'destination-ipv6-network',
+						'source-ipv6-network'
+					];
+					for (let pk of prefixKeys) {
+						if (typeof ipMatch[pk] != 'undefined') {
+							prefixKey = pk;
+							break;
+						}
 					}
-					nextAce.children[0].value = hostname;
+					if (prefixKey !== null) {
+						nextAce = findNextAce('net');
+						nextAce.children[0].value = ipMatch[prefixKey];
+					} else {
+						nextAce = findNextAce('cl');
+						if (typeof ipMatch['ietf-acldns:src-dnsname'] != 'undefined') {
+							hostname = ipMatch['ietf-acldns:src-dnsname'];
+						} else {
+							hostname = ipMatch['ietf-acldns:dst-dnsname'];
+						}
+						nextAce.children[0].value = hostname;
+					}
 				}
 				nextAce.aceBase = aceBase;
 				nextAce.parentElement.open = true;
 				setProto(nextAce,ace,ipVer);
 				})
+		});
 	}
 }
 
@@ -710,6 +752,149 @@ function reloadFields(){
 		sessionStorage.setItem('pcap',pcap.replace(re,''));
 	}
  }
+
+// js update
+// Build a MUD file from the PCAPs currently chosen in the #pcapfile
+// control by POSTing them to /pcap2mud (handled by the gitmud Flask
+// service).  On success the generated MUD JSON is fed straight into the
+// visualizer / form via MudMakerVisualizer.initializeLoadedMudFile, the
+// same code path used by "Continue Earlier Work".
+function generateMudFromPcap() {
+	var fileInput = document.getElementById('pcapfile');
+	var macInput = document.getElementById('pcapmac');
+	var resolveBox = document.getElementById('pcapresolve');
+	var resultDiv = document.getElementById('pcap-result');
+	var mh = document.getElementById('mudhost');
+	var mm = document.getElementById('model_name');
+	var mfg = document.getElementById('mfg-name');
+	var sysinfo = document.getElementById('systeminfo');
+	var docu = document.getElementById('documentation');
+	var i;
+
+	function report(msg, isError) {
+		if (!resultDiv) {
+			return;
+		}
+		while (resultDiv.firstChild) {
+			resultDiv.removeChild(resultDiv.firstChild);
+		}
+		resultDiv.appendChild(document.createTextNode(msg));
+		resultDiv.style.color = isError ? '#b00020' : '';
+	}
+
+	// If the server's error message lists candidate MAC addresses,
+	// turn each one into a button that pre-fills #pcapmac so the user
+	// can just click and re-submit.
+	function reportWithMacSuggestions(prefix, err) {
+		if (!resultDiv) {
+			return;
+		}
+		while (resultDiv.firstChild) {
+			resultDiv.removeChild(resultDiv.firstChild);
+		}
+		resultDiv.style.color = '#b00020';
+		resultDiv.appendChild(document.createTextNode(prefix + ' ' + err));
+		var macs = (err.match(/[0-9a-f]{2}(?::[0-9a-f]{2}){5}/gi) || [])
+			.map(function(m){ return m.toLowerCase(); });
+		if (!macs.length) {
+			return;
+		}
+		var seen = {};
+		var unique = macs.filter(function(m){
+			if (seen[m]) { return false; }
+			seen[m] = true;
+			return true;
+		});
+		var helper = document.createElement('div');
+		helper.style.marginTop = '4px';
+		helper.appendChild(document.createTextNode('Try as device MAC: '));
+		unique.forEach(function(m, idx){
+			if (idx > 0) { helper.appendChild(document.createTextNode(' ')); }
+			var b = document.createElement('button');
+			b.type = 'button';
+			b.textContent = m;
+			b.style.marginRight = '4px';
+			b.onclick = function(){
+				if (macInput) { macInput.value = m; }
+				generateMudFromPcap();
+			};
+			helper.appendChild(b);
+		});
+		resultDiv.appendChild(helper);
+	}
+
+	if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+		report('Please choose at least one .pcap or .pcapng file first.', true);
+		return;
+	}
+	if (macInput && macInput.value && !macInput.validity.valid) {
+		report('MAC must be of the form aa:bb:cc:dd:ee:ff.', true);
+		return;
+	}
+
+	var fd = new FormData();
+	for (i = 0; i < fileInput.files.length; i++) {
+		fd.append('pcap', fileInput.files[i]);
+	}
+	if (macInput && macInput.value) {
+		fd.append('mac', macInput.value.trim());
+	}
+	if (!resolveBox || !resolveBox.checked) {
+		fd.append('no_dns', '1');
+	}
+	if (mfg && mfg.value) { fd.append('mfg', mfg.value); }
+	if (mm && mm.value) { fd.append('model', mm.value); }
+	if (sysinfo && sysinfo.value) { fd.append('systeminfo', sysinfo.value); }
+	if (docu && docu.value) { fd.append('documentation', docu.value); }
+	if (mh && mh.value && mm && mm.value) {
+		fd.append('mud_url', 'https://' + mh.value + '/' + mm.value + '.json');
+	}
+
+	report('Generating MUD file from ' + fileInput.files.length +
+		' pcap file' + (fileInput.files.length === 1 ? '' : 's') + ' ...');
+
+	fetch('/pcap2mud', { method: 'POST', body: fd })
+		.then(function(response) {
+			return response.json().then(function(body) {
+				return { ok: response.ok, status: response.status, body: body };
+			});
+		})
+		.then(function(r) {
+			if (!r.ok || !r.body || !r.body.mud) {
+				var err = (r.body && r.body.error) || 'request failed (' + r.status + ')';
+				if (r.body && r.body.received_file_fields) {
+					err += ' [server saw file fields=' +
+						JSON.stringify(r.body.received_file_fields) +
+						' form fields=' +
+						JSON.stringify(r.body.received_form_fields) +
+						' content-type=' + r.body.content_type +
+						' length=' + r.body.content_length + ']';
+				}
+				reportWithMacSuggestions('Could not generate MUD file:', err);
+				return;
+			}
+			try {
+				MudMakerVisualizer.initializeLoadedMudFile(r.body.mud);
+			} catch (e) {
+				report('Loaded MUD file but rendering failed: ' + e, true);
+				return;
+			}
+			var msg = 'MUD file generated and loaded into the editor.';
+			if (r.body.notes) {
+				msg += ' (' + r.body.notes + ')';
+			}
+			report(msg);
+			// Switch to the visualizer-enabled Create tab so the user
+			// immediately sees the rendered policy.
+			var createTab = document.getElementById('createTab');
+			if (createTab) {
+				createTab.click();
+			}
+		})
+		.catch(function(e) {
+			report('Network error: ' + e, true);
+		});
+}
 
 
 // js update
@@ -903,6 +1088,17 @@ function updateAce(acl,ace_entry,aceBase,p){
 		}
 		matchobj=JSON.parse('{"' + ipver + '": {"' + matchname + '":"' +
 			ace_entry.children[0].value + '"}}');
+	} else if ( p.id == 'net' ) {
+		// RFC 8519 raw prefix.  The prefix family must match the ACL.
+		var prefix = (ace_entry.children[0].value || '').trim();
+		var isV6 = prefix.indexOf(':') !== -1;
+		if (isV6 && ipver !== 'ipv6') { return; }
+		if (!isV6 && ipver !== 'ipv4') { return; }
+		var netSuffix = isV6 ? 'ipv6-network' : 'ipv4-network';
+		matchname = (direction == 'to' ? 'source-' : 'destination-') + netSuffix;
+		matchobj = {};
+		matchobj[ipver] = {};
+		matchobj[ipver][matchname] = prefix;
 	} else {
 		matchobj = {
 			"ietf-mud:mud" : {

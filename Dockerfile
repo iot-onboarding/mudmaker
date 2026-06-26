@@ -39,8 +39,10 @@ RUN useradd --system --create-home --home-dir /var/lib/gitmud --uid 1001 gitmud 
 COPY --from=gitmud-builder /opt/venv /opt/venv
 COPY gitmud/initdb.sql /usr/local/share/gitmud/initdb.sql
 COPY docker/gitmud-entrypoint.sh /usr/local/bin/gitmud-entrypoint.sh
+COPY mudgen_pcap.py /usr/local/bin/mudgen_pcap.py
 
-RUN chmod 0755 /usr/local/bin/gitmud-entrypoint.sh
+RUN chmod 0755 /usr/local/bin/gitmud-entrypoint.sh \
+    && chmod 0755 /usr/local/bin/mudgen_pcap.py
 
 ENV PATH="/opt/venv/bin:${PATH}" \
     GITMUD_CONFIG=/etc/gitmud/config.ini \

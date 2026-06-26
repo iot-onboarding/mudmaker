@@ -6,7 +6,11 @@ import json
 import logging
 import os
 import re
+import shutil
 import sqlite3
+import subprocess
+import sys
+import tempfile
 import base64
 import configparser
 from pathlib import Path
@@ -514,6 +518,131 @@ def do_the_rest():
         "user" : user,
         "mudurl" : mudurl
     }, 200
+
+
+# ---------------------------------------------------------------------------
+# /pcap2mud: take user-uploaded pcap files, invoke mudgen_pcap.py, and
+# return the generated MUD JSON.
+# ---------------------------------------------------------------------------
+
+# 20 MiB total upload cap.  Set on the Flask app so the body is rejected
+# before it ever reaches the route.
+app.config.setdefault("MAX_CONTENT_LENGTH", 20 * 1024 * 1024)
+
+# Path to mudgen_pcap.py.  In the gitmud Docker image it is installed at
+# /usr/local/bin/mudgen_pcap.py.  In a local source checkout the file
+# lives at the repository root, two directories above this module.
+_MUDGEN_PCAP_CANDIDATES = [
+    Path(os.environ.get("MUDGEN_PCAP", "/nonexistent")),
+    Path("/usr/local/bin/mudgen_pcap.py"),
+    Path(__file__).resolve().parent.parent.parent / "mudgen_pcap.py",
+]
+
+_MAC_RE = re.compile(r"^[0-9A-Fa-f]{2}(:[0-9A-Fa-f]{2}){5}$")
+_ALLOWED_PCAP_EXT = (".pcap", ".pcapng")
+_MUDGEN_TIMEOUT_SECONDS = 60
+
+
+def _locate_mudgen_pcap():
+    for candidate in _MUDGEN_PCAP_CANDIDATES:
+        if candidate.is_file():
+            return candidate
+    return None
+
+
+@app.route("/pcap2mud", methods=["POST"])
+def pcap2mud():
+    """
+    Accept one or more pcap files plus optional metadata, run
+    mudgen_pcap.py against them, and return the resulting MUD JSON
+    (or a structured error).
+    """
+    script = _locate_mudgen_pcap()
+    if script is None:
+        return jsonify({"error": "mudgen_pcap.py not installed"}), 500
+
+    files = request.files.getlist("pcap")
+    if not files:
+        # Help the caller diagnose why no files arrived (wrong field
+        # name, browser dropped the body, proxy strip, etc.).
+        all_file_keys = sorted(set(request.files.keys()))
+        all_form_keys = sorted(set(request.form.keys()))
+        return jsonify({
+            "error": "no pcap files supplied",
+            "received_file_fields": all_file_keys,
+            "received_form_fields": all_form_keys,
+            "content_length": request.content_length,
+            "content_type": request.content_type,
+        }), 400
+
+    mac = (request.form.get("mac") or "").strip()
+    if mac and not _MAC_RE.match(mac):
+        return jsonify({"error": f"invalid MAC: {mac!r}"}), 400
+
+    no_dns = request.form.get("no_dns", "").lower() in ("1", "true", "yes", "on")
+
+    workdir = tempfile.mkdtemp(prefix="pcap2mud-")
+    try:
+        for upload in files:
+            name = os.path.basename(upload.filename or "")
+            if not name.lower().endswith(_ALLOWED_PCAP_EXT):
+                return jsonify({
+                    "error": f"file {name!r} is not a .pcap or .pcapng"
+                }), 400
+            upload.save(os.path.join(workdir, name))
+
+        if mac:
+            with open(os.path.join(workdir, "_iotdevice-mac.txt"),
+                      "w", encoding="ascii") as fh:
+                fh.write(mac + "\n")
+
+        argv = [sys.executable, str(script), workdir]
+        for opt, value in (
+            ("--mfg", request.form.get("mfg")),
+            ("--model", request.form.get("model")),
+            ("--systeminfo", request.form.get("systeminfo")),
+            ("--documentation", request.form.get("documentation")),
+            ("--mud-url", request.form.get("mud_url")),
+        ):
+            if value:
+                argv += [opt, value]
+        if no_dns:
+            argv.append("--no-dns")
+
+        try:
+            proc = subprocess.run(argv, capture_output=True,
+                                  text=True,
+                                  timeout=_MUDGEN_TIMEOUT_SECONDS,
+                                  check=False)
+        except subprocess.TimeoutExpired:
+            return jsonify({"error": "mudgen_pcap.py timed out"}), 504
+
+        if proc.returncode != 0:
+            err_lines = [
+                line for line in (proc.stderr or "").splitlines()
+                if line.strip()
+                and not line.startswith("inferred device MAC:")
+            ]
+            if not err_lines:
+                err_lines = [(proc.stdout or "mudgen_pcap.py failed").strip()]
+            return jsonify({
+                "error": " ".join(err_lines).strip()
+            }), 400
+
+        try:
+            mud = json.loads(proc.stdout)
+        except json.JSONDecodeError as exc:
+            return jsonify({
+                "error": f"mudgen_pcap.py produced invalid JSON: {exc}"
+            }), 500
+
+        notes = (proc.stderr or "").strip()
+        result = {"mud": mud}
+        if notes:
+            result["notes"] = notes
+        return jsonify(result), 200
+    finally:
+        shutil.rmtree(workdir, ignore_errors=True)
 
 
 #       return redirect("mudpublish.html?stored=ok")
