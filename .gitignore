@@ -6,3 +6,8 @@ sudi.py~
 # gitmud runtime configuration (contains OAuth client secret and
 # Flask session key). Never commit.
 gitmud/config.ini
+
+# skip zips
+*.zip
+tmp
+
