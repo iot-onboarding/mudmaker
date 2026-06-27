@@ -235,7 +235,11 @@ def collect_flows(pcap_files, device_mac: str) -> Dict[Tuple, Flow]:
                 sport, dport = int(udp.sport), int(udp.dport)
             elif pkt.haslayer(ICMP) or (ipver == 6
                                         and getattr(l3, "nxt", None) == 58):
-                proto = "icmp"
+                # ICMP / ICMPv6 cannot be represented in the
+                # mudmaker UI (the protocol dropdown only offers
+                # any/TCP/UDP) and is typically infrastructure
+                # diagnostic traffic.  Skip it.
+                continue
             else:
                 # Skip exotic IP protocols.
                 continue
@@ -259,9 +263,15 @@ def collect_flows(pcap_files, device_mac: str) -> Dict[Tuple, Flow]:
             else:
                 service_port = None
 
+
             # DHCP (UDP/67, UDP/68) is handled by the network
             # infrastructure and is not expressed in MUD policy.
             if proto == "udp" and {sport, dport} & {67, 68}:
+                continue
+
+            # NTP (UDP/123) is also infrastructure traffic; skip it so
+            # it doesn't appear in the generated MUD policy.
+            if proto == "udp" and {sport, dport} & {123}:
                 continue
 
             # DNS to a local resolver (the gateway / local network) is
@@ -355,6 +365,64 @@ def collect_dns_map(pcap_files) -> Dict[str, str]:
                         mapping[ip] = qname
 
     return mapping
+
+
+# Threshold for collapsing high-port flows into a single "any port"
+# ACE.  When more than ``_EPHEMERAL_MIN_FLOWS - 1`` distinct service
+# ports strictly greater than ``_EPHEMERAL_PORT_THRESHOLD`` are seen
+# to the same ``(ipver, proto, remote_ip)`` endpoint, those flows are
+# merged into a single flow with ``service_port = None``.
+#
+# IMPORTANT: collapsing only affects the L4 port; the remote_ip is
+# preserved verbatim so ``classify_endpoint`` produces exactly the
+# same Endpoint kind for the merged flow as it did for the inputs.
+# This guarantees that flows whose host part is a read-only RFC 8520
+# abstraction (``local-networks`` or ``my-controller``) stay that
+# way after the merge — they never degrade to an editable
+# ``destination-ipv4-network`` / ``source-ipv4-network`` prefix.
+_EPHEMERAL_PORT_THRESHOLD = 10000
+_EPHEMERAL_MIN_FLOWS = 4  # "more than three"
+
+
+def collapse_ephemeral_flows(flows: Dict[Tuple, Flow]) -> Dict[Tuple, Flow]:
+    """Merge groups of high-port flows to the same remote endpoint.
+
+    Flows are grouped by ``(ipver, proto, remote_ip)``.  Within each
+    group, every TCP/UDP flow whose service port is strictly greater
+    than ``_EPHEMERAL_PORT_THRESHOLD`` is a candidate.  When more
+    than three such candidates exist for one endpoint, they are
+    replaced by a single merged flow with ``service_port=None``
+    (which ``build_ace`` renders as no port restriction → "any").
+
+    Low-port flows in the same group are left untouched so their
+    well-known service ports remain explicit in the MUD policy.
+
+    The merged flow's ``remote_ip`` is unchanged, so endpoint
+    classification (local / my-controller / dnsname / ipnet) is
+    identical to that of the input flows.  The merged flow keeps an
+    initiator only when every input flow agreed on it.
+    """
+    groups: Dict[Tuple[int, str, str], list] = defaultdict(list)
+    for flow in flows.values():
+        if flow.proto in ("tcp", "udp"):
+            groups[(flow.ipver, flow.proto, flow.remote_ip)].append(flow)
+
+    result = dict(flows)
+    for (ipver, proto, remote_ip), group in groups.items():
+        eph = [f for f in group
+               if f.service_port is not None
+               and f.service_port > _EPHEMERAL_PORT_THRESHOLD]
+        if len(eph) < _EPHEMERAL_MIN_FLOWS:
+            continue
+        for f in eph:
+            result.pop(f.key, None)
+        merged = Flow(ipver, proto, remote_ip, None)
+        inits = {f.initiator for f in eph if f.initiator}
+        if len(inits) == 1:
+            merged.initiator = inits.pop()
+        merged.samples = sum(f.samples for f in eph)
+        result[merged.key] = merged
+    return result
 
 
 # ---------------------------------------------------------------------------
@@ -512,17 +580,107 @@ def build_mud(flows: Dict[Tuple, Flow], do_dns: bool, *, mud_url: str,
                           key=lambda f: (f.ipver, f.proto, f.remote_ip,
                                          f.service_port or 0))
 
-    counter = 0
+    # Build (from-device, to-device) ACE pairs per flow with placeholder
+    # names; we will dedupe and renumber below.
+    pairs_per_ipver: Dict[int, list] = defaultdict(list)
     for flow in sorted_flows:
         endpoint = classify_endpoint(flow.remote_ip, do_dns, cache,
                                      local_use_networks=local_use_networks,
                                      dns_map=dns_map)
-        counter += 1
-        base = f"ace{counter}"
-        aces[("from", flow.ipver)].append(
-            build_ace(flow, endpoint, "from", f"{base}-frdev"))
-        aces[("to", flow.ipver)].append(
-            build_ace(flow, endpoint, "to", f"{base}-todev"))
+        fr = build_ace(flow, endpoint, "from", "_")
+        to = build_ace(flow, endpoint, "to", "_")
+        pairs_per_ipver[flow.ipver].append((fr, to))
+
+    # Dedupe pairs whose match content is identical apart from
+    # ``ietf-mud:direction-initiated``.  When two pairs share the same
+    # stripped signature, keep the one that carries an initiator (so
+    # we never lose that information just because another packet
+    # ordering produced a less-specific duplicate ACE).
+    def _strip_initiator(matches: dict) -> dict:
+        out: dict = {}
+        for k, v in matches.items():
+            if isinstance(v, dict):
+                out[k] = {kk: vv for kk, vv in v.items()
+                          if kk != "ietf-mud:direction-initiated"}
+            else:
+                out[k] = v
+        return out
+
+    def _has_initiator(ace: dict) -> bool:
+        for v in ace["matches"].values():
+            if isinstance(v, dict) and "ietf-mud:direction-initiated" in v:
+                return True
+        return False
+
+    def _signature(pair: Tuple[dict, dict]) -> str:
+        fr, to = pair
+        sig = (_strip_initiator(fr["matches"]),
+               _strip_initiator(to["matches"]))
+        return json.dumps(sig, sort_keys=True)
+
+    deduped_per_ipver: Dict[int, list] = defaultdict(list)
+    for ipver, pairs in pairs_per_ipver.items():
+        chosen: Dict[str, Tuple[dict, dict]] = {}
+        order: list = []
+        for pair in pairs:
+            sig = _signature(pair)
+            if sig not in chosen:
+                chosen[sig] = pair
+                order.append(sig)
+                continue
+            # Prefer the pair that carries direction-initiated.
+            current = chosen[sig]
+            cur_has = _has_initiator(current[0]) or _has_initiator(current[1])
+            new_has = _has_initiator(pair[0]) or _has_initiator(pair[1])
+            if new_has and not cur_has:
+                chosen[sig] = pair
+        deduped_per_ipver[ipver] = [chosen[s] for s in order]
+
+    # Post-classification subsumption: if two pairs share the same
+    # host classification and protocol but one has "any port" (no
+    # L4 port restriction) and the other has a specific port, the
+    # specific one is redundant and is dropped.  This catches cases
+    # like multiple ``local-networks`` UDP flows where one is
+    # port=any — the specific-port siblings add no security value.
+    def _host_signature(pair: Tuple[dict, dict]) -> str:
+        # Build a signature from each ACE that ignores the L4 dict
+        # entirely (so port + initiator + everything L4 is stripped).
+        def _strip_l4(ace: dict) -> dict:
+            return {k: v for k, v in ace["matches"].items()
+                    if k not in ("tcp", "udp")}
+        return json.dumps((_strip_l4(pair[0]), _strip_l4(pair[1])),
+                          sort_keys=True)
+
+    def _is_any_port(pair: Tuple[dict, dict]) -> bool:
+        # "Any port" means no tcp/udp L4 match block at all.
+        for ace in pair:
+            for k in ("tcp", "udp"):
+                if k in ace["matches"]:
+                    return False
+        return True
+
+    for ipver, pairs in deduped_per_ipver.items():
+        any_host_sigs = {_host_signature(p) for p in pairs
+                         if _is_any_port(p)}
+        if not any_host_sigs:
+            continue
+        deduped_per_ipver[ipver] = [
+            p for p in pairs
+            if _is_any_port(p) or _host_signature(p) not in any_host_sigs
+        ]
+
+    # Renumber the surviving ACEs so paired from-/to-device names stay
+    # aligned across the two ACLs.  The naming convention matches what
+    # the mudmaker UI expects (regex /^..(ace.*)/ in reloadFields):
+    # ``fr{aceBase}`` for from-device and ``to{aceBase}`` for to-device,
+    # where ``aceBase`` is e.g. ``ace7``.  Using this format lets the UI
+    # pair the two ACLs back into a single form row per flow.
+    for ipver, pairs in deduped_per_ipver.items():
+        for i, (fr, to) in enumerate(pairs, start=1):
+            fr["name"] = f"frace{i}"
+            to["name"] = f"toace{i}"
+            aces[("from", ipver)].append(fr)
+            aces[("to", ipver)].append(to)
 
     mud_tag = f"mud-{random.randint(10000, 99999)}"
 
@@ -717,6 +875,7 @@ def main(argv=None) -> int:
                   or f"MUD policy derived from pcap captures for {model}")
 
     flows = collect_flows(pcap_files, mac)
+    flows = collapse_ephemeral_flows(flows)
     if not flows:
         # Help the user pick a different MAC: list every unicast MAC
         # that actually has IP traffic in these pcaps.

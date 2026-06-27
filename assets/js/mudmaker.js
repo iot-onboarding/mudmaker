@@ -183,6 +183,14 @@ function normalizeMUDFile(mudFile) {
 		delete mud['ietf-access-control-list:acls'];
 	}
 	normalizeAcls(mudFile['ietf-access-control-list:acls']);
+	// Force key order so the access-list block always serialises after
+	// the ietf-mud:mud block.  JS object iteration is insertion order,
+	// so deleting and re-adding pushes the ACLs to the end.
+	if (typeof mudFile['ietf-access-control-list:acls'] != 'undefined') {
+		var aclsBlock = mudFile['ietf-access-control-list:acls'];
+		delete mudFile['ietf-access-control-list:acls'];
+		mudFile['ietf-access-control-list:acls'] = aclsBlock;
+	}
 	return mudFile;
 }
 
@@ -579,6 +587,10 @@ function setProto(nextAce,ace,ipVer) {
 		if (typeof matches['tcp'] != 'undefined' &&
 			typeof matches['tcp']["ietf-mud:direction-initiated"] != 'undefined') {
 			cominit.children[0].value = matches['tcp']["ietf-mud:direction-initiated"];
+		} else {
+			// No direction-initiated in the source ACE: default to
+			// "any" (represented as 'either' in the dropdown).
+			cominit.children[0].value = 'either';
 		}
 	} else if ( matches[ipVer]['protocol'] == 17 ){
 		pstring = 'udp';
