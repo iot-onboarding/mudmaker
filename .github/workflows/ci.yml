@@ -93,7 +93,7 @@ jobs:
         run: docker compose config --quiet
 
       - name: Build mudzipserver
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           target: mudzipserver
@@ -103,7 +103,7 @@ jobs:
           cache-to: type=gha,scope=mudzipserver,mode=max
 
       - name: Build gitmud
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           target: gitmud
@@ -113,7 +113,7 @@ jobs:
           cache-to: type=gha,scope=gitmud,mode=max
 
       - name: Build mudmaker (httpd)
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           tags: mudmaker:ci
