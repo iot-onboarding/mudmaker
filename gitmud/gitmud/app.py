@@ -607,11 +607,14 @@ def do_the_rest():
     pcaps_result = []   # list[{original, stored, sha}]
 
     try:
-        # Upload the MUD JSON.
+        # Upload the MUD JSON.  It lives in the same directory as the
+        # attached pcaps (``<mfg>/<model>/<model>.json``) so a reviewer
+        # looking at the PR sees the rule file and its supporting
+        # captures side-by-side.
         upload = {
                 "branch_name" : branch_name,
                 "user" : user,
-                "filename" : mfg + "/" + model + ".json",
+                "filename" : f"{mfg}/{model}/{model}.json",
                 "content" : mud64,
                 "email" :    email,
                 "token" : token

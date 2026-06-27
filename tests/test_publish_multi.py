@@ -111,9 +111,10 @@ def main():
         "Acme-Devices/Acme-Thermostat/setup_a.pcap",
         "Acme-Devices/Acme-Thermostat/setup_a-1.pcap",
     ], stored
-    # 1 MUD JSON + 3 pcaps = 4 uploads
+    # 1 MUD JSON + 3 pcaps = 4 uploads, all in the same directory
     assert len(uploaded) == 4, [u["filename"] for u in uploaded]
-    assert uploaded[0]["filename"] == "Acme-Devices/Acme-Thermostat.json"
+    assert uploaded[0]["filename"] == \
+        "Acme-Devices/Acme-Thermostat/Acme-Thermostat.json"
     print("ok case 1: 3 pcaps including a collision uploaded with -N suffix")
 
     # -- Case 2: zero pcaps -> only the MUD JSON is uploaded. --
@@ -158,7 +159,10 @@ def main():
     resp = client.post("/therest", json=legacy_payload)
     body = resp.get_json()
     assert resp.status_code == 200, (resp.status_code, body)
-    # legacy path keeps the historical filename layout
+    # legacy path keeps the historical pcap filename layout, but the
+    # JSON now lives next to it under the model directory.
+    assert uploaded[0]["filename"] == \
+        "Acme-Devices/Acme-Thermostat/Acme-Thermostat.json", uploaded
     assert uploaded[1]["filename"] == "Acme-Devices/Acme-Thermostat.pcap", \
         uploaded
     assert body["pcaps"][0]["stored"] == "Acme-Devices/Acme-Thermostat.pcap"
