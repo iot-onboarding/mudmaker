@@ -20,7 +20,7 @@ ENTRYPOINT ["/mudzipserver"]
 # image carries only the venv and the runtime files, not pip caches or build
 # tooling.
 # ---------------------------------------------------------------------------
-FROM python:3.12-slim AS gitmud-builder
+FROM python:3.14-slim AS gitmud-builder
 
 WORKDIR /build
 COPY gitmud/ /build/
@@ -30,7 +30,7 @@ RUN python -m venv /opt/venv \
     && /opt/venv/bin/pip install --no-cache-dir -r requirements.txt gunicorn \
     && /opt/venv/bin/pip install --no-cache-dir .
 
-FROM python:3.12-slim AS gitmud
+FROM python:3.14-slim AS gitmud
 
 RUN useradd --system --create-home --home-dir /var/lib/gitmud --uid 1001 gitmud \
     && mkdir -p /var/lib/gitmud /etc/gitmud \
