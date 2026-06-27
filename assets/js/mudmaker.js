@@ -615,6 +615,109 @@ function setProto(nextAce,ace,ipVer) {
 	}
 }
 
+// Determine, for each ACL referenced by the MUD policy blocks, whether
+// it represents from-device or to-device traffic.  Returns a plain
+// object mapping ACL name -> 'from' | 'to'.  ACLs not referenced from
+// either policy are absent from the map.
+function _aclDirections(mf) {
+	var out = {};
+	if (!mf || typeof mf !== 'object') {
+		return out;
+	}
+	function harvest(side, label) {
+		var pol = mf[side];
+		if (!pol || typeof pol !== 'object') { return; }
+		var lists = pol['access-lists'];
+		if (!lists || !Array.isArray(lists['access-list'])) { return; }
+		lists['access-list'].forEach(function(ref) {
+			if (ref && typeof ref.name === 'string') {
+				out[ref.name] = label;
+			}
+		});
+	}
+	harvest('from-device-policy', 'from');
+	harvest('to-device-policy', 'to');
+	return out;
+}
+
+// Build a direction-invariant signature for an ACE.  Two ACEs that are
+// the mirror image of one another (one in the from-device ACL, the
+// other in the to-device ACL describing the same logical flow) produce
+// the same signature, so the UI can collapse the pair into a single
+// row.  ``direction`` is 'from' | 'to' | undefined.
+function _aceSignature(ace, direction) {
+	var m = (ace && ace.matches) || {};
+	var ipver = (m.ipv4 != null) ? 'ipv4'
+				: (m.ipv6 != null ? 'ipv6' : 'any');
+	var ipMatch = m[ipver] || {};
+	var target = null;
+	// MUD classification entries (my-controller / controller /
+	// manufacturer / same-manufacturer / local-networks) are
+	// direction-symmetric in their match block.
+	if (m['ietf-mud:mud']) {
+		var mudKeys = ['my-controller', 'controller',
+				'manufacturer', 'same-manufacturer',
+				'local-networks'];
+		for (var i = 0; i < mudKeys.length; i++) {
+			var mk = mudKeys[i];
+			if (m['ietf-mud:mud'][mk] !== undefined) {
+				target = 'mud:' + mk + ':' +
+					JSON.stringify(m['ietf-mud:mud'][mk]);
+				break;
+			}
+		}
+	}
+	if (target === null) {
+		var netKeys = ['destination-ipv4-network',
+				'source-ipv4-network',
+				'destination-ipv6-network',
+				'source-ipv6-network'];
+		for (var n = 0; n < netKeys.length; n++) {
+			if (ipMatch[netKeys[n]] !== undefined) {
+				target = 'net:' + ipMatch[netKeys[n]];
+				break;
+			}
+		}
+	}
+	if (target === null) {
+		if (ipMatch['ietf-acldns:src-dnsname'] !== undefined) {
+			target = 'dns:' + ipMatch['ietf-acldns:src-dnsname'];
+		} else if (ipMatch['ietf-acldns:dst-dnsname'] !== undefined) {
+			target = 'dns:' + ipMatch['ietf-acldns:dst-dnsname'];
+		}
+	}
+	if (target === null) {
+		// Unrecognised match shape — fall back to ACE name so we
+		// don't accidentally collapse unrelated entries.
+		target = 'raw:' + (ace && ace.name) || '';
+	}
+	var proto = 'any';
+	var localPort = 'any';
+	var remotePort = 'any';
+	if (m.tcp || m.udp) {
+		proto = m.tcp ? 'tcp' : 'udp';
+		var portBlock = m.tcp || m.udp || {};
+		var sport = (portBlock['source-port']
+				&& portBlock['source-port'].port);
+		var dport = (portBlock['destination-port']
+				&& portBlock['destination-port'].port);
+		sport = (sport == null) ? 'any' : sport;
+		dport = (dport == null) ? 'any' : dport;
+		if (direction === 'from') {
+			localPort = sport; remotePort = dport;
+		} else if (direction === 'to') {
+			localPort = dport; remotePort = sport;
+		} else {
+			// Direction unknown — normalise by sorting so a
+			// mirror pair still collapses.
+			var pair = [sport, dport].map(String).sort();
+			localPort = pair[0]; remotePort = pair[1];
+		}
+	}
+	return ipver + '|' + target + '|' + proto + ':'
+		+ localPort + ':' + remotePort;
+}
+
 function reloadFields(){
 	normalizeMUDFile(document.mudFile);
 	resetAclBaseFromMUDFile();
@@ -670,13 +773,28 @@ function reloadFields(){
 	clearAclUI();
 	var acls = getAcls();
 	if (typeof acls != 'undefined' && Array.isArray(acls.acl)){
-		// Walk every ACL so both from-device and to-device entries
-		// populate the form (some loaded MUD files only have policy in
-		// one direction).
+		// Walk every ACL.  Each logical flow appears twice in the
+		// MUD file — once in the from-device ACL and once in the
+		// mirrored to-device ACL.  We render the flow as a single
+		// UI row by computing a direction-invariant signature and
+		// skipping any ACE whose signature has already produced a
+		// row.  The full bidirectional pair stays in document.mudFile
+		// and is regenerated on save by updateAces() (which writes
+		// both fr* and to* entries from every UI row).
+		var aclDirections = _aclDirections(mf);
+		var seenSignatures = {};
 		var seenAceBases = {};
 		acls.acl.forEach(function(curAcl){
 			if (!curAcl || !curAcl.aces || !Array.isArray(curAcl.aces.ace)) {
 				return;
+			}
+			var aclDir = aclDirections[curAcl.name];
+			if (aclDir === undefined) {
+				// Fall back to the historical naming
+				// convention (frXXX / toXXX) when the policy
+				// blocks don't reference this ACL.
+				if (/^fr/.test(curAcl.name)) { aclDir = 'from'; }
+				else if (/^to/.test(curAcl.name)) { aclDir = 'to'; }
 			}
 			curAcl.aces.ace.forEach(
 			function(ace){
@@ -693,8 +811,18 @@ function reloadFields(){
 				let re = /^..(ace.*)/;
 				let aceMatch = ace.name && ace.name.match(re);
 				let aceBase = aceMatch ? aceMatch[1] : ace.name;
-				// Avoid creating duplicate UI rows for the matching
-				// from-/to-device ACE pair that mudgen_pcap emits.
+				// Primary dedupe: content-based signature so
+				// arbitrary ACE naming still collapses a
+				// from/to pair into one row.
+				var sig = _aceSignature(ace, aclDir);
+				if (seenSignatures[sig]) {
+					return;
+				}
+				seenSignatures[sig] = true;
+				// Secondary dedupe: name-based, kept so we
+				// don't double-render if two ACEs happen to
+				// share aceBase but produce different sigs
+				// (e.g. partial loads).
 				if (seenAceBases[aceBase]) {
 					return;
 				}
