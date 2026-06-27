@@ -25,7 +25,7 @@ jobs:
         # docker-build time, so there is nothing for CodeQL to scan here.
         language: [python, javascript]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
