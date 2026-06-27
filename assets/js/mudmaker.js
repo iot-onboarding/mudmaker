@@ -897,7 +897,6 @@ function reloadFields(){
 function generateMudFromPcap() {
 	var fileInput = document.getElementById('pcapfile');
 	var macInput = document.getElementById('pcapmac');
-	var resolveBox = document.getElementById('pcapresolve');
 	var resultDiv = document.getElementById('pcap-result');
 	var mh = document.getElementById('mudhost');
 	var mm = document.getElementById('model_name');
@@ -973,9 +972,6 @@ function generateMudFromPcap() {
 	}
 	if (macInput && macInput.value) {
 		fd.append('mac', macInput.value.trim());
-	}
-	if (!resolveBox || !resolveBox.checked) {
-		fd.append('no_dns', '1');
 	}
 	if (mfg && mfg.value) { fd.append('mfg', mfg.value); }
 	if (mm && mm.value) { fd.append('model', mm.value); }

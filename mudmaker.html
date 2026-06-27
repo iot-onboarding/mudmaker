@@ -89,8 +89,6 @@
             <label for="pcapmac">Device MAC (optional)</label>
             <input id="pcapmac" type="text" size="20" placeholder="aa:bb:cc:dd:ee:ff"
                    pattern="^[0-9A-Fa-f]{2}(:[0-9A-Fa-f]{2}){5}$">
-            &nbsp;
-            <label><input id="pcapresolve" type="checkbox"> Resolve PTR records</label>
             <br>
             <button type="button" onclick="generateMudFromPcap()">Generate MUD from PCAP</button>
             <div id="pcap-result" class="maker-live-detail-meta" style="margin-top:6px"></div>
@@ -105,9 +103,8 @@
               You may also use <b>Generate MUD from PCAP</b> to derive a draft MUD
               file from the captured traffic.  Supply the device MAC if more than
               one host appears in every packet (e.g. only the device and its
-              gateway).  Enable <b>Resolve PTR records</b> to ask the server to
-              translate public IPs into DNS names &mdash; otherwise raw RFC 8519
-              network prefixes are used.
+              gateway).  Public addresses with no DNS name observed in the
+              capture are rendered as RFC 8519 network prefixes.
             </td>
           </tr>
           <tr>

@@ -19,22 +19,16 @@ Behaviour:
 
       * Private / link-local / multicast / broadcast addresses are
         treated as RFC 8520 ``local-networks``.
-      * For public addresses we first consult an ``IP -> name`` map
-        built from DNS responses observed *in the captures
-        themselves*.  When the IP appears in that map the queried
-        name is used directly via the ``ietf-acldns:src-dnsname`` /
+      * For public addresses we consult an ``IP -> name`` map built
+        from DNS responses observed *in the captures themselves*.
+        When the IP appears in that map the queried name is used
+        directly via the ``ietf-acldns:src-dnsname`` /
         ``ietf-acldns:dst-dnsname`` extension.
-      * Otherwise (and only when ``--no-dns`` is not set) we fall
-        back to a reverse-PTR lookup.  When the PTR record looks
-        like a residential / consumer-ISP record (it embeds the IP
-        octets or contains residential keywords such as ``dyn``,
-        ``dsl``, ``cable``, ``cpe`` …) the endpoint is treated as
-        the RFC 8520 ``my-controller`` abstraction; a "normal" PTR
-        is used as the DNS name.
-      * Public addresses with no name at all fall back to an
+      * Public addresses with no name in the capture fall back to an
         RFC 8519 ``destination-ipv4-network`` /
         ``source-ipv4-network`` (or the IPv6 equivalent) match
-        against the bare /32 or /128 prefix.
+        against the bare /32 or /128 prefix.  No reverse-PTR lookup
+        is performed.
 
 The output is a single MUD file (JSON) written to stdout or to the file
 named with ``--output``.  Only constructs defined by RFC 8520 and the
@@ -52,7 +46,6 @@ import json
 import os
 import random
 import re
-import socket
 import sys
 from collections import defaultdict
 from typing import Dict, Optional, Tuple
@@ -71,73 +64,6 @@ except ImportError:  # pragma: no cover
 # ---------------------------------------------------------------------------
 # Endpoint classification
 # ---------------------------------------------------------------------------
-
-# Substrings that strongly suggest a residential / consumer-ISP PTR.
-_RESIDENTIAL_HINTS = (
-    "dyn", "dynamic", "dsl", "adsl", "vdsl", "cable", "kabel",
-    "broadband", "pool", "dhcp", "cust", "customer", "fiber", "ftth",
-    "ppp", "cpe", "resnet", "hsd", "sat-net", "wireless", "wifi",
-    "mobile", "lte", "umts", "gprs",
-)
-
-# Substrings indicating a datacenter / cloud / CDN PTR.  When matched we
-# prefer the DNS name (or raw IP) rather than the ``my-controller``
-# abstraction.
-_DATACENTER_HINTS = (
-    "amazonaws.com", "compute.amazonaws", "googleusercontent.com",
-    "googlecloud", "1e100.net", "azure", "cloudapp.net", "akamai",
-    "akamaitechnologies", "fastly", "cloudfront", "cloudflare",
-    "ovh.net", "ovh.com", "digitalocean", "linode", "hetzner",
-    "scaleway", "vultr", "oraclecloud", "rackspace", "alibabacloud",
-    "tencentcloud", "edgecastcdn", "stackpathdns", "githubusercontent",
-)
-
-
-def _ip_appears_in_hostname(ip: str, hostname: str) -> bool:
-    """Return True if the hostname embeds the IP address octets.
-
-    Matches a range of common ISP encodings, e.g. ``81-14-202-72``,
-    ``81.14.202.72``, ``81_14_202_72`` and the reversed form.
-    """
-    host = hostname.lower()
-    try:
-        addr = ipaddress.ip_address(ip)
-    except ValueError:
-        return False
-
-    if isinstance(addr, ipaddress.IPv4Address):
-        octets = ip.split(".")
-        candidates = []
-        for sep in (".", "-", "_"):
-            candidates.append(sep.join(octets))
-            candidates.append(sep.join(reversed(octets)))
-        # Some ISPs zero-pad the octets.
-        padded = [o.zfill(3) for o in octets]
-        for sep in (".", "-", "_"):
-            candidates.append(sep.join(padded))
-            candidates.append(sep.join(reversed(padded)))
-        return any(c in host for c in candidates)
-
-    # IPv6: look for the exploded address with the colons replaced.
-    exploded = addr.exploded
-    for sep in (":", "-", ""):
-        if exploded.replace(":", sep) in host:
-            return True
-    return False
-
-
-def _looks_residential(ip: str, hostname: Optional[str]) -> bool:
-    """Heuristic: does the PTR look like a home / consumer-ISP record?"""
-    if not hostname:
-        return False
-    host = hostname.lower().rstrip(".")
-    if any(dc in host for dc in _DATACENTER_HINTS):
-        return False
-    if _ip_appears_in_hostname(ip, host):
-        return True
-    # Look for hints in the hostname labels.
-    labels = re.split(r"[.\-_]", host)
-    return any(hint in labels or hint in host for hint in _RESIDENTIAL_HINTS)
 
 
 def _is_local(ip: str) -> bool:
@@ -440,7 +366,7 @@ class Endpoint:
         self.value = value
 
 
-def classify_endpoint(ip: str, do_dns: bool,
+def classify_endpoint(ip: str,
                       cache: Dict[str, Endpoint],
                       *, local_use_networks: bool = True,
                       dns_map: Optional[Dict[str, str]] = None) -> Endpoint:
@@ -454,8 +380,8 @@ def classify_endpoint(ip: str, do_dns: bool,
 
     ``dns_map`` is a precomputed ``IP -> hostname`` mapping derived
     from DNS responses observed in the pcap captures.  When the
-    remote IP is present in the map, that name is used directly
-    (no PTR lookup is attempted).
+    remote IP is present in the map, that name is used directly; no
+    reverse-PTR lookup is ever attempted.
     """
     if ip in cache:
         return cache[ip]
@@ -467,18 +393,10 @@ def classify_endpoint(ip: str, do_dns: bool,
         return ep
 
     hostname: Optional[str] = None
-    # Prefer DNS answers observed in the captures themselves.
     if dns_map and ip in dns_map:
         hostname = dns_map[ip]
-    elif do_dns:
-        try:
-            hostname = socket.gethostbyaddr(ip)[0]
-        except (socket.herror, socket.gaierror, OSError):
-            hostname = None
 
-    if hostname and _looks_residential(ip, hostname):
-        ep = Endpoint("controller", None)
-    elif hostname:
+    if hostname:
         ep = Endpoint("dnsname", hostname.lower().rstrip("."))
     else:
         addr = ipaddress.ip_address(ip)
@@ -553,7 +471,7 @@ def build_ace(flow: Flow, endpoint: Endpoint, direction: str,
     }
 
 
-def build_mud(flows: Dict[Tuple, Flow], do_dns: bool, *, mud_url: str,
+def build_mud(flows: Dict[Tuple, Flow], *, mud_url: str,
               mfg: str, model: str, systeminfo: str,
               documentation: Optional[str],
               cache_validity: int,
@@ -584,7 +502,7 @@ def build_mud(flows: Dict[Tuple, Flow], do_dns: bool, *, mud_url: str,
     # names; we will dedupe and renumber below.
     pairs_per_ipver: Dict[int, list] = defaultdict(list)
     for flow in sorted_flows:
-        endpoint = classify_endpoint(flow.remote_ip, do_dns, cache,
+        endpoint = classify_endpoint(flow.remote_ip, cache,
                                      local_use_networks=local_use_networks,
                                      dns_map=dns_map)
         fr = build_ace(flow, endpoint, "from", "_")
@@ -843,10 +761,6 @@ def main(argv=None) -> int:
                    help="value for documentation URL")
     p.add_argument("--cache-validity", type=int, default=48,
                    help="value for cache-validity (hours), default 48")
-    p.add_argument("--no-dns", action="store_true",
-                   help="do not perform reverse PTR lookups; the "
-                        "name map built from DNS responses in the "
-                        "captures is still used")
     p.add_argument("--output", "-o",
                    help="write MUD JSON here (default: stdout)")
     args = p.parse_args(argv)
@@ -913,7 +827,6 @@ def main(argv=None) -> int:
 
     mud = build_mud(
         flows,
-        do_dns=not args.no_dns,
         mud_url=mud_url,
         mfg=args.mfg,
         model=model,

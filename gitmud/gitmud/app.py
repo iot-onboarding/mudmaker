@@ -732,8 +732,6 @@ def pcap2mud():
     if mac and not _MAC_RE.match(mac):
         return jsonify({"error": f"invalid MAC: {mac!r}"}), 400
 
-    no_dns = request.form.get("no_dns", "").lower() in ("1", "true", "yes", "on")
-
     workdir = tempfile.mkdtemp(prefix="pcap2mud-")
     try:
         for upload in files:
@@ -759,8 +757,6 @@ def pcap2mud():
         ):
             if value:
                 argv += [opt, value]
-        if no_dns:
-            argv.append("--no-dns")
 
         try:
             proc = subprocess.run(argv, capture_output=True,
