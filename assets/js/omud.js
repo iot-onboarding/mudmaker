@@ -188,25 +188,45 @@ function oAuthP2(){
           branch_name = responsejson['branch'];
           gitStatusAppend(gitstat, window.MudSafeDom.element("br"), "Branch is called ", branch_name, ".", window.MudSafeDom.element("br"));
           let m64=b64_encode(JSON.stringify(mudFile));
-          let jsonbody = {
-              mudFile : m64,
-              email : email,
-              user : user
+
+          // Build a multipart body so the user can attach an
+          // arbitrary number of pcaps in a single publish.  Each file
+          // is sent as its own ``pcap`` field; the server reads them
+          // with request.files.getlist("pcap").
+          let fd = new FormData();
+          fd.append('mudFile', m64);
+          fd.append('email', email);
+          fd.append('user', user);
+          let picker = document.getElementById('pcapfile');
+          let pcapCount = 0;
+          if (picker && picker.files) {
+            for (let i = 0; i < picker.files.length; i++) {
+              fd.append('pcap', picker.files[i]);
+              pcapCount++;
+            }
           }
-          let pcap = sessionStorage.getItem('pcap');
-          if ( pcap ) {
-            jsonbody['pcap'] = pcap;
-            gitStatusAppend(gitstat, "Will also include PCAP file. Uploading/creating PR...");
+          // A previous version of this code cached the first selected
+          // pcap as base64 in sessionStorage; that storage is no
+          // longer used.  Clear it so stale data from an old session
+          // can't accidentally be re-uploaded if the user has nothing
+          // currently selected.
+          try { sessionStorage.removeItem('pcap'); } catch (e) {}
+
+          if (pcapCount > 0) {
+            gitStatusAppend(gitstat, "Will also include " + pcapCount +
+              " PCAP file" + (pcapCount === 1 ? "" : "s") +
+              ". Uploading/creating PR...");
+          } else {
+            gitStatusAppend(gitstat, "Uploading MUD JSON/creating PR...");
           }
           return fetch("/gitShovel/therest", {
             method : "POST",
-            body : JSON.stringify(jsonbody),
-            headers :{
-              "Content-type" : "application/json"
-            }
+            // No Content-type header — the browser sets the
+            // multipart/form-data boundary automatically.
+            body : fd
             })
           })
-        }) 
+        })
       })
     .then(response => {
       if (typeof response != 'object') {

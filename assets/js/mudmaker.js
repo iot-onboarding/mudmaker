@@ -753,17 +753,10 @@ function reloadFields(){
 }
 
  // js update
- function loadPCAP(input) {
-	let file = input.files[0];
-	let reader = new FileReader();
-
-	reader.readAsDataURL(file);
-	reader.onload = function () {
-		let pcap = reader.result;
-		re= /.*,/;
-		sessionStorage.setItem('pcap',pcap.replace(re,''));
-	}
- }
+ // The pcap files chosen in #pcapfile are read lazily at publish time
+ // (omud.js builds a multipart FormData from `picker.files`) and at
+ // MUD-generation time (generateMudFromPcap below).  There is no
+ // longer a sessionStorage cache of the first pcap.
 
 // js update
 // Build a MUD file from the PCAPs currently chosen in the #pcapfile

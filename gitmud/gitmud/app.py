@@ -266,6 +266,67 @@ def upload_file(upload):
                 jsonbody
                 )
 
+# Filenames sent in to /therest as user-supplied pcaps are sanitised
+# before they are committed to the MUD repo.  The rules:
+#   * lowercase
+#   * strip path components (defence-in-depth against ``../``)
+#   * collapse anything outside [a-z0-9._-] to ``_``
+#   * collapse runs of ``_``
+#   * require a ``.pcap`` / ``.pcapng`` extension
+# Returns the sanitised name, or ``None`` if the input cannot be made
+# acceptable (no extension match, empty stem, etc.).
+_PCAP_NAME_SANITISE_RE = re.compile(r"[^a-z0-9._-]+")
+_PCAP_NAME_COLLAPSE_RE = re.compile(r"_+")
+_PCAP_ALLOWED_EXT = (".pcap", ".pcapng")
+
+
+def _sanitise_pcap_filename(name):
+    """Return a safe pcap filename, or None if the input is unusable."""
+    if not name:
+        return None
+    # Always discard any directory components the browser sent.
+    name = os.path.basename(name).strip().lower()
+    if not name:
+        return None
+    matched_ext = None
+    for ext in _PCAP_ALLOWED_EXT:
+        if name.endswith(ext):
+            matched_ext = ext
+            break
+    if matched_ext is None:
+        return None
+    stem = name[: -len(matched_ext)]
+    stem = _PCAP_NAME_SANITISE_RE.sub("_", stem)
+    stem = _PCAP_NAME_COLLAPSE_RE.sub("_", stem).strip("_.-")
+    if not stem:
+        return None
+    return stem + matched_ext
+
+
+def _dedupe_target_names(names):
+    """Given an ordered list of sanitised filenames, ensure uniqueness
+    by appending ``-1``, ``-2``, ... before the extension on
+    collisions.  Returns a new list of the same length and order.
+    """
+    seen = {}
+    out = []
+    for name in names:
+        if name not in seen:
+            seen[name] = 0
+            out.append(name)
+            continue
+        # Bump the collision counter until we find an unused name.
+        stem, dot, ext = name.rpartition(".")
+        while True:
+            seen[name] += 1
+            candidate = f"{stem}-{seen[name]}.{ext}"
+            if candidate not in seen:
+                seen[candidate] = 0
+                out.append(candidate)
+                break
+    return out
+
+
 def pr_exists(user, branch_name, token):
     """
     Checks the existence of a PR.
@@ -452,20 +513,68 @@ def do_branch():
 def do_the_rest():
     """
     Branch and PR code.
-    """
-    req=request.json
-    pcap= None
-    try:
-        mud64 = req["mudFile"]
-        email = req["email"]
-        user = req["user"]
-        mud = json.loads(base64.b64decode(mud64))
-        mudurl = mud["ietf-mud:mud"]["mud-url"]
-        if 'pcap' in req:
-            pcap = req['pcap']
 
-    except KeyError as e:
-        return "Parameter problem: " + str(e), 400
+    Accepts two request encodings:
+
+    * ``multipart/form-data`` (preferred):
+        - form field ``mudFile`` — base64 of the MUD JSON
+        - form field ``email``
+        - form field ``user``
+        - file field ``pcap`` — repeated, one per attached pcap
+    * ``application/json`` (legacy, kept for one release):
+        - body keys ``mudFile``, ``email``, ``user``, and an optional
+          single base64 ``pcap``
+    """
+    pcap_uploads = []   # list[(target_name, b64_content, original_name)]
+    legacy_pcap_b64 = None
+
+    ctype = (request.content_type or "").split(";", 1)[0].strip().lower()
+    if ctype == "application/json":
+        # Legacy single-pcap path.
+        req = request.get_json(silent=True) or {}
+        try:
+            mud64 = req["mudFile"]
+            email = req["email"]
+            user = req["user"]
+            mud = json.loads(base64.b64decode(mud64))
+            mudurl = mud["ietf-mud:mud"]["mud-url"]
+            if "pcap" in req and req["pcap"]:
+                legacy_pcap_b64 = req["pcap"]
+        except KeyError as e:
+            return "Parameter problem: " + str(e), 400
+    else:
+        # Multipart path.  Read scalar metadata from form fields and the
+        # pcaps from repeated file fields.
+        try:
+            mud64 = request.form["mudFile"]
+            email = request.form["email"]
+            user = request.form["user"]
+            mud = json.loads(base64.b64decode(mud64))
+            mudurl = mud["ietf-mud:mud"]["mud-url"]
+        except KeyError as e:
+            return jsonify({
+                "error": "Parameter problem: " + str(e),
+                "received_file_fields": sorted(request.files.keys()),
+                "received_form_fields": sorted(request.form.keys()),
+                "content_type": request.content_type,
+            }), 400
+
+        raw_pcaps = request.files.getlist("pcap")
+        sanitised = []
+        for upload in raw_pcaps:
+            original = upload.filename or ""
+            target = _sanitise_pcap_filename(original)
+            if target is None:
+                return jsonify({
+                    "error": (f"pcap filename {original!r} is not allowed "
+                              f"(must end in .pcap or .pcapng)")
+                }), 400
+            sanitised.append((target, upload, original))
+        # Resolve intra-request filename collisions.
+        deduped = _dedupe_target_names([s[0] for s in sanitised])
+        for (orig_target, upload, original), final in zip(sanitised, deduped):
+            content_b64 = base64.b64encode(upload.read()).decode("ascii")
+            pcap_uploads.append((final, content_b64, original))
 
     token = token_in_db(mudurl)
     if not token:
@@ -482,8 +591,11 @@ def do_the_rest():
     mfg = re.sub(' ','-',mud["ietf-mud:mud"]["mfg-name"])
     model = re.sub(' ','-',mud["ietf-mud:mud"]["systeminfo"])
     branch_name = mfg +  "-" + model
-    # upload b64 file
+
+    pcaps_result = []   # list[{original, stored, sha}]
+
     try:
+        # Upload the MUD JSON.
         upload = {
                 "branch_name" : branch_name,
                 "user" : user,
@@ -495,12 +607,37 @@ def do_the_rest():
         resp = upload_file(upload)
         if not resp:
             return "upload failed", 400
-        if pcap:
-            upload["filename"]  = mfg + "/" + model + ".pcap"
-            upload["content"] = pcap
+
+        # Legacy single-pcap path keeps the historical filename layout
+        # ("<mfg>/<model>.pcap") so existing branches don't suddenly
+        # see two homes for "the" pcap.
+        if legacy_pcap_b64:
+            upload["filename"] = mfg + "/" + model + ".pcap"
+            upload["content"] = legacy_pcap_b64
             resp = upload_file(upload)
             if not resp:
-                return "PCAP upload failed."
+                return "PCAP upload failed", 502
+            pcaps_result.append({
+                "original": "(legacy single pcap)",
+                "stored": upload["filename"],
+                "sha": (resp.get("content") or {}).get("sha"),
+            })
+
+        # Multipart-supplied pcaps: each lands under <mfg>/<model>/<name>.
+        for target, content_b64, original in pcap_uploads:
+            upload["filename"] = f"{mfg}/{model}/{target}"
+            upload["content"] = content_b64
+            resp = upload_file(upload)
+            if not resp:
+                return jsonify({
+                    "error": f"PCAP upload failed for {original!r}",
+                    "pcaps": pcaps_result,
+                }), 502
+            pcaps_result.append({
+                "original": original,
+                "stored": upload["filename"],
+                "sha": (resp.get("content") or {}).get("sha"),
+            })
 
     except GithubProblem as e:
         return str(e), 400
@@ -516,7 +653,8 @@ def do_the_rest():
         "mfg" : mfg,
         "model" : model,
         "user" : user,
-        "mudurl" : mudurl
+        "mudurl" : mudurl,
+        "pcaps" : pcaps_result,
     }, 200
 
 

@@ -84,7 +84,7 @@
           <tr>
             <td>
             <label for="pcapfile">Upload PCAP</label>
-            <input id="pcapfile" type="file" multiple accept=".pcap,.pcapng,application/vnd.tcpdump.pcap" onchange="loadPCAP(this)">
+            <input id="pcapfile" type="file" multiple accept=".pcap,.pcapng,application/vnd.tcpdump.pcap">
             <br>
             <label for="pcapmac">Device MAC (optional)</label>
             <input id="pcapmac" type="text" size="20" placeholder="aa:bb:cc:dd:ee:ff"
@@ -97,9 +97,10 @@
             </td>
             <td>
               If you are planning to publish your MUD file to GitHub, you may include
-              a PCAP file to assist in identifying the device to which the MUD file
-              is associated.  You needn't do this if your device emits a MUD URL. A
-              PCAP file is <em>entirely optional</em>.
+              one or more PCAP files to assist in identifying the device to which the
+              MUD file is associated.  Every file selected here is uploaded to the
+              PR.  You needn't do this if your device emits a MUD URL.  PCAP files
+              are <em>entirely optional</em>.
               <br>
               You may also use <b>Generate MUD from PCAP</b> to derive a draft MUD
               file from the captured traffic.  Supply the device MAC if more than
