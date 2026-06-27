@@ -60,10 +60,18 @@ req = urllib.request.Request(
 try:
     with urllib.request.urlopen(req, timeout=90) as resp:
         status = resp.status
-        payload = json.loads(resp.read().decode())
+        body = resp.read().decode("utf-8", "replace")
 except urllib.error.HTTPError as e:
     status = e.code
-    payload = json.loads(e.read().decode() or "{}")
+    body = e.read().decode("utf-8", "replace")
+
+try:
+    payload = json.loads(body) if body.strip() else {}
+except json.JSONDecodeError:
+    sys.exit(
+        f"HTTP {status} but body is not JSON ({len(body)} bytes):\n"
+        + body[:2000]
+    )
 
 print("HTTP", status, "uploaded", len(pcaps), "pcap(s)")
 assert status == 200, payload
