@@ -1,4 +1,4 @@
-FROM golang:1.24-bookworm AS mudcerts-builder
+FROM golang:1.26-bookworm AS mudcerts-builder
 
 ARG MUDCERTS_REF=main
 
