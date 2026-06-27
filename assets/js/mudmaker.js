@@ -881,10 +881,12 @@ function reloadFields(){
 }
 
  // js update
- // The pcap files chosen in #pcapfile are read lazily at publish time
- // (omud.js builds a multipart FormData from `picker.files`) and at
- // MUD-generation time (generateMudFromPcap below).  There is no
- // longer a sessionStorage cache of the first pcap.
+ // The pcap files chosen in #pcapfile are consumed two ways:
+ //   * generateMudFromPcap() below reads picker.files directly.
+ //   * oAuthP1() in omud.js calls stashPcapsForPublish() to base64-
+ //     encode every selected file into sessionStorage['pcaps'] before
+ //     the OAuth redirect, so the selection survives the navigation
+ //     to mudpublish.html where the picker is no longer in the DOM.
 
 // js update
 // Build a MUD file from the PCAPs currently chosen in the #pcapfile
