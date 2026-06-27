@@ -60,8 +60,22 @@ jobs:
           done
 
       - name: Unit tests
+        env:
+          GITMUD_CONFIG: ${{ github.workspace }}/gitmud/config.ini
         run: |
           set -e
+          mkdir -p gitmud
+          cat > "$GITMUD_CONFIG" <<'CFG'
+          [github]
+          client_id = ci-stub
+          client_secret = ci-stub
+
+          [flask]
+          secret_key = ci-only-not-secret
+
+          [storage]
+          db_path = /tmp/gitmud-ci.sqlite
+          CFG
           python tests/test_pcap_sanitise.py
           python tests/test_publish_multi.py
           python tests/test_acl_dedupe.py
@@ -156,15 +170,15 @@ jobs:
         run: |
           mkdir -p gitmud
           cat > gitmud/config.ini <<'CFG'
-          [oauth]
+          [github]
           client_id = ci-stub
           client_secret = ci-stub
-          
+
           [flask]
           secret_key = ci-only-not-secret
-          
-          [db]
-          path = /var/lib/gitmud/tokens.sqlite
+
+          [storage]
+          db_path = /var/lib/gitmud/tokens.sqlite
           CFG
 
       - name: Stage SmarterCoffee pcap fixtures
@@ -175,15 +189,25 @@ jobs:
       - name: Bring up stack
         run: |
           docker compose up -d
-          # wait up to 60 s for mudmaker.html to be served
+          # wait up to 60 s for mudmaker.html (httpd) to be served
           for i in $(seq 1 30); do
             if curl -fsS -o /dev/null http://127.0.0.1:8081/mudmaker.html; then
               echo "mudmaker up after ${i} attempts"
+              break
+            fi
+            sleep 2
+          done
+          # wait up to 60 s for /pcap2mud (gitmud, via the proxy) to answer.
+          # A bare GET should return 405 once the route is registered.
+          for i in $(seq 1 30); do
+            code=$(curl -sS -o /dev/null -w '%{http_code}' http://127.0.0.1:8081/pcap2mud || true)
+            if [ "$code" = "405" ] || [ "$code" = "400" ]; then
+              echo "gitmud up after ${i} attempts (code ${code})"
               exit 0
             fi
             sleep 2
           done
-          echo "mudmaker did not come up in time"
+          echo "stack did not come up in time"
           docker compose ps
           docker compose logs --no-color
           exit 1

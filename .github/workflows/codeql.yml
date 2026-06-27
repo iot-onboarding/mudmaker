@@ -20,7 +20,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: [python, javascript, go]
+        # Go sources for mudzipserver live in the external
+        # iot-onboarding/mudcerts repo and are only pulled in at
+        # docker-build time, so there is nothing for CodeQL to scan here.
+        language: [python, javascript]
     steps:
       - uses: actions/checkout@v4
 
