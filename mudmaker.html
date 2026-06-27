@@ -84,13 +84,27 @@
           <tr>
             <td>
             <label for="pcapfile">Upload PCAP</label>
-            <input id="pcapfile" type="file" accept=".pcap,.pcapng,application/vnd.tcpdump.pcap" onchange="loadPCAP(this)">
+            <input id="pcapfile" type="file" multiple accept=".pcap,.pcapng,application/vnd.tcpdump.pcap">
+            <br>
+            <label for="pcapmac">Device MAC (optional)</label>
+            <input id="pcapmac" type="text" size="20" placeholder="aa:bb:cc:dd:ee:ff"
+                   pattern="^[0-9A-Fa-f]{2}(:[0-9A-Fa-f]{2}){5}$">
+            <br>
+            <button type="button" onclick="generateMudFromPcap()">Generate MUD from PCAP</button>
+            <div id="pcap-result" class="maker-live-detail-meta" style="margin-top:6px"></div>
             </td>
             <td>
               If you are planning to publish your MUD file to GitHub, you may include
-              a PCAP file to assist in identifying the device to which the MUD file
-              is associated.  You needn't do this if your device emits a MUD URL. A
-              PCAP file is <em>entirely optional</em>.
+              one or more PCAP files to assist in identifying the device to which the
+              MUD file is associated.  Every file selected here is uploaded to the
+              PR.  You needn't do this if your device emits a MUD URL.  PCAP files
+              are <em>entirely optional</em>.
+              <br>
+              You may also use <b>Generate MUD from PCAP</b> to derive a draft MUD
+              file from the captured traffic.  Supply the device MAC if more than
+              one host appears in every packet (e.g. only the device and its
+              gateway).  Public addresses with no DNS name observed in the
+              capture are rendered as RFC 8519 network prefixes.
             </td>
           </tr>
           <tr>
@@ -544,6 +558,7 @@
           <input type="checkbox" id=locbox name=locbox style="visibility:hidden">
           <input type="checkbox" id=mfgbox name=mfgbox style="visibility:hidden">
           <input type="checkbox" id=mymfgbox name=mymfgbox style="visibility:hidden">
+          <input type="checkbox" id=netbox name=netbox style="visibility:hidden">
 
           <h3>What systems does this device need to talk to?</h3>
           Select all that apply: <em>(optional)</em>
@@ -578,8 +593,8 @@
                 &nbsp;&nbsp;Initiated by&nbsp;
                 <select name="direction" value="either">
                   <option value ="either">Either</option>
-                  <option value="thing">Thing</option>
-                  <option value="remote">Remote</option>
+                  <option value="from-device">Thing</option>
+                  <option value="to-device">Remote</option>
                 </select>
               </span> 
             </div>
@@ -613,8 +628,8 @@
                 &nbsp;&nbsp;Initiated by&nbsp;
                 <select name="direction" value="either">
                   <option value ="either">Either</option>
-                  <option value="thing">Thing</option>
-                  <option value="remote">Remote</option>
+                  <option value="from-device">Thing</option>
+                  <option value="to-device">Remote</option>
                 </select>
               </span>
             </div>
@@ -645,8 +660,8 @@
                   &nbsp;&nbsp;Initiated by&nbsp;
                   <select name="direction" value="either">
                     <option value ="either">Either</option>
-                    <option value="thing">Thing</option>
-                    <option value="remote">Remote</option>
+                    <option value="from-device">Thing</option>
+                    <option value="to-device">Remote</option>
                   </select>
                 </span>
             </div>
@@ -680,8 +695,8 @@
                 &nbsp;&nbsp;Initiated by&nbsp;
                 <select name="direction" value="either">
                   <option value ="either">Either</option>
-                  <option value="thing">Thing</option>
-                  <option value="remote">Remote</option>
+                  <option value="from-device">Thing</option>
+                  <option value="to-device">Remote</option>
                 </select>
               </span>
             </div>          
@@ -713,8 +728,8 @@
                 &nbsp;&nbsp;Initiated by&nbsp;
                 <select name="direction" value="either">
                   <option value ="either">Either</option>
-                  <option value="thing">Thing</option>
-                  <option value="remote">Remote</option>
+                  <option value="from-device">Thing</option>
+                  <option value="to-device">Remote</option>
                 </select>
               </span>
             </div>
@@ -749,10 +764,48 @@
                       &nbsp;&nbsp;Initiated by&nbsp;
                       <select name="direction" value="either">
                         <option value ="either">Either</option>
-                        <option value="thing">Thing</option>
-                        <option value="remote">Remote</option>
+                        <option value="from-device">Thing</option>
+                        <option value="to-device">Remote</option>
                       </select>
                     </span>
+            </div>
+          </details>
+          <details id="net" class="addable">
+            <summary>Host or network address (RFC 8519): allow access to a
+              specific IPv4 or IPv6 prefix, e.g. a server that has no DNS
+              name.</summary>
+            <div class="clentry">
+              <input pattern="^(([0-9]{1,3}\.){3}[0-9]{1,3}/(3[0-2]|[12]?[0-9]))|([0-9a-fA-F:]+/(12[0-8]|[1-9]?[0-9]))$"
+                maxlength="60"
+                size="40"
+                name="destination-ipv4-network"
+                placeholder="203.0.113.7/32 or 2001:db8::/64"
+                type="text">&nbsp;&nbsp;&nbsp;
+                Protocol&nbsp;
+              <select class="proto" value="any">
+                <option value="any">Any</option>
+                <option value="tcp">TCP</option>
+                <option value="udp">UDP</option>
+              </select>
+              <input value="+" type="button" class="addItem">
+              <br>
+              <span class="portinfo" style="visibility: hidden">
+                Local Port&nbsp; <input pattern="([0-9]{1,5}|any)" value="any"
+                  class="lport"
+                  style="width:60px">
+                &nbsp;&nbsp;Remote Port&nbsp; <input pattern="([0-9]{1,5}|any)"
+                  value="any"
+                  class="rport"
+                  style="width:60px">
+              </span>
+              <span class="coninit" style="visibility: hidden">
+                &nbsp;&nbsp;Initiated by&nbsp;
+                <select name="direction" value="either">
+                  <option value ="either">Either</option>
+                  <option value="from-device">Thing</option>
+                  <option value="to-device">Remote</option>
+                </select>
+              </span>
             </div>
           </details>
           <br>

@@ -61,7 +61,50 @@ function appendPRCreated(gitstat, user) {
   );
 }
 
-function oAuthP1(){
+// Read every File from <input id="pcapfile"> into sessionStorage so
+// the selection survives the OAuth round-trip from mudmaker.html to
+// mudpublish.html.  Stores a JSON array of {name, type, b64}.  Returns
+// a Promise that resolves with the count (0 if nothing to stash).  If
+// the combined size overflows sessionStorage's quota the promise
+// rejects so the caller can warn the user.
+function stashPcapsForPublish() {
+  return new Promise(function(resolve, reject) {
+    const picker = document.getElementById('pcapfile');
+    if (!picker || !picker.files || picker.files.length === 0) {
+      try { sessionStorage.removeItem('pcaps'); } catch (e) {}
+      resolve(0);
+      return;
+    }
+    const files = Array.from(picker.files);
+    const out = new Array(files.length);
+    let pending = files.length;
+    files.forEach(function(f, idx) {
+      const r = new FileReader();
+      r.onload = function() {
+        const comma = r.result.indexOf(',');
+        out[idx] = {
+          name: f.name,
+          type: f.type || 'application/vnd.tcpdump.pcap',
+          b64: comma >= 0 ? r.result.slice(comma + 1) : ''
+        };
+        pending -= 1;
+        if (pending === 0) {
+          try {
+            sessionStorage.setItem('pcaps', JSON.stringify(out));
+            resolve(out.length);
+          } catch (e) {
+            try { sessionStorage.removeItem('pcaps'); } catch (e2) {}
+            reject(e);
+          }
+        }
+      };
+      r.onerror = function() { reject(r.error); };
+      r.readAsDataURL(f);
+    });
+  });
+}
+
+function _oAuthP1Navigate(){
     const redirectURL = new URL("mudpublish.html", window.location.href);
     const redirect_uri = redirectURL.href;
     const client_id = "Ov23licSoRbhBHkeDqPJ";
@@ -71,6 +114,7 @@ function oAuthP1(){
       // skip git.  we're already there.
       redirectURL.searchParams.set("got_token", "true");
       window.location.assign(redirectURL.href);
+      return;
     }
     self.crypto.getRandomValues(csrfkey);
     const state = csrfkey.toHex();
@@ -83,6 +127,22 @@ function oAuthP1(){
     authURL.searchParams.set("redirect_uri", redirect_uri);
     authURL.searchParams.set("state", state);
     window.location.assign(authURL.href);
+}
+
+function oAuthP1(){
+    // Stash any selected pcaps in sessionStorage before navigating to
+    // GitHub for OAuth — the file input lives on mudmaker.html but
+    // the publish flow resumes on mudpublish.html where the picker is
+    // gone.  sessionStorage is the project's existing cross-page
+    // carrier (the MUD JSON itself travels the same way).
+    stashPcapsForPublish().catch(function(err) {
+      console.warn("Could not stash pcaps for publish:", err);
+      alert(
+        "Selected PCAP files are too large to attach during publish " +
+        "(browser session storage limit). Continuing without pcaps."
+      );
+      try { sessionStorage.removeItem('pcaps'); } catch (e) {}
+    }).then(_oAuthP1Navigate);
 }
 
 function oAuthP2(){ 
@@ -188,25 +248,63 @@ function oAuthP2(){
           branch_name = responsejson['branch'];
           gitStatusAppend(gitstat, window.MudSafeDom.element("br"), "Branch is called ", branch_name, ".", window.MudSafeDom.element("br"));
           let m64=b64_encode(JSON.stringify(mudFile));
-          let jsonbody = {
-              mudFile : m64,
-              email : email,
-              user : user
+
+          // Build a multipart body so the user can attach an
+          // arbitrary number of pcaps in a single publish.  Each file
+          // is sent as its own ``pcap`` field; the server reads them
+          // with request.files.getlist("pcap").  The files were
+          // stashed by stashPcapsForPublish() before the OAuth
+          // redirect, so they survive the navigation from
+          // mudmaker.html to mudpublish.html.
+          let fd = new FormData();
+          fd.append('mudFile', m64);
+          fd.append('email', email);
+          fd.append('user', user);
+          let pcapCount = 0;
+          try {
+            const stashed = JSON.parse(
+              sessionStorage.getItem('pcaps') || '[]');
+            if (Array.isArray(stashed)) {
+              stashed.forEach(function(entry) {
+                if (!entry || typeof entry.b64 !== 'string' || !entry.name) {
+                  return;
+                }
+                const bin = atob(entry.b64);
+                const buf = new Uint8Array(bin.length);
+                for (let i = 0; i < bin.length; i++) {
+                  buf[i] = bin.charCodeAt(i);
+                }
+                const blob = new Blob([buf], {
+                  type: entry.type || 'application/vnd.tcpdump.pcap'
+                });
+                fd.append('pcap', blob, entry.name);
+                pcapCount++;
+              });
+            }
+          } catch (e) {
+            console.warn("Could not decode stashed pcaps:", e);
           }
-          let pcap = sessionStorage.getItem('pcap');
-          if ( pcap ) {
-            jsonbody['pcap'] = pcap;
-            gitStatusAppend(gitstat, "Will also include PCAP file. Uploading/creating PR...");
+          // Once the request body has been assembled the cached
+          // copies are no longer needed.  Clear both the new
+          // multi-pcap key and the legacy single-pcap key.
+          try { sessionStorage.removeItem('pcaps'); } catch (e) {}
+          try { sessionStorage.removeItem('pcap'); } catch (e) {}
+
+          if (pcapCount > 0) {
+            gitStatusAppend(gitstat, "Will also include " + pcapCount +
+              " PCAP file" + (pcapCount === 1 ? "" : "s") +
+              ". Uploading/creating PR...");
+          } else {
+            gitStatusAppend(gitstat, "Uploading MUD JSON/creating PR...");
           }
           return fetch("/gitShovel/therest", {
             method : "POST",
-            body : JSON.stringify(jsonbody),
-            headers :{
-              "Content-type" : "application/json"
-            }
+            // No Content-type header — the browser sets the
+            // multipart/form-data boundary automatically.
+            body : fd
             })
           })
-        }) 
+        })
       })
     .then(response => {
       if (typeof response != 'object') {

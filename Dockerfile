@@ -39,8 +39,10 @@ RUN useradd --system --create-home --home-dir /var/lib/gitmud --uid 1001 gitmud 
 COPY --from=gitmud-builder /opt/venv /opt/venv
 COPY gitmud/initdb.sql /usr/local/share/gitmud/initdb.sql
 COPY docker/gitmud-entrypoint.sh /usr/local/bin/gitmud-entrypoint.sh
+COPY mudgen_pcap.py /usr/local/bin/mudgen_pcap.py
 
-RUN chmod 0755 /usr/local/bin/gitmud-entrypoint.sh
+RUN chmod 0755 /usr/local/bin/gitmud-entrypoint.sh \
+    && chmod 0755 /usr/local/bin/mudgen_pcap.py
 
 ENV PATH="/opt/venv/bin:${PATH}" \
     GITMUD_CONFIG=/etc/gitmud/config.ini \
@@ -49,7 +51,12 @@ ENV PATH="/opt/venv/bin:${PATH}" \
 EXPOSE 8000
 USER gitmud
 ENTRYPOINT ["/usr/local/bin/gitmud-entrypoint.sh"]
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "2", "--access-logfile", "-", "gitmud.app:app"]
+# --timeout 180: the /therest publish path makes one existence-probe GET
+# plus one PUT to GitHub for the MUD JSON and for every attached pcap.
+# A 20-pcap upload runs ~40 sequential round-trips; the gunicorn sync
+# worker's default 30 s timeout kills the request mid-stream.  Three
+# minutes is a comfortable cap that still trips on a hung peer.
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "2", "--timeout", "180", "--graceful-timeout", "180", "--access-logfile", "-", "gitmud.app:app"]
 
 FROM httpd:2.4
 

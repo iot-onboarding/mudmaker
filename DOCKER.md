@@ -22,6 +22,20 @@ The **Sign** action returns a zip file with a generated MUD file, detached CMS
 signature, and demonstration certificates/keys. Those keys and certificates are
 test material only.
 
+Uploads to `/pcap2mud` (Generate MUD from PCAP) and `/gitShovel/therest`
+(Publish) are capped at **20 MiB per request** by both Apache
+(`LimitRequestBody`) and Flask (`MAX_CONTENT_LENGTH`); requests larger than
+this are rejected with `413 Payload Too Large`.  Multiple pcap files can be
+selected in a single Publish request.  The resulting pull request collects
+the MUD JSON and every attached capture in one directory:
+
+```
+<mfg>/<model>/<model>.json
+<mfg>/<model>/<pcap-1>
+<mfg>/<model>/<pcap-2>
+...
+```
+
 ### Stopping:
 
 ```bash

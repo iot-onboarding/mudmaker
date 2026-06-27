@@ -6,7 +6,11 @@ import json
 import logging
 import os
 import re
+import shutil
 import sqlite3
+import subprocess
+import sys
+import tempfile
 import base64
 import configparser
 from pathlib import Path
@@ -15,6 +19,16 @@ from flask import Flask,request, jsonify
 import requests
 
 log = logging.getLogger("gitmud")
+# Surface INFO-level diagnostics (e.g. per-PUT trail in git_putpost) to
+# the gunicorn stderr stream.  Without an explicit handler the default
+# "lastResort" handler only emits WARNING+.  Honour LOG_LEVEL if set.
+if not log.handlers:
+    _h = logging.StreamHandler()
+    _h.setFormatter(logging.Formatter(
+        "%(asctime)s %(levelname)s gitmud: %(message)s"))
+    log.addHandler(_h)
+    log.setLevel(os.environ.get("LOG_LEVEL", "INFO").upper())
+    log.propagate = False
 
 
 def _load_config():
@@ -151,6 +165,7 @@ def git_putpost(which, endpoint, token, content):
     """
     Do either a git PUT or POST and return the results.
     """
+    log.info("git_%s %s start", which.lower(), endpoint)
     resp = requests.request(which, GITHUB_API_URL + endpoint,
                             headers = {
                                 "Authorization" : "Bearer " + token,
@@ -165,6 +180,7 @@ def git_putpost(which, endpoint, token, content):
         log.warning("git_%s %s -> %s: %s",
                     which.lower(), endpoint, resp.status_code, resp.text[:200])
         raise GithubProblem("request failed: " + resp.text)
+    log.info("git_%s %s -> %s ok", which.lower(), endpoint, resp.status_code)
     return resp.json()
 
 def git_post(endpoint, token, content):
@@ -261,6 +277,67 @@ def upload_file(upload):
                 token,
                 jsonbody
                 )
+
+# Filenames sent in to /therest as user-supplied pcaps are sanitised
+# before they are committed to the MUD repo.  The rules:
+#   * lowercase
+#   * strip path components (defence-in-depth against ``../``)
+#   * collapse anything outside [a-z0-9._-] to ``_``
+#   * collapse runs of ``_``
+#   * require a ``.pcap`` / ``.pcapng`` extension
+# Returns the sanitised name, or ``None`` if the input cannot be made
+# acceptable (no extension match, empty stem, etc.).
+_PCAP_NAME_SANITISE_RE = re.compile(r"[^a-z0-9._-]+")
+_PCAP_NAME_COLLAPSE_RE = re.compile(r"_+")
+_PCAP_ALLOWED_EXT = (".pcap", ".pcapng")
+
+
+def _sanitise_pcap_filename(name):
+    """Return a safe pcap filename, or None if the input is unusable."""
+    if not name:
+        return None
+    # Always discard any directory components the browser sent.
+    name = os.path.basename(name).strip().lower()
+    if not name:
+        return None
+    matched_ext = None
+    for ext in _PCAP_ALLOWED_EXT:
+        if name.endswith(ext):
+            matched_ext = ext
+            break
+    if matched_ext is None:
+        return None
+    stem = name[: -len(matched_ext)]
+    stem = _PCAP_NAME_SANITISE_RE.sub("_", stem)
+    stem = _PCAP_NAME_COLLAPSE_RE.sub("_", stem).strip("_.-")
+    if not stem:
+        return None
+    return stem + matched_ext
+
+
+def _dedupe_target_names(names):
+    """Given an ordered list of sanitised filenames, ensure uniqueness
+    by appending ``-1``, ``-2``, ... before the extension on
+    collisions.  Returns a new list of the same length and order.
+    """
+    seen = {}
+    out = []
+    for name in names:
+        if name not in seen:
+            seen[name] = 0
+            out.append(name)
+            continue
+        # Bump the collision counter until we find an unused name.
+        stem, dot, ext = name.rpartition(".")
+        while True:
+            seen[name] += 1
+            candidate = f"{stem}-{seen[name]}.{ext}"
+            if candidate not in seen:
+                seen[candidate] = 0
+                out.append(candidate)
+                break
+    return out
+
 
 def pr_exists(user, branch_name, token):
     """
@@ -448,20 +525,68 @@ def do_branch():
 def do_the_rest():
     """
     Branch and PR code.
-    """
-    req=request.json
-    pcap= None
-    try:
-        mud64 = req["mudFile"]
-        email = req["email"]
-        user = req["user"]
-        mud = json.loads(base64.b64decode(mud64))
-        mudurl = mud["ietf-mud:mud"]["mud-url"]
-        if 'pcap' in req:
-            pcap = req['pcap']
 
-    except KeyError as e:
-        return "Parameter problem: " + str(e), 400
+    Accepts two request encodings:
+
+    * ``multipart/form-data`` (preferred):
+        - form field ``mudFile`` — base64 of the MUD JSON
+        - form field ``email``
+        - form field ``user``
+        - file field ``pcap`` — repeated, one per attached pcap
+    * ``application/json`` (legacy, kept for one release):
+        - body keys ``mudFile``, ``email``, ``user``, and an optional
+          single base64 ``pcap``
+    """
+    pcap_uploads = []   # list[(target_name, b64_content, original_name)]
+    legacy_pcap_b64 = None
+
+    ctype = (request.content_type or "").split(";", 1)[0].strip().lower()
+    if ctype == "application/json":
+        # Legacy single-pcap path.
+        req = request.get_json(silent=True) or {}
+        try:
+            mud64 = req["mudFile"]
+            email = req["email"]
+            user = req["user"]
+            mud = json.loads(base64.b64decode(mud64))
+            mudurl = mud["ietf-mud:mud"]["mud-url"]
+            if "pcap" in req and req["pcap"]:
+                legacy_pcap_b64 = req["pcap"]
+        except KeyError as e:
+            return "Parameter problem: " + str(e), 400
+    else:
+        # Multipart path.  Read scalar metadata from form fields and the
+        # pcaps from repeated file fields.
+        try:
+            mud64 = request.form["mudFile"]
+            email = request.form["email"]
+            user = request.form["user"]
+            mud = json.loads(base64.b64decode(mud64))
+            mudurl = mud["ietf-mud:mud"]["mud-url"]
+        except KeyError as e:
+            return jsonify({
+                "error": "Parameter problem: " + str(e),
+                "received_file_fields": sorted(request.files.keys()),
+                "received_form_fields": sorted(request.form.keys()),
+                "content_type": request.content_type,
+            }), 400
+
+        raw_pcaps = request.files.getlist("pcap")
+        sanitised = []
+        for upload in raw_pcaps:
+            original = upload.filename or ""
+            target = _sanitise_pcap_filename(original)
+            if target is None:
+                return jsonify({
+                    "error": (f"pcap filename {original!r} is not allowed "
+                              f"(must end in .pcap or .pcapng)")
+                }), 400
+            sanitised.append((target, upload, original))
+        # Resolve intra-request filename collisions.
+        deduped = _dedupe_target_names([s[0] for s in sanitised])
+        for (orig_target, upload, original), final in zip(sanitised, deduped):
+            content_b64 = base64.b64encode(upload.read()).decode("ascii")
+            pcap_uploads.append((final, content_b64, original))
 
     token = token_in_db(mudurl)
     if not token:
@@ -478,12 +603,18 @@ def do_the_rest():
     mfg = re.sub(' ','-',mud["ietf-mud:mud"]["mfg-name"])
     model = re.sub(' ','-',mud["ietf-mud:mud"]["systeminfo"])
     branch_name = mfg +  "-" + model
-    # upload b64 file
+
+    pcaps_result = []   # list[{original, stored, sha}]
+
     try:
+        # Upload the MUD JSON.  It lives in the same directory as the
+        # attached pcaps (``<mfg>/<model>/<model>.json``) so a reviewer
+        # looking at the PR sees the rule file and its supporting
+        # captures side-by-side.
         upload = {
                 "branch_name" : branch_name,
                 "user" : user,
-                "filename" : mfg + "/" + model + ".json",
+                "filename" : f"{mfg}/{model}/{model}.json",
                 "content" : mud64,
                 "email" :    email,
                 "token" : token
@@ -491,12 +622,37 @@ def do_the_rest():
         resp = upload_file(upload)
         if not resp:
             return "upload failed", 400
-        if pcap:
-            upload["filename"]  = mfg + "/" + model + ".pcap"
-            upload["content"] = pcap
+
+        # Legacy single-pcap path keeps the historical filename layout
+        # ("<mfg>/<model>.pcap") so existing branches don't suddenly
+        # see two homes for "the" pcap.
+        if legacy_pcap_b64:
+            upload["filename"] = mfg + "/" + model + ".pcap"
+            upload["content"] = legacy_pcap_b64
             resp = upload_file(upload)
             if not resp:
-                return "PCAP upload failed."
+                return "PCAP upload failed", 502
+            pcaps_result.append({
+                "original": "(legacy single pcap)",
+                "stored": upload["filename"],
+                "sha": (resp.get("content") or {}).get("sha"),
+            })
+
+        # Multipart-supplied pcaps: each lands under <mfg>/<model>/<name>.
+        for target, content_b64, original in pcap_uploads:
+            upload["filename"] = f"{mfg}/{model}/{target}"
+            upload["content"] = content_b64
+            resp = upload_file(upload)
+            if not resp:
+                return jsonify({
+                    "error": f"PCAP upload failed for {original!r}",
+                    "pcaps": pcaps_result,
+                }), 502
+            pcaps_result.append({
+                "original": original,
+                "stored": upload["filename"],
+                "sha": (resp.get("content") or {}).get("sha"),
+            })
 
     except GithubProblem as e:
         return str(e), 400
@@ -512,8 +668,130 @@ def do_the_rest():
         "mfg" : mfg,
         "model" : model,
         "user" : user,
-        "mudurl" : mudurl
+        "mudurl" : mudurl,
+        "pcaps" : pcaps_result,
     }, 200
+
+
+# ---------------------------------------------------------------------------
+# /pcap2mud: take user-uploaded pcap files, invoke mudgen_pcap.py, and
+# return the generated MUD JSON.
+# ---------------------------------------------------------------------------
+
+# 20 MiB total upload cap.  Set on the Flask app so the body is rejected
+# before it ever reaches the route.
+app.config.setdefault("MAX_CONTENT_LENGTH", 20 * 1024 * 1024)
+
+# Path to mudgen_pcap.py.  In the gitmud Docker image it is installed at
+# /usr/local/bin/mudgen_pcap.py.  In a local source checkout the file
+# lives at the repository root, two directories above this module.
+_MUDGEN_PCAP_CANDIDATES = [
+    Path(os.environ.get("MUDGEN_PCAP", "/nonexistent")),
+    Path("/usr/local/bin/mudgen_pcap.py"),
+    Path(__file__).resolve().parent.parent.parent / "mudgen_pcap.py",
+]
+
+_MAC_RE = re.compile(r"^[0-9A-Fa-f]{2}(:[0-9A-Fa-f]{2}){5}$")
+_ALLOWED_PCAP_EXT = (".pcap", ".pcapng")
+_MUDGEN_TIMEOUT_SECONDS = 60
+
+
+def _locate_mudgen_pcap():
+    for candidate in _MUDGEN_PCAP_CANDIDATES:
+        if candidate.is_file():
+            return candidate
+    return None
+
+
+@app.route("/pcap2mud", methods=["POST"])
+def pcap2mud():
+    """
+    Accept one or more pcap files plus optional metadata, run
+    mudgen_pcap.py against them, and return the resulting MUD JSON
+    (or a structured error).
+    """
+    script = _locate_mudgen_pcap()
+    if script is None:
+        return jsonify({"error": "mudgen_pcap.py not installed"}), 500
+
+    files = request.files.getlist("pcap")
+    if not files:
+        # Help the caller diagnose why no files arrived (wrong field
+        # name, browser dropped the body, proxy strip, etc.).
+        all_file_keys = sorted(set(request.files.keys()))
+        all_form_keys = sorted(set(request.form.keys()))
+        return jsonify({
+            "error": "no pcap files supplied",
+            "received_file_fields": all_file_keys,
+            "received_form_fields": all_form_keys,
+            "content_length": request.content_length,
+            "content_type": request.content_type,
+        }), 400
+
+    mac = (request.form.get("mac") or "").strip()
+    if mac and not _MAC_RE.match(mac):
+        return jsonify({"error": f"invalid MAC: {mac!r}"}), 400
+
+    workdir = tempfile.mkdtemp(prefix="pcap2mud-")
+    try:
+        for upload in files:
+            name = os.path.basename(upload.filename or "")
+            if not name.lower().endswith(_ALLOWED_PCAP_EXT):
+                return jsonify({
+                    "error": f"file {name!r} is not a .pcap or .pcapng"
+                }), 400
+            upload.save(os.path.join(workdir, name))
+
+        if mac:
+            with open(os.path.join(workdir, "_iotdevice-mac.txt"),
+                      "w", encoding="ascii") as fh:
+                fh.write(mac + "\n")
+
+        argv = [sys.executable, str(script), workdir]
+        for opt, value in (
+            ("--mfg", request.form.get("mfg")),
+            ("--model", request.form.get("model")),
+            ("--systeminfo", request.form.get("systeminfo")),
+            ("--documentation", request.form.get("documentation")),
+            ("--mud-url", request.form.get("mud_url")),
+        ):
+            if value:
+                argv += [opt, value]
+
+        try:
+            proc = subprocess.run(argv, capture_output=True,
+                                  text=True,
+                                  timeout=_MUDGEN_TIMEOUT_SECONDS,
+                                  check=False)
+        except subprocess.TimeoutExpired:
+            return jsonify({"error": "mudgen_pcap.py timed out"}), 504
+
+        if proc.returncode != 0:
+            err_lines = [
+                line for line in (proc.stderr or "").splitlines()
+                if line.strip()
+                and not line.startswith("inferred device MAC:")
+            ]
+            if not err_lines:
+                err_lines = [(proc.stdout or "mudgen_pcap.py failed").strip()]
+            return jsonify({
+                "error": " ".join(err_lines).strip()
+            }), 400
+
+        try:
+            mud = json.loads(proc.stdout)
+        except json.JSONDecodeError as exc:
+            return jsonify({
+                "error": f"mudgen_pcap.py produced invalid JSON: {exc}"
+            }), 500
+
+        notes = (proc.stderr or "").strip()
+        result = {"mud": mud}
+        if notes:
+            result["notes"] = notes
+        return jsonify(result), 200
+    finally:
+        shutil.rmtree(workdir, ignore_errors=True)
 
 
 #       return redirect("mudpublish.html?stored=ok")
