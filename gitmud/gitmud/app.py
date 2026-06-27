@@ -19,6 +19,16 @@ from flask import Flask,request, jsonify
 import requests
 
 log = logging.getLogger("gitmud")
+# Surface INFO-level diagnostics (e.g. per-PUT trail in git_putpost) to
+# the gunicorn stderr stream.  Without an explicit handler the default
+# "lastResort" handler only emits WARNING+.  Honour LOG_LEVEL if set.
+if not log.handlers:
+    _h = logging.StreamHandler()
+    _h.setFormatter(logging.Formatter(
+        "%(asctime)s %(levelname)s gitmud: %(message)s"))
+    log.addHandler(_h)
+    log.setLevel(os.environ.get("LOG_LEVEL", "INFO").upper())
+    log.propagate = False
 
 
 def _load_config():
@@ -155,6 +165,7 @@ def git_putpost(which, endpoint, token, content):
     """
     Do either a git PUT or POST and return the results.
     """
+    log.info("git_%s %s start", which.lower(), endpoint)
     resp = requests.request(which, GITHUB_API_URL + endpoint,
                             headers = {
                                 "Authorization" : "Bearer " + token,
@@ -169,6 +180,7 @@ def git_putpost(which, endpoint, token, content):
         log.warning("git_%s %s -> %s: %s",
                     which.lower(), endpoint, resp.status_code, resp.text[:200])
         raise GithubProblem("request failed: " + resp.text)
+    log.info("git_%s %s -> %s ok", which.lower(), endpoint, resp.status_code)
     return resp.json()
 
 def git_post(endpoint, token, content):
