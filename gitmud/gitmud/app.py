@@ -780,9 +780,10 @@ def pcap2mud():
 
         try:
             mud = json.loads(proc.stdout)
-        except json.JSONDecodeError as exc:
+        except json.JSONDecodeError:
+            log.exception("mudgen_pcap.py produced invalid JSON")
             return jsonify({
-                "error": f"mudgen_pcap.py produced invalid JSON: {exc}"
+                "error": "mudgen_pcap.py produced invalid JSON"
             }), 500
 
         notes = (proc.stderr or "").strip()
