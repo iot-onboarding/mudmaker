@@ -15,7 +15,7 @@ import base64
 import configparser
 from pathlib import Path
 from time import sleep
-from flask import Flask,request, jsonify
+from flask import Flask,request, jsonify, escape
 import requests
 
 log = logging.getLogger("gitmud")
@@ -667,7 +667,7 @@ def do_the_rest():
     return {
         "mfg" : mfg,
         "model" : model,
-        "user" : user,
+        "user" : escape(user),
         "mudurl" : mudurl,
         "pcaps" : pcaps_result,
     }, 200
