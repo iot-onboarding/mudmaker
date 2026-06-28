@@ -773,7 +773,8 @@ def pcap2mud():
                 if value:
                     argv += [opt, value]
         except ValueError as exc:
-            return jsonify({"error": str(exc)}), 400
+            log.warning("Invalid request parameters for mudgen_pcap invocation", exc_info=True)
+            return jsonify({"error": "Invalid request parameters"}), 400
 
         try:
             proc = subprocess.run(argv, capture_output=True,
