@@ -878,6 +878,20 @@ function reloadFields(){
 				})
 		});
 	}
+
+	// Notify any input listeners (e.g. the Basic-Info status chip in
+	// the visualizer header) that fields were populated
+	// programmatically.  Direct .value assignments above do not fire
+	// `input` events, so passive listeners that depend on them would
+	// otherwise miss the load.
+	['mfg-name', 'systeminfo', 'documentation', 'email_addr'].forEach(
+		function (id) {
+			var el = document.getElementById(id);
+			if (el) {
+				el.dispatchEvent(new Event('input',
+					{ bubbles: true }));
+			}
+		});
 }
 
  // js update
