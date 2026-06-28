@@ -62,12 +62,19 @@
       <section id="three" class="wrapper">
         <table>
           <tbody>
-          <tr>
+          <tr hidden>
+            <!-- Save row is hidden; users save via the disk icon
+                 next to the maximize button on the live visualizer. -->
             <td><button name="Save" onclick="savework()">Save</button></td>
             <td>Save the generated MUD file.  Then return to this page later to upload and continue editing the MUD fields.
             </td>
           </tr>
-          <tr><td>
+          <tr hidden>
+              <!-- Continue Earlier Work selector is hidden; users now
+                   drop the saved .json onto the live visualizer.  The
+                   input must remain in the DOM because resetSite()
+                   clears its .value during a reset. -->
+          <td>
               <!-- <label for="getSavedWork">Want to load saved work?<label> -->
               <input id="loadsaved" type="file" accept="text/json, application/json" onchange="MudMakerVisualizer.loadSavedWork(this);"></input>
             </td>
@@ -82,7 +89,12 @@
               <a id="downloadZip" style="display:none"></a>
             </td>
           </tr>
-          <tr>
+          <tr hidden>
+              <!-- PCAP selector is hidden; users now drop captures
+                   onto the live visualizer.  The inputs must remain
+                   in the DOM because the drag-drop module assigns
+                   #pcapfile.files programmatically and reads
+                   #pcapmac, and resetSite() depends on them. -->
             <td>
             <label for="pcapfile">Upload PCAP</label>
             <input id="pcapfile" type="file" multiple accept=".pcap,.pcapng,application/vnd.tcpdump.pcap">
@@ -92,20 +104,8 @@
                    pattern="^[0-9A-Fa-f]{2}(:[0-9A-Fa-f]{2}){5}$">
             <br>
             <button type="button" onclick="generateMudFromPcap()">Generate MUD from PCAP</button>
-            <div id="pcap-result" class="maker-live-detail-meta" style="margin-top:6px"></div>
             </td>
             <td>
-              If you are planning to publish your MUD file to GitHub, you may include
-              one or more PCAP files to assist in identifying the device to which the
-              MUD file is associated.  Every file selected here is uploaded to the
-              PR.  You needn't do this if your device emits a MUD URL.  PCAP files
-              are <em>entirely optional</em>.
-              <br>
-              You may also use <b>Generate MUD from PCAP</b> to derive a draft MUD
-              file from the captured traffic.  Supply the device MAC if more than
-              one host appears in every packet (e.g. only the device and its
-              gateway).  Public addresses with no DNS name observed in the
-              capture are rendered as RFC 8519 network prefixes.
             </td>
           </tr>
           <tr>
@@ -561,6 +561,7 @@
           <input type="checkbox" id=mymfgbox name=mymfgbox style="visibility:hidden">
           <input type="checkbox" id=netbox name=netbox style="visibility:hidden">
 
+          <div class="maker-live-form-acls">
           <h3>What systems does this device need to talk to?</h3>
           Select all that apply: <em>(optional)</em>
           <details id="cl" class="addable"> 
@@ -810,14 +811,21 @@
             </div>
           </details>
           <br>
+          </div>
       </form>
           </div>
           <aside id="mud-live-visualizer" class="maker-live-visualizer" aria-label="MUD visualizer (drop MUD .json or .pcap files here)" tabindex="0">
             <div class="maker-live-visualizer-header">
+              <div class="maker-live-controls">
+                <button type="button" id="mud-live-save" class="maker-live-toggle maker-live-save" aria-label="Save MUD file" title="Save MUD file" onclick="savework()">
+                  <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path fill="currentColor" d="M2 1.5A1.5 1.5 0 0 1 3.5 0h7.586a1.5 1.5 0 0 1 1.06.44l1.915 1.914A1.5 1.5 0 0 1 14.5 3.414V14.5A1.5 1.5 0 0 1 13 16H3a1.5 1.5 0 0 1-1.5-1.5v-13zM4 0v5h7V0H4zm5 1h1v3H9V1zM3 9.5A1.5 1.5 0 0 1 4.5 8h7A1.5 1.5 0 0 1 13 9.5V15H3V9.5z"/></svg>
+                </button>
+                <button type="button" id="mud-live-toggle" class="maker-live-toggle" aria-label="Maximize visualizer" title="Maximize visualizer" aria-pressed="false">&#x26F6;</button>
+              </div>
               <h3 id="mud-url-preview">Your Device's Access</h3>
               <p id="mud-live-summary">No access lists yet</p>
-              <p class="maker-live-drop-hint">Tip: drop a MUD <code>.json</code> file or one or more <code>.pcap</code> captures here. Shift-drop replaces, plain drop merges.</p>
             </div>
+            <div id="pcap-result" class="maker-live-detail-meta maker-live-pcap-result" role="status" aria-live="polite"></div>
             <div class="maker-live-canvas">
               <svg id="mud-live-svg" class="mud-live-svg" viewBox="0 0 900 620" role="img" aria-labelledby="mud-live-title mud-live-desc">
                 <title id="mud-live-title">MUD access list visualization</title>
@@ -846,6 +854,47 @@
     <script src="assets/js/main.js"></script>
     <script>
       document.getElementById("createTab").click();
+      (function () {
+        var btn = document.getElementById('mud-live-toggle');
+        var layout = document.querySelector('.maker-live-layout');
+        if (!btn || !layout) { return; }
+        // U+26F6 = SQUARED KEY (maximize), U+2716 = HEAVY MULTIPLICATION X (minimize).
+        var MAX = '\u26F6';
+        var MIN = '\u2716';
+        function setState(maximized) {
+          layout.classList.toggle('maximized', maximized);
+          btn.setAttribute('aria-pressed', maximized ? 'true' : 'false');
+          btn.setAttribute('aria-label',
+            maximized ? 'Minimize visualizer' : 'Maximize visualizer');
+          btn.setAttribute('title',
+            maximized ? 'Minimize visualizer' : 'Maximize visualizer');
+          btn.textContent = maximized ? MIN : MAX;
+          // Re-render so the SVG fills the new viewport width.
+          // render() needs the current MUD file as an argument —
+          // calling it bare drops every endpoint and the diagram
+          // appears blank after toggling.
+          if (window.MudMakerVisualizer
+              && typeof window.MudMakerVisualizer.render === 'function') {
+            try {
+              var mf = (typeof window.MudMakerVisualizer.currentMudFile
+                          === 'function')
+                ? window.MudMakerVisualizer.currentMudFile()
+                : (document.mudFile || null);
+              window.MudMakerVisualizer.render(mf);
+            } catch (e) {}
+          }
+        }
+        btn.addEventListener('click', function () {
+          setState(!layout.classList.contains('maximized'));
+        });
+        // Escape exits the maximized view.
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape'
+              && layout.classList.contains('maximized')) {
+            setState(false);
+          }
+        });
+      })();
     </script>
   </body>
 </html>

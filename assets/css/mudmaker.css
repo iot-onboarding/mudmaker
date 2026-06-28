@@ -126,6 +126,85 @@
 	text-align: right;
 }
 
+.maker-live-toggle {
+	align-self: flex-start;
+	background: transparent;
+	border: 1px solid #d7dee8;
+	border-radius: 4px;
+	color: #536271;
+	cursor: pointer;
+	flex: 0 0 auto;
+	font-size: 1em;
+	line-height: 1;
+	order: 99;
+	padding: 0.2em 0.45em;
+	transition: background-color 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.maker-live-controls {
+	align-self: flex-start;
+	display: inline-flex;
+	flex: 0 0 auto;
+	gap: 0.3em;
+	order: 99;
+}
+
+.maker-live-controls .maker-live-toggle {
+	order: 0;
+}
+
+.maker-live-save {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.maker-live-save svg {
+	display: block;
+}
+
+.maker-live-toggle:hover,
+.maker-live-toggle:focus {
+	background: #eef3fb;
+	border-color: #2b8aef;
+	color: #14376b;
+	outline: none;
+}
+
+.maker-live-pcap-result {
+	margin: 0.25em 0 0.5em 0;
+	min-height: 1.1em;
+	font-size: 0.9em;
+}
+
+.maker-live-pcap-result:empty {
+	display: none;
+}
+
+.maker-live-layout.maximized {
+	grid-template-columns: 1fr;
+}
+
+/* Hide the basic-info / URL / SBOM portion of the form but keep the
+ * ACL editor ("What systems does this device need to talk to?")
+ * visible underneath the maximised visualiser. */
+.maker-live-layout.maximized #mudform > *:not(.maker-live-form-acls) {
+	display: none;
+}
+
+.maker-live-layout.maximized .maker-live-form {
+	order: 2;
+}
+
+.maker-live-layout.maximized .maker-live-visualizer {
+	order: 1;
+	position: static;
+}
+
+.maker-live-layout.maximized .mud-live-svg {
+	min-height: 75vh;
+}
+
 .maker-live-canvas {
 	border: 1px solid #e4e9f0;
 	border-radius: 6px;
@@ -276,6 +355,14 @@
 
 .mud-live-internet-label {
 	fill: #41536b;
+	text-anchor: middle;
+	dominant-baseline: middle;
+}
+
+.mud-live-legend-tip {
+	fill: #536271;
+	font-weight: 500;
+	text-anchor: middle;
 }
 
 .mud-live-legend-bg {
