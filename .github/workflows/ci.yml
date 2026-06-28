@@ -79,6 +79,7 @@ jobs:
           python tests/test_pcap_sanitise.py
           python tests/test_publish_multi.py
           python tests/test_acl_dedupe.py
+          python tests/test_pcap_merge.py
 
   docker-build:
     name: Build docker images
@@ -220,6 +221,11 @@ jobs:
           MUDMAKER_HEADLESS: '1'
           MUDMAKER_ARTIFACT_DIR: ${{ github.workspace }}/_artifacts
         run: python tests/test_signing_chrome.py
+
+      - name: Drag-drop smoke (Chrome, headless)
+        env:
+          MUDMAKER_HEADLESS: '1'
+        run: python tests/test_dragdrop_chrome.py
 
       - name: Capture compose logs
         if: always()

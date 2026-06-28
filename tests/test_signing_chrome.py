@@ -76,7 +76,7 @@ def _drive_browser(workdir: Path) -> Path:
                     f"handlers. Errors: {errors}"
                 )
             print(f"  mud-url populated: {mud_url}")
-            page.get_by_role("button", name="Publish/Save/Continue Work").click()
+            page.get_by_role("button", name="Sign/Publish").click()
             with page.expect_download(timeout=30_000) as dl_info:
                 page.locator('button[name="Sign"]').click()
             dl_info.value.save_as(str(zip_path))

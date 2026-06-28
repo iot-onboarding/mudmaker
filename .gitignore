@@ -11,3 +11,6 @@ gitmud/config.ini
 *.zip
 tmp
 
+# axe-core is fetched at test runtime into tests/vendor/.
+tests/vendor/
+
