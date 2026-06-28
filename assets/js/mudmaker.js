@@ -888,13 +888,173 @@ function reloadFields(){
  //     the OAuth redirect, so the selection survives the navigation
  //     to mudpublish.html where the picker is no longer in the DOM.
 
+// Merge ACEs from a freshly-generated MUD (typically from a new batch
+// of pcap drops) into the live document.mudFile, deduping by
+// _aceSignature so mirror / repeated flows do not produce duplicate
+// rows.  Returns {added, skipped} counters.  Metadata fields (mfg,
+// model, mud-url, …) are left untouched — the caller keeps whatever
+// the user has typed.
+//
+// gitmud names ACLs after the ephemeral source port of the first flow
+// it observes, so re-uploading the same pcaps usually produces
+// differently-named ACLs that describe identical traffic.  Dedupe is
+// therefore performed by content signature across all ACLs of the
+// same direction (from/to), not by ACL name.  ACEs that have no
+// equivalent in the live MUD are appended into the corresponding
+// per-direction "merged" ACL pair (created on demand).
+function mergePcapMud(newMud) {
+	if (!newMud || typeof newMud !== 'object') {
+		throw new Error('mergePcapMud: invalid input');
+	}
+	if (!document.mudFile || typeof document.mudFile !== 'object') {
+		// Nothing to merge into — degrade to a full replace.
+		MudMakerVisualizer.initializeLoadedMudFile(newMud);
+		return { added: -1, skipped: 0 };
+	}
+	var mf = document.mudFile;
+	var mudBlock = mf['ietf-mud:mud'] || (mf['ietf-mud:mud'] = {});
+	var newMudBlock = newMud['ietf-mud:mud'] || {};
+
+	// --- ACL container bootstrap ---------------------------------------
+	if (!mf['ietf-access-control-list:acls']
+			|| !Array.isArray(mf['ietf-access-control-list:acls'].acl)) {
+		mf['ietf-access-control-list:acls'] = { acl: [] };
+	}
+	var liveAcls = mf['ietf-access-control-list:acls'].acl;
+	var newAcls = (newMud['ietf-access-control-list:acls']
+			&& Array.isArray(newMud['ietf-access-control-list:acls'].acl))
+		? newMud['ietf-access-control-list:acls'].acl : [];
+
+	function bootstrapPolicy(side) {
+		if (!mudBlock[side]) {
+			mudBlock[side] = { 'access-lists': { 'access-list': [] } };
+		}
+		if (!mudBlock[side]['access-lists']) {
+			mudBlock[side]['access-lists'] = { 'access-list': [] };
+		}
+		if (!Array.isArray(mudBlock[side]['access-lists']['access-list'])) {
+			mudBlock[side]['access-lists']['access-list'] = [];
+		}
+		return mudBlock[side]['access-lists']['access-list'];
+	}
+
+	var liveDirs = _aclDirections(mudBlock);
+	var newDirs = _aclDirections(newMudBlock);
+
+	// --- Build signature index of every existing ACE, per direction ---
+	var seenByDir = { from: {}, to: {} };
+	liveAcls.forEach(function(acl) {
+		if (!acl || !acl.name) { return; }
+		var d = liveDirs[acl.name];
+		if (d !== 'from' && d !== 'to') { return; }
+		var aces = (acl.aces && Array.isArray(acl.aces.ace))
+				? acl.aces.ace : [];
+		aces.forEach(function(ace) {
+			seenByDir[d][_aceSignature(ace, d)] = true;
+		});
+	});
+
+	// --- Walk the new ACLs and merge by direction --------------------
+	var added = 0;
+	var skipped = 0;
+	// Cached lookup of an existing-by-name ACL so we can extend it
+	// instead of always creating a "merged-from"/"merged-to" sink.
+	var liveByName = {};
+	liveAcls.forEach(function(a) {
+		if (a && a.name) { liveByName[a.name] = a; }
+	});
+
+	function aceNameUnique(target, base) {
+		var existing = {};
+		(target.aces.ace || []).forEach(function(a) {
+			if (a && a.name) { existing[a.name] = true; }
+		});
+		if (!existing[base]) { return base; }
+		var i = 2;
+		while (existing[base + '-' + i]) { i += 1; }
+		return base + '-' + i;
+	}
+
+	function appendAce(target, dir, ace) {
+		var copy = JSON.parse(JSON.stringify(ace));
+		copy.name = aceNameUnique(target, copy.name || ('ace-' + Date.now()));
+		target.aces = target.aces || { ace: [] };
+		if (!Array.isArray(target.aces.ace)) { target.aces.ace = []; }
+		target.aces.ace.push(copy);
+		seenByDir[dir][_aceSignature(copy, dir)] = true;
+		added += 1;
+	}
+
+	newAcls.forEach(function(newAcl) {
+		if (!newAcl || !newAcl.name) { return; }
+		var dir = newDirs[newAcl.name];
+		if (dir !== 'from' && dir !== 'to') {
+			// Unreferenced ACL — fall back to a heuristic from the
+			// gitmud naming convention so we still merge sanely.
+			if (newAcl.name.endsWith('fr')) { dir = 'from'; }
+			else if (newAcl.name.endsWith('to')) { dir = 'to'; }
+			else { return; }
+		}
+		var aces = (newAcl.aces && Array.isArray(newAcl.aces.ace))
+				? newAcl.aces.ace : [];
+		var fresh = aces.filter(function(ace) {
+			var sig = _aceSignature(ace, dir);
+			if (seenByDir[dir][sig]) {
+				skipped += 1;
+				return false;
+			}
+			return true;
+		});
+		if (fresh.length === 0) { return; }
+		// If the live MUD has an ACL of the same name we can extend
+		// it; otherwise append the new ACL verbatim (preserves the
+		// server's naming convention so the visualizer renders the
+		// usual port-based labels).
+		var target = liveByName[newAcl.name];
+		if (target) {
+			fresh.forEach(function(ace) { appendAce(target, dir, ace); });
+			return;
+		}
+		// New ACL — clone its shell and add only the fresh ACEs.
+		var copy = JSON.parse(JSON.stringify(newAcl));
+		copy.aces = { ace: [] };
+		liveAcls.push(copy);
+		liveByName[copy.name] = copy;
+		var refs = bootstrapPolicy(
+			dir === 'from' ? 'from-device-policy' : 'to-device-policy');
+		if (!refs.some(function(r) { return r && r.name === copy.name; })) {
+			refs.push({ name: copy.name });
+		}
+		fresh.forEach(function(ace) { appendAce(copy, dir, ace); });
+	});
+
+	mudBlock['last-update'] = new Date().toISOString();
+
+	try {
+		if (typeof saveMUD === 'function') { saveMUD(); }
+		else { window.sessionStorage.setItem('mudfile', JSON.stringify(mf)); }
+	} catch (e) { /* best effort */ }
+	try { reloadFields(); } catch (e) { /* best effort */ }
+	try { refreshmans(); } catch (e) { /* best effort */ }
+	if (window.MudMakerVisualizer
+			&& typeof window.MudMakerVisualizer.scheduleRender === 'function') {
+		window.MudMakerVisualizer.scheduleRender();
+	}
+	return { added: added, skipped: skipped };
+}
+
 // js update
 // Build a MUD file from the PCAPs currently chosen in the #pcapfile
 // control by POSTing them to /pcap2mud (handled by the gitmud Flask
 // service).  On success the generated MUD JSON is fed straight into the
 // visualizer / form via MudMakerVisualizer.initializeLoadedMudFile, the
 // same code path used by "Continue Earlier Work".
-function generateMudFromPcap() {
+//
+// ``opts.mode`` is 'replace' (default; matches the historical button
+// behavior) or 'merge'.  In merge mode the response is unioned into
+// the live MUD via mergePcapMud() and metadata fields are left alone,
+// so repeated drops accumulate flows instead of overwriting prior work.
+function generateMudFromPcap(opts) {
 	var fileInput = document.getElementById('pcapfile');
 	var macInput = document.getElementById('pcapmac');
 	var resultDiv = document.getElementById('pcap-result');
@@ -903,6 +1063,7 @@ function generateMudFromPcap() {
 	var mfg = document.getElementById('mfg-name');
 	var sysinfo = document.getElementById('systeminfo');
 	var docu = document.getElementById('documentation');
+	var mode = (opts && opts.mode === 'merge') ? 'merge' : 'replace';
 	var i;
 
 	function report(msg, isError) {
@@ -1005,6 +1166,30 @@ function generateMudFromPcap() {
 				return;
 			}
 			try {
+				if (mode === 'merge') {
+					var res = mergePcapMud(r.body.mud);
+					var addedMsg;
+					if (res.added < 0) {
+						addedMsg = 'MUD file loaded.';
+					} else {
+						addedMsg = 'Merged ' + res.added + ' new ACE'
+							+ (res.added === 1 ? '' : 's')
+							+ (res.skipped
+								? '; skipped ' + res.skipped
+								  + ' duplicate'
+								  + (res.skipped === 1 ? '' : 's')
+								: '')
+							+ ' from ' + fileInput.files.length
+							+ ' pcap'
+							+ (fileInput.files.length === 1 ? '' : 's')
+							+ '.';
+					}
+					if (r.body.notes) {
+						addedMsg += ' (' + r.body.notes + ')';
+					}
+					report(addedMsg);
+					return;
+				}
 				MudMakerVisualizer.initializeLoadedMudFile(r.body.mud);
 			} catch (e) {
 				report('Loaded MUD file but rendering failed: ' + e, true);

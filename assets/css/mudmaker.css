@@ -400,3 +400,51 @@
 		min-height: 340px;
 	}
 }
+
+/* Drag-drop affordance for #mud-live-visualizer.  The aside is
+ * already position:sticky, which provides the positioning context for
+ * the absolutely-positioned overlay below. */
+.maker-live-visualizer.dragover {
+outline: 3px dashed #2b8aef;
+outline-offset: -8px;
+}
+.maker-live-dropzone-overlay {
+position: absolute;
+inset: 0;
+display: none;
+	align-items: flex-start;
+	justify-content: center;
+	background: rgba(43, 138, 239, 0.10);
+	border-radius: 6px;
+	color: #14376b;
+	font-weight: 600;
+	font-size: 1.05em;
+	pointer-events: none;
+	text-align: center;
+	padding: 1em;
+}
+.maker-live-visualizer.dragover .maker-live-dropzone-overlay {
+	display: flex;
+}
+.maker-live-dropzone-overlay > span {
+	position: sticky;
+	top: 4.5em;
+	background: #2b8aef;
+	color: #fff;
+	padding: 0.5em 1em;
+	border-radius: 999px;
+	box-shadow: 0 2px 6px rgba(31, 41, 55, 0.25);
+	font-size: 0.95em;
+}
+.maker-live-drop-hint {
+font-size: 0.82em;
+opacity: 0.7;
+margin: 0.25em 0 0 0;
+font-weight: normal;
+}
+.maker-live-drop-hint code {
+font-size: 0.95em;
+background: #f3f5f8;
+padding: 0 0.25em;
+border-radius: 3px;
+}

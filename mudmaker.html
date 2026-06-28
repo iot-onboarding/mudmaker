@@ -32,6 +32,7 @@
     <script type="text/javascript" src="assets/js/mudmaker-reload.js"></script>
     <script type="text/javascript" src="assets/js/mudmaker.js" defer="defer"></script>
     <script type="text/javascript" src="assets/js/mudmaker-visualizer.js" defer="defer"></script>
+    <script type="text/javascript" src="assets/js/mudmaker-dragdrop.js" defer="defer"></script>
     <script type="text/javascript" src="assets/js/tabs.js"></script>
     <script type="text/javascript" src="assets/js/omud.js"></script>
   </head>
@@ -811,10 +812,11 @@
           <br>
       </form>
           </div>
-          <aside id="mud-live-visualizer" class="maker-live-visualizer" aria-label="MUD visualizer">
+          <aside id="mud-live-visualizer" class="maker-live-visualizer" aria-label="MUD visualizer (drop MUD .json or .pcap files here)" tabindex="0">
             <div class="maker-live-visualizer-header">
               <h3 id="mud-url-preview">Your Device's Access</h3>
               <p id="mud-live-summary">No access lists yet</p>
+              <p class="maker-live-drop-hint">Tip: drop a MUD <code>.json</code> file or one or more <code>.pcap</code> captures here. Shift-drop replaces, plain drop merges.</p>
             </div>
             <div class="maker-live-canvas">
               <svg id="mud-live-svg" class="mud-live-svg" viewBox="0 0 900 620" role="img" aria-labelledby="mud-live-title mud-live-desc">
@@ -823,6 +825,9 @@
               </svg>
             </div>
             <div id="mud-live-details" class="maker-live-details"></div>
+            <div id="mud-live-drop-overlay" class="maker-live-dropzone-overlay" aria-hidden="true">
+              <span>Drop to <strong>merge</strong> &middot; &#8679; to <strong>replace</strong></span>
+            </div>
           </aside>
         </div>
       </section>
