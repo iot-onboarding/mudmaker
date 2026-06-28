@@ -747,16 +747,33 @@ def pcap2mud():
                       "w", encoding="ascii") as fh:
                 fh.write(mac + "\n")
 
+        _SAFE_ARG_RE = re.compile(r"^[A-Za-z0-9._:/?#\[\]@!$&'()*+,;=%\- ]+$")
+        def _validated_cli_value(field_name, raw_value, max_len=512):
+            if raw_value is None:
+                return None
+            value = raw_value.strip()
+            if not value:
+                return None
+            if len(value) > max_len:
+                raise ValueError(f"{field_name} is too long")
+            if not _SAFE_ARG_RE.match(value):
+                raise ValueError(f"invalid characters in {field_name}")
+            return value
+
         argv = [sys.executable, str(script), workdir]
-        for opt, value in (
-            ("--mfg", request.form.get("mfg")),
-            ("--model", request.form.get("model")),
-            ("--systeminfo", request.form.get("systeminfo")),
-            ("--documentation", request.form.get("documentation")),
-            ("--mud-url", request.form.get("mud_url")),
-        ):
-            if value:
-                argv += [opt, value]
+        try:
+            for opt, field_name in (
+                ("--mfg", "mfg"),
+                ("--model", "model"),
+                ("--systeminfo", "systeminfo"),
+                ("--documentation", "documentation"),
+                ("--mud-url", "mud_url"),
+            ):
+                value = _validated_cli_value(field_name, request.form.get(field_name))
+                if value:
+                    argv += [opt, value]
+        except ValueError as exc:
+            return jsonify({"error": str(exc)}), 400
 
         try:
             proc = subprocess.run(argv, capture_output=True,
