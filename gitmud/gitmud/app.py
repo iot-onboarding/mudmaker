@@ -655,7 +655,10 @@ def do_the_rest():
             })
 
     except GithubProblem as e:
-        return str(e), 400
+        log.exception("GitHub operation failed during MUD/PCAP upload flow")
+        return jsonify({
+            "error": "Request could not be processed."
+        }), 400
 
     # create the PR only if the branch doesn't already exist
     resp =  pr_exists(user,branch_name,token)
