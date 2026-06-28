@@ -6,7 +6,7 @@ passes so we can scan each tab (axe ignores nodes hidden by
 ``display:none``):
 
   * the Create tab (default landing)
-  * the Publish/Save/Continue Work tab
+  * the Sign/Publish tab
   * the View MUD File tab
 
 By default the test FAILS when axe reports any rule with impact
