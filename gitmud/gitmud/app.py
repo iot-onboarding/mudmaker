@@ -15,6 +15,7 @@ import base64
 import configparser
 from pathlib import Path
 from time import sleep
+from urllib.parse import urlparse
 from flask import Flask,request, jsonify
 import requests
 
@@ -751,8 +752,9 @@ def pcap2mud():
                       "w", encoding="ascii") as fh:
                 fh.write(mac + "\n")
 
-        _SAFE_ARG_RE = re.compile(r"^[A-Za-z0-9._:/?#\[\]@!$&'()*+,;=%\- ]+$")
-        def _validated_cli_value(field_name, raw_value, max_len=512):
+        _SAFE_TEXT_ARG_RE = re.compile(r"^[A-Za-z0-9._,()\- ]+$")
+
+        def _validated_text_cli_value(field_name, raw_value, max_len=128):
             if raw_value is None:
                 return None
             value = raw_value.strip()
@@ -760,20 +762,33 @@ def pcap2mud():
                 return None
             if len(value) > max_len:
                 raise ValueError(f"{field_name} is too long")
-            if not _SAFE_ARG_RE.match(value):
+            if not _SAFE_TEXT_ARG_RE.fullmatch(value):
                 raise ValueError(f"invalid characters in {field_name}")
+            return value
+
+        def _validated_url_cli_value(field_name, raw_value, max_len=512):
+            if raw_value is None:
+                return None
+            value = raw_value.strip()
+            if not value:
+                return None
+            if len(value) > max_len:
+                raise ValueError(f"{field_name} is too long")
+            parsed = urlparse(value)
+            if parsed.scheme not in ("http", "https") or not parsed.netloc:
+                raise ValueError(f"invalid URL in {field_name}")
             return value
 
         argv = [sys.executable, str(script), workdir]
         try:
-            for opt, field_name in (
-                ("--mfg", "mfg"),
-                ("--model", "model"),
-                ("--systeminfo", "systeminfo"),
-                ("--documentation", "documentation"),
-                ("--mud-url", "mud_url"),
+            for opt, field_name, validator in (
+                ("--mfg", "mfg", _validated_text_cli_value),
+                ("--model", "model", _validated_text_cli_value),
+                ("--systeminfo", "systeminfo", _validated_text_cli_value),
+                ("--documentation", "documentation", _validated_url_cli_value),
+                ("--mud-url", "mud_url", _validated_url_cli_value),
             ):
-                value = _validated_cli_value(field_name, request.form.get(field_name))
+                value = validator(field_name, request.form.get(field_name))
                 if value:
                     argv += [opt, value]
         except ValueError as exc:
