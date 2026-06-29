@@ -96,12 +96,17 @@
 
 			// Expand "target" safely if it's not a jQuery object already.
 				if (!(config.target instanceof jQuery)) {
-					if (config.target && (config.target.nodeType || config.target === window || config.target === document))
+					if (config.target && (config.target.nodeType || config.target === window || config.target === document)) {
 						config.target = $(config.target);
-					else if (typeof config.target === 'string')
+					}
+					else if (typeof config.target === 'string') {
+						// Use $.find so string input is always treated as a selector, never as HTML.
 						config.target = $($.find(config.target));
-					else
+					}
+					else {
+						// Fallback for unsupported/untrusted types.
 						config.target = $this;
+					}
 				}
 
 		// Panel.
