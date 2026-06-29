@@ -641,3 +641,221 @@ background: #f3f5f8;
 padding: 0 0.25em;
 border-radius: 3px;
 }
+
+/* ---------------------------------------------------------------
+ * Guided tour (assets/js/mudmaker-tour.js)
+ * --------------------------------------------------------------- */
+.mud-tour-root {
+	position: fixed;
+	inset: 0;
+	z-index: 9999;
+}
+
+.mud-tour-overlay {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	pointer-events: auto;
+}
+
+.mud-tour-popover {
+	position: fixed;
+	max-width: 340px;
+	min-width: 240px;
+	background: #f5ead0;
+	background-image: linear-gradient(180deg, #f7eed7 0%, #efe2bd 100%);
+	color: #3a2d18;
+	border: 1px solid #c9b482;
+	border-radius: 28px;
+	box-shadow:
+		0 14px 32px rgba(60, 40, 10, 0.35),
+		inset 0 1px 0 rgba(255, 248, 224, 0.7);
+	padding: 20px 22px 18px;
+	font-family: Georgia, "Times New Roman", "Hoefler Text", serif;
+	font-size: 14px;
+	line-height: 1.45;
+	outline: none;
+}
+
+/* Balloon tail: a small triangle on the edge facing the spotlight.
+ * Uses two stacked pseudo-elements so we can fake a 1px border. */
+.mud-tour-popover::before,
+.mud-tour-popover::after {
+	content: "";
+	position: absolute;
+	width: 0;
+	height: 0;
+	border: 10px solid transparent;
+}
+
+.mud-tour-popover[data-placement="bottom"]::before {
+	top: -20px;
+	left: 50%;
+	margin-left: -10px;
+	border-bottom-color: #c9b482;
+}
+.mud-tour-popover[data-placement="bottom"]::after {
+	top: -18px;
+	left: 50%;
+	margin-left: -10px;
+	border-bottom-color: #f7eed7;
+}
+
+.mud-tour-popover[data-placement="top"]::before {
+	bottom: -20px;
+	left: 50%;
+	margin-left: -10px;
+	border-top-color: #c9b482;
+}
+.mud-tour-popover[data-placement="top"]::after {
+	bottom: -18px;
+	left: 50%;
+	margin-left: -10px;
+	border-top-color: #efe2bd;
+}
+
+.mud-tour-popover[data-placement="left"]::before {
+	right: -20px;
+	top: 50%;
+	margin-top: -10px;
+	border-left-color: #c9b482;
+}
+.mud-tour-popover[data-placement="left"]::after {
+	right: -18px;
+	top: 50%;
+	margin-top: -10px;
+	border-left-color: #ede0bc;
+}
+
+.mud-tour-popover[data-placement="right"]::before {
+	left: -20px;
+	top: 50%;
+	margin-top: -10px;
+	border-right-color: #c9b482;
+}
+.mud-tour-popover[data-placement="right"]::after {
+	left: -18px;
+	top: 50%;
+	margin-top: -10px;
+	border-right-color: #f3e7c9;
+}
+
+.mud-tour-head {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 8px;
+	margin-bottom: 6px;
+}
+
+.mud-tour-title {
+	margin: 0;
+	font-family: Georgia, "Times New Roman", "Hoefler Text", serif;
+	font-size: 17px;
+	font-weight: 700;
+	color: #2a1f10;
+	letter-spacing: 0.01em;
+	line-height: 1.2;
+}
+
+.mud-tour-close {
+	background: transparent;
+	border: 0;
+	font-size: 22px;
+	line-height: 1;
+	cursor: pointer;
+	color: #8a6a36;
+	padding: 0 4px;
+}
+
+.mud-tour-close:hover {
+	color: #2a1f10;
+}
+
+.mud-tour-body {
+	margin: 0 0 14px 0;
+	color: #4a3a20;
+	font-size: 14px;
+}
+
+.mud-tour-foot {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+	flex-wrap: wrap;
+}
+
+.mud-tour-progress {
+	font-family: Georgia, "Times New Roman", "Hoefler Text", serif;
+	font-style: italic;
+	font-size: 12px;
+	color: #7a5e2c;
+}
+
+.mud-tour-skip {
+	background: transparent;
+	border: 0;
+	color: #7a5e2c;
+	text-decoration: underline;
+	cursor: pointer;
+	font-family: Georgia, "Times New Roman", "Hoefler Text", serif;
+	font-size: 12px;
+	font-style: italic;
+	padding: 0;
+}
+
+.mud-tour-skip:hover {
+	color: #2a1f10;
+}
+
+.mud-tour-nav {
+	display: flex;
+	gap: 6px;
+	margin-left: auto;
+}
+
+.mud-tour-back,
+.mud-tour-next {
+	border: 1px solid #b89a5a;
+	border-radius: 999px;
+	padding: 6px 14px;
+	font-family: Georgia, "Times New Roman", "Hoefler Text", serif;
+	font-size: 13px;
+	cursor: pointer;
+}
+
+.mud-tour-back {
+	background: #ede0bc;
+	color: #3a2d18;
+}
+
+.mud-tour-back:hover:not(:disabled) {
+	background: #e3d3a4;
+}
+
+.mud-tour-back:disabled {
+	opacity: 0.45;
+	cursor: not-allowed;
+}
+
+.mud-tour-next {
+	background: #a07a43;
+	background-image: linear-gradient(180deg, #b08a52 0%, #8e6a36 100%);
+	color: #fff7e2;
+	font-weight: 700;
+	border-color: #7a5a28;
+	box-shadow: inset 0 1px 0 rgba(255, 240, 200, 0.45);
+}
+
+.mud-tour-next:hover {
+	background-image: linear-gradient(180deg, #b8915a 0%, #97743e 100%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.mud-tour-overlay,
+	.mud-tour-popover {
+		transition: none !important;
+	}
+}

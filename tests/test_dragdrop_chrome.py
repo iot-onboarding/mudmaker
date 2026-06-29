@@ -207,6 +207,12 @@ def _drive() -> None:
         browser = p.chromium.launch(**launch_kwargs)
         try:
             ctx = browser.new_context()
+            # Suppress the first-visit guided tour so it does not
+            # intercept clicks/drag-drop interactions below.
+            ctx.add_init_script(
+                "try { localStorage.setItem('mudmaker.tour.seen', '1'); }"
+                " catch (e) {}"
+            )
             page = ctx.new_page()
             errors: List[str] = []
             page.on("pageerror", lambda e: errors.append(f"pageerror: {e}"))

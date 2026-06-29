@@ -33,6 +33,7 @@
     <script type="text/javascript" src="assets/js/mudmaker.js" defer="defer"></script>
     <script type="text/javascript" src="assets/js/mudmaker-visualizer.js" defer="defer"></script>
     <script type="text/javascript" src="assets/js/mudmaker-dragdrop.js" defer="defer"></script>
+    <script type="text/javascript" src="assets/js/mudmaker-tour.js" defer="defer"></script>
     <script type="text/javascript" src="assets/js/tabs.js"></script>
     <script type="text/javascript" src="assets/js/omud.js"></script>
   </head>
@@ -47,6 +48,7 @@
           <p>A tool to build your own MUD files</p>
           <ul class="actions">
             <li><a href="index.html" class="button special">Help</a></li>
+            <li><a href="#" id="tour-start" class="button" onclick="if(window.MudMakerTour){MudMakerTour.start();}return false;">Tour</a></li>
           </ul>
           <a id="downloadAnchorElem" style="display:none"></a>
         </section>
@@ -150,10 +152,10 @@
         <div class="maker-live-layout">
           <div class="maker-live-form">
         <form id="mudform">
-          <p onload="oauthp2(this)"><em>Note:</em> Unless you publish to GitHub through this interface,  no information
+          <p id="privacy-note" onload="oauthp2(this)"><em>Note:</em> Unless you publish to GitHub through this interface,  no information
           collected on this form is saved beyond this session.  It is only used to generate the
           files that are returned to you, or to facilitate your visualization.</p>
-          <fieldset class="maker-live-url-fieldset">
+          <fieldset id="mud-url-builder" class="maker-live-url-fieldset">
             <legend>Please enter the host and model to build a MUD-URL for this device:</legend>
             <div class="maker-live-url-row">
               <div class="maker-live-url-part maker-live-url-host">
@@ -169,7 +171,7 @@
             </div>
           </fieldset>
           <br>
-          <fieldset>
+          <fieldset id="basic-info">
           <legend>Basic Information</legend>
           <ul class="twocol maker-live-field-row">
             <li class="maker-live-field">
@@ -562,7 +564,7 @@
           <input type="checkbox" id=netbox name=netbox style="visibility:hidden">
 
           <div class="maker-live-form-acls">
-          <h3>What systems does this device need to talk to?</h3>
+          <h3 id="acl-section">What systems does this device need to talk to?</h3>
           Select all that apply: <em>(optional)</em>
           <details id="cl" class="addable"> 
             <summary>Internet hosts by name</summary>
