@@ -100,10 +100,12 @@
 						// Treat string input strictly as a selector, never as HTML.
 						config.target = $($.find(config.target));
 					}
-					else if (config.target && typeof config.target === 'object' &&
-						(config.target.nodeType || config.target === window || config.target === document)) {
-						// Allow only concrete DOM/window/document objects.
-						config.target = $(config.target);
+					else if (config.target && typeof config.target === 'object') {
+						// Allow only real DOM Element/Document nodes or window.
+						if (config.target === window || config.target.nodeType === 1 || config.target.nodeType === 9)
+							config.target = $(config.target);
+						else
+							config.target = $this;
 					}
 					else {
 						// Fallback for unsupported/untrusted types.
