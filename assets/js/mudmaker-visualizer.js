@@ -790,14 +790,23 @@
 
 	function drawEmpty(svg, model) {
 		var device = { x: 180, y: 300 };
-		drawNode(svg, device, model.deviceLabel, "MUD file", "device");
-		svg.appendChild(textNode("text", {
-			x: 450,
+		drawNode(svg, device, model.deviceLabel, "", "device");
+		var tipText = createSvg("text", {
+			x: 335,
 			y: 410,
 			class: "mud-live-empty-title"
-		}, "No access-list entries yet"));
-		// Call-to-action sits below the legend (which now hosts the
-		// drag-and-drop tip) so it doesn't compete with the heading.
+		});
+		tipText.appendChild(createSvg("tspan", {
+			x: 335,
+			dy: "0",
+			text: "Tip: drop a MUD .json or .pcap here."
+		}));
+		tipText.appendChild(createSvg("tspan", {
+			x: 335,
+			dy: "1.2em",
+			text: "Shift-drop replaces, plain drop merges."
+		}));
+		svg.appendChild(tipText);
 		svg.appendChild(textNode("text", {
 			x: 450,
 			y: 614,
@@ -866,13 +875,6 @@
 			y: y - 3,
 			class: "mud-live-legend-text"
 		}, "other enterprise access"));
-		// Drop-target tip lives in the legend so it remains visible in
-		// both the empty and the populated state.
-		svg.appendChild(textNode("text", {
-			x: 445,
-			y: y + 29,
-			class: "mud-live-legend-text mud-live-legend-tip"
-		}, "Tip: drop a MUD .json or .pcap here. Shift-drop replaces, plain drop merges."));
 	}
 
 	function drawModel(svg, model) {
@@ -905,7 +907,7 @@
 			});
 			drawNode(svg, positions[endpoint.id], endpoint.label, related.length + " flow" + (related.length === 1 ? "" : "s"), endpoint.kind);
 		});
-		drawNode(svg, device, model.deviceLabel, "MUD file", "device");
+		drawNode(svg, device, model.deviceLabel, "", "device");
 	}
 
 	function renderDetails(model) {
