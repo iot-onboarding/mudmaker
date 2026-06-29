@@ -11,14 +11,56 @@
 // Lightweight, dependency-free guided tour for mudmaker.html.
 //
 // Exposes window.MudMakerTour = { start, stop, isActive }.  The first
-// visit (no localStorage flag) triggers start() automatically once the
+// visit (no matching cookie) triggers start() automatically once the
 // DOM is ready; subsequent visits only start it when the user clicks
 // the Tour button.  Escape, clicking the backdrop, or "Skip" cleanly
 // dismiss the tour and restore prior UI state.
+//
+// The "seen" state is recorded in a long-lived first-party cookie
+// whose value is the current TOUR_TOKEN.  Bumping TOUR_TOKEN (for
+// example when the tour content changes meaningfully) forces every
+// returning visitor to see the new tour exactly once.
 (function (global) {
 	"use strict";
 
-	var STORAGE_KEY = "mudmaker.tour.seen";
+	// Long, unique token written to the cookie when the tour is
+	// dismissed.  Change this string to force re-display for every
+	// returning visitor.
+	var TOUR_TOKEN =
+		"mm-tour-v1-9f4c2a1e3b7d4f8e8a6c5b2d1e7f3a9c-7b8e2d1a";
+	var COOKIE_NAME = "mudmaker_tour_seen";
+	// ~5 years in seconds; cookie is renewed each time the tour ends.
+	var COOKIE_MAX_AGE = 60 * 60 * 24 * 365 * 5;
+
+	function readCookie(name) {
+		var raw = (typeof document !== "undefined" && document.cookie)
+			? document.cookie : "";
+		var parts = raw ? raw.split(";") : [];
+		for (var i = 0; i < parts.length; i++) {
+			var kv = parts[i].split("=");
+			var key = (kv.shift() || "").trim();
+			if (key === name) {
+				try { return decodeURIComponent(kv.join("=")); }
+				catch (e) { return kv.join("="); }
+			}
+		}
+		return null;
+	}
+
+	function writeSeenCookie() {
+		try {
+			var secure = (location.protocol === "https:")
+				? "; Secure" : "";
+			document.cookie = COOKIE_NAME + "=" +
+				encodeURIComponent(TOUR_TOKEN) +
+				"; Max-Age=" + COOKIE_MAX_AGE +
+				"; Path=/; SameSite=Lax" + secure;
+		} catch (e) { /* cookies disabled; ignore */ }
+	}
+
+	function hasSeenCurrentTour() {
+		return readCookie(COOKIE_NAME) === TOUR_TOKEN;
+	}
 
 	// Each step targets one or more existing DOM elements via selector.
 	// `tab` (optional) switches the named tab before the step is shown.
@@ -474,18 +516,18 @@
 				state.prevFocus.focus();
 			}
 		} catch (e) { /* ignore */ }
-		try {
-			localStorage.setItem(STORAGE_KEY, "1");
-		} catch (e) { /* ignore */ }
+		writeSeenCookie();
 		state = null;
 	}
 
 	function isActive() { return !!state; }
 
 	function maybeAutoStart() {
-		try {
-			if (localStorage.getItem(STORAGE_KEY)) { return; }
-		} catch (e) { /* ignore */ }
+		// Escape hatch for browser tests and embedding contexts that
+		// never want the auto-open to fire.  Set before this script
+		// runs (e.g. via Playwright's add_init_script).
+		if (global.MUDMAKER_NO_TOUR) { return; }
+		if (hasSeenCurrentTour()) { return; }
 		// Defer slightly so the form, visualizer, and other deferred
 		// scripts have finished their first paint before we measure.
 		setTimeout(start, 250);

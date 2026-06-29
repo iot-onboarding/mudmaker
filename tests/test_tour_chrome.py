@@ -2,13 +2,13 @@
 
 Loads ``mudmaker.html`` in headless Chrome and exercises the tour:
 
-  * clears ``localStorage`` so the tour auto-opens on first visit
+  * clears the "seen" cookie so the tour auto-opens on first visit
   * walks every step with the Enter key, asserting the title text
     changes between steps and the dialog stays in the DOM
   * verifies Escape closes the tour
   * re-opens via the Tour button and asserts the dialog is back
   * verifies clicking the backdrop closes the tour
-  * verifies that after a dismissal, localStorage records the visit
+  * verifies that after a dismissal, the cookie records the visit
     so the tour does not auto-open on the next page load
 
 Requires a running mudmaker stack on http://127.0.0.1:8081 (the
@@ -34,10 +34,17 @@ CHANNEL = os.environ.get("MUDMAKER_BROWSER_CHANNEL", "chrome")
 
 # Keep in sync with STEPS.length in assets/js/mudmaker-tour.js.
 EXPECTED_STEP_COUNT = 10
+# Cookie name used by assets/js/mudmaker-tour.js.
+COOKIE_NAME = "mudmaker_tour_seen"
 
 
 def _reset_tour_state(page):
-    page.evaluate("() => { localStorage.removeItem('mudmaker.tour.seen'); }")
+    # Expire the cookie (and clear any legacy localStorage flag).
+    page.evaluate(
+        "() => { document.cookie = '%s=; Max-Age=0; Path=/';"
+        " try { localStorage.removeItem('mudmaker.tour.seen'); }"
+        " catch (e) {} }" % COOKIE_NAME
+    )
 
 
 def _start_via_button(page):
@@ -102,11 +109,16 @@ def main():
                                    timeout=5000)
             print("  Escape closes: ok")
 
-            # localStorage flag was written.
+            # Cookie flag was written.
             seen = page.evaluate(
-                "() => localStorage.getItem('mudmaker.tour.seen')")
-            if seen != "1":
-                sys.exit("FAILED: localStorage flag not set after stop")
+                "() => { const m = document.cookie.match("
+                "/(?:^|;\\s*)%s=([^;]+)/);"
+                " return m ? decodeURIComponent(m[1]) : null; }"
+                % COOKIE_NAME
+            )
+            if not seen or not seen.startswith("mm-tour-"):
+                sys.exit("FAILED: tour cookie not set after stop (got %r)"
+                         % seen)
             print("  storage flag set on dismissal: ok")
 
             # Tour button re-opens it.
