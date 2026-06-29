@@ -96,12 +96,14 @@
 
 			// Expand "target" safely if it's not a jQuery object already.
 				if (!(config.target instanceof jQuery)) {
-					if (config.target && (config.target.nodeType || config.target === window || config.target === document)) {
-						config.target = $(config.target);
-					}
-					else if (typeof config.target === 'string') {
-						// Use $.find so string input is always treated as a selector, never as HTML.
+					if (typeof config.target === 'string') {
+						// Treat string input strictly as a selector, never as HTML.
 						config.target = $($.find(config.target));
+					}
+					else if (config.target && typeof config.target === 'object' &&
+						(config.target.nodeType || config.target === window || config.target === document)) {
+						// Allow only concrete DOM/window/document objects.
+						config.target = $(config.target);
 					}
 					else {
 						// Fallback for unsupported/untrusted types.
