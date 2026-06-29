@@ -17,6 +17,7 @@ from pathlib import Path
 from time import sleep
 from urllib.parse import urlparse
 from flask import Flask,request, jsonify
+from markupsafe import escape
 import requests
 
 log = logging.getLogger("gitmud")
@@ -672,8 +673,13 @@ def do_the_rest():
     return {
         "mfg" : mfg,
         "model" : model,
-        "user" : user,
-        "mudurl" : mudurl,
+        # ``user`` and ``mudurl`` come from request input and are
+        # reflected back to the caller; HTML-escape them so any
+        # downstream consumer that renders them as HTML cannot be
+        # tricked into running injected markup.  See CodeQL alert
+        # py/reflective-xss.
+        "user" : str(escape(user)),
+        "mudurl" : str(escape(mudurl)),
         "pcaps" : pcaps_result,
     }, 200
 
