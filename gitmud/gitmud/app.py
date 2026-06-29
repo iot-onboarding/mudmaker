@@ -654,7 +654,7 @@ def do_the_rest():
                 "sha": (resp.get("content") or {}).get("sha"),
             })
 
-    except GithubProblem as e:
+    except GithubProblem:
         log.exception("GitHub operation failed during MUD/PCAP upload flow")
         return jsonify({
             "error": "Request could not be processed."
