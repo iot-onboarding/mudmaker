@@ -50,6 +50,9 @@ def _drive_browser(workdir: Path) -> Path:
         browser = p.chromium.launch(**launch_kwargs)
         try:
             ctx = browser.new_context(accept_downloads=True)
+            # Suppress the first-visit guided tour so its overlay does
+            # not intercept the clicks/fills below.
+            ctx.add_init_script("window.MUDMAKER_NO_TOUR = true;")
             page = ctx.new_page()
             errors: list[str] = []
             page.on("pageerror", lambda e: errors.append(f"pageerror: {e}"))

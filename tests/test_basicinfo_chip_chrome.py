@@ -61,6 +61,9 @@ def main():
         try:
             ctx = browser.new_context(viewport={"width": 1400,
                                                 "height": 900})
+            # Suppress the first-visit guided tour so its overlay does
+            # not intercept clicks below.
+            ctx.add_init_script("window.MUDMAKER_NO_TOUR = true;")
             page = ctx.new_page()
             page.goto(BASE_URL + "/mudmaker.html", wait_until="load")
             page.wait_for_selector("#mud-live-toggle", state="visible")
