@@ -406,8 +406,9 @@ def complete_oauth():
         code = None
         if "got_token" not in req:
             code = req["code"]
-    except KeyError as e:
-        return 'KeyError: ' + str(e), 400
+    except KeyError:
+        log.warning("complete_oauth missing required request field", exc_info=True)
+        return "invalid request payload", 400
 
     token = token_in_db(mudurl)
     user = get_gituser(token) if token else False
