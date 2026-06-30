@@ -113,6 +113,45 @@ def collect_flows(pcap_files, device_mac: str) -> Dict[Tuple, Flow]:
     flows: Dict[Tuple, Flow] = {}
     mac = device_mac.lower()
 
+    # Pre-pass: identify every TCP connection the device itself
+    # initiated by recording the 4-tuple of each SYN-without-ACK sent
+    # from the device.  The SYN's destination port is unambiguously the
+    # peer's service port — regardless of how that port compares to the
+    # device's ephemeral source port.  We use this in the main pass
+    # below to suppress the lower-port-wins fallback, which would
+    # otherwise misclassify the device's own ephemeral source port as
+    # the "service port" whenever the real service happens to live
+    # above the device's ephemeral range (e.g. cloud control on
+    # TCP/8767 called from device sport 3299).
+    device_initiated_tcp: set = set()
+    for path in pcap_files:
+        try:
+            pkts = rdpcap(path)
+        except Exception as exc:  # noqa: BLE001
+            sys.stderr.write(f"warning: skipping {path}: {exc}\n")
+            continue
+        for pkt in pkts:
+            if not (pkt.haslayer(Ether) and pkt.haslayer(TCP)):
+                continue
+            eth = pkt[Ether]
+            if eth.src.lower() != mac:
+                continue
+            tcp = pkt[TCP]
+            flags = int(tcp.flags)
+            if not ((flags & 0x02) and not (flags & 0x10)):
+                continue
+            if pkt.haslayer(IP):
+                l3 = pkt[IP]
+                ipver = 4
+            elif pkt.haslayer(IPv6):
+                l3 = pkt[IPv6]
+                ipver = 6
+            else:
+                continue
+            device_initiated_tcp.add(
+                (ipver, l3.dst, int(tcp.dport), int(tcp.sport))
+            )
+
     for path in pcap_files:
         try:
             pkts = rdpcap(path)
@@ -177,12 +216,29 @@ def collect_flows(pcap_files, device_mac: str) -> Dict[Tuple, Flow]:
                 # source port.  If neither end is obviously the
                 # initiator (no SYN seen for this packet) we fall back
                 # to "the lower of the two ports" — well-known services
-                # always sit below the ephemeral range.
+                # usually sit below the ephemeral range.
                 if from_device:
                     service_port = dport
                 else:
                     service_port = sport
-                if service_port is not None and service_port >= 1024:
+                # Suppress the lower-port-wins fallback when this TCP
+                # packet belongs to a connection whose SYN we observed
+                # come from the device.  The SYN's dport is authoritative
+                # and may itself live above 1024 (e.g. cloud-control on
+                # TCP/8767) -- the fallback would otherwise overwrite it
+                # with the device's ephemeral source port.
+                suppress_lowport = False
+                if proto == "tcp":
+                    if from_device:
+                        device_port_here, peer_port_here = sport, dport
+                    else:
+                        device_port_here, peer_port_here = dport, sport
+                    if (ipver, remote_ip, peer_port_here,
+                            device_port_here) in device_initiated_tcp:
+                        suppress_lowport = True
+                if (not suppress_lowport
+                        and service_port is not None
+                        and service_port >= 1024):
                     other = sport if from_device else dport
                     if other is not None and other < service_port:
                         service_port = other
@@ -263,8 +319,11 @@ def collect_dns_map(pcap_files) -> Dict[str, str]:
                 continue
 
             qname = None
-            if dns.qd is not None:
-                qname = _decode(getattr(dns.qd, "qname", None))
+            if int(getattr(dns, "qdcount", 0) or 0) > 0 and dns.qd is not None:
+                try:
+                    qname = _decode(getattr(dns.qd, "qname", None))
+                except (IndexError, AttributeError):
+                    qname = None
             if not qname:
                 continue
 
@@ -454,12 +513,22 @@ def build_ace(flow: Flow, endpoint: Endpoint, direction: str,
     # L4 ports / direction-initiated.
     if flow.proto in ("tcp", "udp") and flow.service_port is not None:
         l4: Dict[str, object] = {}
+        # Pick source-port vs destination-port based on which end runs
+        # the service.  When the device itself is the server
+        # (``flow.initiator == "to-device"``) the service port appears
+        # as the destination port of inbound packets and the source
+        # port of outbound responses -- the opposite of the
+        # device-as-client case.  When the initiator is unknown
+        # (UDP, or mid-stream TCP captures with no SYN observed) we
+        # default to assuming the remote runs the service, which
+        # matches the dominant pattern for IoT traffic.
+        service_on_device = (flow.proto == "tcp"
+                             and flow.initiator == "to-device")
         if direction == "from":
-            l4["destination-port"] = {"operator": "eq",
-                                      "port": flow.service_port}
+            port_key = "source-port" if service_on_device else "destination-port"
         else:
-            l4["source-port"] = {"operator": "eq",
-                                 "port": flow.service_port}
+            port_key = "destination-port" if service_on_device else "source-port"
+        l4[port_key] = {"operator": "eq", "port": flow.service_port}
         if flow.proto == "tcp" and flow.initiator:
             l4["ietf-mud:direction-initiated"] = flow.initiator
         matches[flow.proto] = l4
@@ -552,7 +621,49 @@ def build_mud(flows: Dict[Tuple, Flow], *, mud_url: str,
             new_has = _has_initiator(pair[0]) or _has_initiator(pair[1])
             if new_has and not cur_has:
                 chosen[sig] = pair
-        deduped_per_ipver[ipver] = [chosen[s] for s in order]
+        # Secondary subsumption: when one pair has a known initiator
+        # and another describes the same endpoint+port pattern but
+        # with an unknown initiator (so its port-direction is the
+        # "remote-service" default guess), drop the unknown-initiator
+        # pair -- the known-initiator pair already explains that
+        # traffic with the correct port direction.  This recovers the
+        # collapse that used to happen accidentally when both pairs
+        # produced identical port keys before the build_ace fix.
+        def _norm_port_dir(matches: dict) -> dict:
+            out: dict = {}
+            for k, v in matches.items():
+                if isinstance(v, dict):
+                    norm: dict = {}
+                    for kk, vv in v.items():
+                        if kk in ("source-port", "destination-port"):
+                            norm["_port"] = vv
+                        else:
+                            norm[kk] = vv
+                    out[k] = norm
+                else:
+                    out[k] = v
+            return out
+
+        def _port_norm_signature(pair: Tuple[dict, dict]) -> str:
+            fr, to = pair
+            return json.dumps((_norm_port_dir(_strip_initiator(fr["matches"])),
+                               _norm_port_dir(_strip_initiator(to["matches"]))),
+                              sort_keys=True)
+
+        known_norm_sigs = {
+            _port_norm_signature(chosen[s]) for s in order
+            if _has_initiator(chosen[s][0]) or _has_initiator(chosen[s][1])
+        }
+        final_order: list = []
+        for s in order:
+            pair = chosen[s]
+            has_init = (_has_initiator(pair[0])
+                        or _has_initiator(pair[1]))
+            if not has_init:
+                if _port_norm_signature(pair) in known_norm_sigs:
+                    continue
+            final_order.append(s)
+        deduped_per_ipver[ipver] = [chosen[s] for s in final_order]
 
     # Post-classification subsumption: if two pairs share the same
     # host classification and protocol but one has "any port" (no
