@@ -17,11 +17,3 @@ This version of MUD Maker is based on Python3, JavaScript and Go.  Signing
 is supported with the [mudcerts](https://github.com/iot-onboarding/mudcerts) package.
 At this time, the GitHub PR integration is not publicly available.
 
-## ToDo
-
-The following items are on the ToDo List:
-
-* Ability to edit MUD file and have it properly represented in the builder
-* Uploading of PCAP files
-* Interactive building of MUD files with those PCAP files (a'la mudgee)
-
