@@ -166,7 +166,7 @@ function oAuthP2(){
       email : email
     }
     if ( got_tok != null ) {
-      jsonbody["got_tok"] = true;
+      jsonbody["got_token"] = true;
     } else {
       if (state !== localStorage.getItem("latestCSRFToken")) {
         localStorage.removeItem("latestCSRFToken");

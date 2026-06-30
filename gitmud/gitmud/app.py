@@ -398,6 +398,8 @@ def complete_oauth():
         token: a token to commplete OAUTH
         OR
         got_token, signalling that no github dance is required.
+        (``got_tok`` is accepted as a legacy alias so that older
+        client builds still in browser caches keep working.)
     Returns: 200/400/401
     """
     req=request.json
@@ -405,7 +407,9 @@ def complete_oauth():
     try:
         mudurl = req['mudurl']
         code = None
-        if "got_token" not in req:
+        # ``got_token`` is the canonical flag; ``got_tok`` is the
+        # historical client spelling kept for backward compatibility.
+        if "got_token" not in req and "got_tok" not in req:
             code = req["code"]
     except KeyError:
         log.warning("complete_oauth missing required request field", exc_info=True)
