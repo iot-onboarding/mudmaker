@@ -113,6 +113,45 @@ def collect_flows(pcap_files, device_mac: str) -> Dict[Tuple, Flow]:
     flows: Dict[Tuple, Flow] = {}
     mac = device_mac.lower()
 
+    # Pre-pass: identify every TCP connection the device itself
+    # initiated by recording the 4-tuple of each SYN-without-ACK sent
+    # from the device.  The SYN's destination port is unambiguously the
+    # peer's service port — regardless of how that port compares to the
+    # device's ephemeral source port.  We use this in the main pass
+    # below to suppress the lower-port-wins fallback, which would
+    # otherwise misclassify the device's own ephemeral source port as
+    # the "service port" whenever the real service happens to live
+    # above the device's ephemeral range (e.g. cloud control on
+    # TCP/8767 called from device sport 3299).
+    device_initiated_tcp: set = set()
+    for path in pcap_files:
+        try:
+            pkts = rdpcap(path)
+        except Exception as exc:  # noqa: BLE001
+            sys.stderr.write(f"warning: skipping {path}: {exc}\n")
+            continue
+        for pkt in pkts:
+            if not (pkt.haslayer(Ether) and pkt.haslayer(TCP)):
+                continue
+            eth = pkt[Ether]
+            if eth.src.lower() != mac:
+                continue
+            tcp = pkt[TCP]
+            flags = int(tcp.flags)
+            if not ((flags & 0x02) and not (flags & 0x10)):
+                continue
+            if pkt.haslayer(IP):
+                l3 = pkt[IP]
+                ipver = 4
+            elif pkt.haslayer(IPv6):
+                l3 = pkt[IPv6]
+                ipver = 6
+            else:
+                continue
+            device_initiated_tcp.add(
+                (ipver, l3.dst, int(tcp.dport), int(tcp.sport))
+            )
+
     for path in pcap_files:
         try:
             pkts = rdpcap(path)
@@ -177,12 +216,29 @@ def collect_flows(pcap_files, device_mac: str) -> Dict[Tuple, Flow]:
                 # source port.  If neither end is obviously the
                 # initiator (no SYN seen for this packet) we fall back
                 # to "the lower of the two ports" — well-known services
-                # always sit below the ephemeral range.
+                # usually sit below the ephemeral range.
                 if from_device:
                     service_port = dport
                 else:
                     service_port = sport
-                if service_port is not None and service_port >= 1024:
+                # Suppress the lower-port-wins fallback when this TCP
+                # packet belongs to a connection whose SYN we observed
+                # come from the device.  The SYN's dport is authoritative
+                # and may itself live above 1024 (e.g. cloud-control on
+                # TCP/8767) -- the fallback would otherwise overwrite it
+                # with the device's ephemeral source port.
+                suppress_lowport = False
+                if proto == "tcp":
+                    if from_device:
+                        device_port_here, peer_port_here = sport, dport
+                    else:
+                        device_port_here, peer_port_here = dport, sport
+                    if (ipver, remote_ip, peer_port_here,
+                            device_port_here) in device_initiated_tcp:
+                        suppress_lowport = True
+                if (not suppress_lowport
+                        and service_port is not None
+                        and service_port >= 1024):
                     other = sport if from_device else dport
                     if other is not None and other < service_port:
                         service_port = other
@@ -263,8 +319,11 @@ def collect_dns_map(pcap_files) -> Dict[str, str]:
                 continue
 
             qname = None
-            if dns.qd is not None:
-                qname = _decode(getattr(dns.qd, "qname", None))
+            if int(getattr(dns, "qdcount", 0) or 0) > 0 and dns.qd is not None:
+                try:
+                    qname = _decode(getattr(dns.qd, "qname", None))
+                except (IndexError, AttributeError):
+                    qname = None
             if not qname:
                 continue
 
