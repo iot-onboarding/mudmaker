@@ -675,8 +675,11 @@ def do_the_rest():
             return "PR failed", 400
 
     return {
-        "mfg" : mfg,
-        "model" : model,
+        # ``mfg`` and ``model`` are derived from request-controlled MUD
+        # content and reflected back to the caller; HTML-escape them so
+        # downstream HTML renderers cannot execute injected markup.
+        "mfg" : str(escape(mfg)),
+        "model" : str(escape(model)),
         # ``user`` and ``mudurl`` come from request input and are
         # reflected back to the caller; HTML-escape them so any
         # downstream consumer that renders them as HTML cannot be
