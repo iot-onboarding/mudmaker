@@ -121,6 +121,73 @@ def test_edimax_plug_1101w_consolidation():
            "(got %r)" % (edimax,))
 
 
+def test_build_ace_port_direction_follows_initiator():
+    """``build_ace`` must emit source/destination port based on which
+    end of the connection runs the service.  When the device is the
+    server (``init=to-device``), the from-device ACE matches outbound
+    response packets whose source port is the service port, and the
+    to-device ACE matches inbound request packets whose destination
+    port is the service port.  This is the opposite of the
+    device-as-client case (``init=from-device``).
+    """
+    print("\nbuild_ace() port direction follows initiator:")
+
+    Flow = mudgen_pcap.Flow
+    Endpoint = mudgen_pcap.Endpoint
+    local = Endpoint("local", None)
+
+    # 1. Device as server (e.g. Hue Bridge HTTP on 80).
+    server = Flow(4, "tcp", "10.10.10.30", 80)
+    server.initiator = "to-device"
+    fr = mudgen_pcap.build_ace(server, local, "from", "frace1")
+    to = mudgen_pcap.build_ace(server, local, "to", "toace1")
+
+    _check("source-port" in fr["matches"]["tcp"]
+           and "destination-port" not in fr["matches"]["tcp"],
+           "init=to-device from-device ACE uses source-port")
+    _check(fr["matches"]["tcp"]["source-port"]["port"] == 80,
+           "init=to-device from-device source-port == 80")
+    _check("destination-port" in to["matches"]["tcp"]
+           and "source-port" not in to["matches"]["tcp"],
+           "init=to-device to-device ACE uses destination-port")
+    _check(to["matches"]["tcp"]["destination-port"]["port"] == 80,
+           "init=to-device to-device destination-port == 80")
+    _check(fr["matches"]["tcp"]["ietf-mud:direction-initiated"]
+           == "to-device",
+           "init=to-device from-device carries direction-initiated")
+    _check(to["matches"]["tcp"]["ietf-mud:direction-initiated"]
+           == "to-device",
+           "init=to-device to-device carries direction-initiated")
+
+    # 2. Device as client (e.g. bridge -> bridge.meethue.com:80).
+    client = Flow(4, "tcp", "130.211.93.93", 80)
+    client.initiator = "from-device"
+    fr = mudgen_pcap.build_ace(client, local, "from", "frace1")
+    to = mudgen_pcap.build_ace(client, local, "to", "toace1")
+    _check("destination-port" in fr["matches"]["tcp"]
+           and fr["matches"]["tcp"]["destination-port"]["port"] == 80,
+           "init=from-device from-device ACE uses destination-port=80")
+    _check("source-port" in to["matches"]["tcp"]
+           and to["matches"]["tcp"]["source-port"]["port"] == 80,
+           "init=from-device to-device ACE uses source-port=80")
+
+    # 3. Unknown initiator (UDP or mid-stream TCP) defaults to
+    #    "remote runs the service" -- matches the device-as-client
+    #    behaviour above.
+    udp = Flow(4, "udp", "8.8.8.8", 53)
+    fr = mudgen_pcap.build_ace(udp, local, "from", "frace1")
+    to = mudgen_pcap.build_ace(udp, local, "to", "toace1")
+    _check("destination-port" in fr["matches"]["udp"]
+           and fr["matches"]["udp"]["destination-port"]["port"] == 53,
+           "UDP/unknown-init from-device ACE uses destination-port=53")
+    _check("source-port" in to["matches"]["udp"]
+           and to["matches"]["udp"]["source-port"]["port"] == 53,
+           "UDP/unknown-init to-device ACE uses source-port=53")
+    _check("ietf-mud:direction-initiated" not in fr["matches"]["udp"],
+           "UDP ACE omits direction-initiated")
+
+
 if __name__ == "__main__":
     test_edimax_plug_1101w_consolidation()
+    test_build_ace_port_direction_follows_initiator()
     print("OK")

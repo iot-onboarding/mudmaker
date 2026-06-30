@@ -513,12 +513,22 @@ def build_ace(flow: Flow, endpoint: Endpoint, direction: str,
     # L4 ports / direction-initiated.
     if flow.proto in ("tcp", "udp") and flow.service_port is not None:
         l4: Dict[str, object] = {}
+        # Pick source-port vs destination-port based on which end runs
+        # the service.  When the device itself is the server
+        # (``flow.initiator == "to-device"``) the service port appears
+        # as the destination port of inbound packets and the source
+        # port of outbound responses -- the opposite of the
+        # device-as-client case.  When the initiator is unknown
+        # (UDP, or mid-stream TCP captures with no SYN observed) we
+        # default to assuming the remote runs the service, which
+        # matches the dominant pattern for IoT traffic.
+        service_on_device = (flow.proto == "tcp"
+                             and flow.initiator == "to-device")
         if direction == "from":
-            l4["destination-port"] = {"operator": "eq",
-                                      "port": flow.service_port}
+            port_key = "source-port" if service_on_device else "destination-port"
         else:
-            l4["source-port"] = {"operator": "eq",
-                                 "port": flow.service_port}
+            port_key = "destination-port" if service_on_device else "source-port"
+        l4[port_key] = {"operator": "eq", "port": flow.service_port}
         if flow.proto == "tcp" and flow.initiator:
             l4["ietf-mud:direction-initiated"] = flow.initiator
         matches[flow.proto] = l4
@@ -611,7 +621,49 @@ def build_mud(flows: Dict[Tuple, Flow], *, mud_url: str,
             new_has = _has_initiator(pair[0]) or _has_initiator(pair[1])
             if new_has and not cur_has:
                 chosen[sig] = pair
-        deduped_per_ipver[ipver] = [chosen[s] for s in order]
+        # Secondary subsumption: when one pair has a known initiator
+        # and another describes the same endpoint+port pattern but
+        # with an unknown initiator (so its port-direction is the
+        # "remote-service" default guess), drop the unknown-initiator
+        # pair -- the known-initiator pair already explains that
+        # traffic with the correct port direction.  This recovers the
+        # collapse that used to happen accidentally when both pairs
+        # produced identical port keys before the build_ace fix.
+        def _norm_port_dir(matches: dict) -> dict:
+            out: dict = {}
+            for k, v in matches.items():
+                if isinstance(v, dict):
+                    norm: dict = {}
+                    for kk, vv in v.items():
+                        if kk in ("source-port", "destination-port"):
+                            norm["_port"] = vv
+                        else:
+                            norm[kk] = vv
+                    out[k] = norm
+                else:
+                    out[k] = v
+            return out
+
+        def _port_norm_signature(pair: Tuple[dict, dict]) -> str:
+            fr, to = pair
+            return json.dumps((_norm_port_dir(_strip_initiator(fr["matches"])),
+                               _norm_port_dir(_strip_initiator(to["matches"]))),
+                              sort_keys=True)
+
+        known_norm_sigs = {
+            _port_norm_signature(chosen[s]) for s in order
+            if _has_initiator(chosen[s][0]) or _has_initiator(chosen[s][1])
+        }
+        final_order: list = []
+        for s in order:
+            pair = chosen[s]
+            has_init = (_has_initiator(pair[0])
+                        or _has_initiator(pair[1]))
+            if not has_init:
+                if _port_norm_signature(pair) in known_norm_sigs:
+                    continue
+            final_order.append(s)
+        deduped_per_ipver[ipver] = [chosen[s] for s in final_order]
 
     # Post-classification subsumption: if two pairs share the same
     # host classification and protocol but one has "any port" (no
