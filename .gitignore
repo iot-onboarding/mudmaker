@@ -14,3 +14,5 @@ tmp
 # axe-core is fetched at test runtime into tests/vendor/.
 tests/vendor/
 
+# deploy
+deploy
