@@ -357,7 +357,11 @@ function addEntry(entry){
 
 	if ( dnsorurl == 'dns' ) {
 	    typefield="'text'";
-	    pattern = " pattern='[a-z0-9.-]+\.[a-z]{2,3}$'";
+	    // Escape the hyphen (required under the RegExp `v` flag that
+	    // modern browsers now apply to HTML5 pattern attributes) and
+	    // double-escape the literal dot so the backslash actually
+	    // survives into the rendered HTML attribute.
+	    pattern = " pattern='[a-z0-9.\\-]+\\.[a-z]{2,3}$'";
 	    readonly=0;
 	    placeholder=" placeholder='hostname.manufacturer.com'";
 	} else if ( dnsorurl == 'url' ) {
