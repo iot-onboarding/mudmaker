@@ -7,5 +7,5 @@ MarkupSafe>=3.0.2
 requests>=2.34.2
 scapy>=2.7.0
 setuptools>=82.0.1
-urllib3>=2.3.0
+urllib3>=2.7.0
 Werkzeug>=3.1.3
