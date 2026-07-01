@@ -451,7 +451,7 @@
 			return "thing";
 		}
 		if (initiated === "to-device") {
-			return "the endpoint";
+			return "remote endpoint";
 		}
 		return "either endpoint";
 	}
