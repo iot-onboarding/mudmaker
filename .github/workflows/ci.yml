@@ -123,7 +123,7 @@ jobs:
           cache-to: type=gha,scope=mudmaker,mode=max
 
       - name: Upload image tarballs
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: docker-images-${{ github.sha }}
           path: /tmp/*.tar
@@ -236,7 +236,7 @@ jobs:
 
       - name: Upload artifacts on failure
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: integration-artifacts-${{ github.sha }}
           path: _artifacts/
