@@ -736,10 +736,19 @@ def build_mud(flows: Dict[Tuple, Flow], *, mud_url: str,
     # ``fr{aceBase}`` for from-device and ``to{aceBase}`` for to-device,
     # where ``aceBase`` is e.g. ``ace7``.  Using this format lets the UI
     # pair the two ACLs back into a single form row per flow.
-    for ipver, pairs in deduped_per_ipver.items():
-        for i, (fr, to) in enumerate(pairs, start=1):
-            fr["name"] = f"frace{i}"
-            to["name"] = f"toace{i}"
+    #
+    # The counter is kept global across IP versions so a v4 flow and a
+    # v6 flow never share the same ``ace{N}`` suffix.  The mudmaker UI
+    # keys its per-row state on that suffix, so a collision (v4 frace1
+    # and v6 frace1) would cause one of the two rows to be silently
+    # suppressed in the editor as an apparent duplicate.
+    global_counter = 0
+    for ipver in (4, 6):
+        pairs = deduped_per_ipver.get(ipver, [])
+        for fr, to in pairs:
+            global_counter += 1
+            fr["name"] = f"frace{global_counter}"
+            to["name"] = f"toace{global_counter}"
             aces[("from", ipver)].append(fr)
             aces[("to", ipver)].append(to)
 

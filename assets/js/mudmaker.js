@@ -744,6 +744,33 @@ function reloadFields(){
 			document.getElementById(item).value = mf[item];
 		}
 	});
+	// Infer the "This device speaks" (#ipchoice) selection from the
+	// ACL types actually present in the loaded MUD file.  Without this
+	// step the dropdown keeps its default (ipv4) even when the file
+	// carries IPv6 (or both) ACLs, and any subsequent save via
+	// makeAcls() would drop the IPv6 side.
+	var ipChoiceEl = document.getElementById('ipchoice');
+	if (ipChoiceEl) {
+		var hasV4 = false;
+		var hasV6 = false;
+		var aclsForType = document.mudFile
+			&& document.mudFile['ietf-access-control-list:acls']
+			&& document.mudFile['ietf-access-control-list:acls']['acl'];
+		if (Array.isArray(aclsForType)) {
+			aclsForType.forEach(function(acl) {
+				if (!acl || typeof acl.type !== 'string') { return; }
+				if (acl.type === 'ipv4-acl-type') { hasV4 = true; }
+				else if (acl.type === 'ipv6-acl-type') { hasV6 = true; }
+			});
+		}
+		if (hasV4 && hasV6) {
+			ipChoiceEl.value = 'both';
+		} else if (hasV6) {
+			ipChoiceEl.value = 'ipv6';
+		} else if (hasV4) {
+			ipChoiceEl.value = 'ipv4';
+		}
+	}
 	if (typeof mf['ol'] != 'undefined' && typeof mf['ol']['owners'] != 'undefined') {
 		document.getElementById('pub_name').value = mf['ol']['owners'][0];
 	}
@@ -811,6 +838,15 @@ function reloadFields(){
 
 				var nextAce;
 				let ipVer = null;
+				// figure out ip version up-front so we can
+				// scope the name-based dedupe below by
+				// address family (frace1 in the v4 ACL is a
+				// different flow from frace1 in the v6 ACL).
+				if (typeof ace['matches']["ipv4"] != 'undefined') {
+					ipVer = 'ipv4';
+				} else if (typeof ace['matches']["ipv6"] != 'undefined') {
+					ipVer = 'ipv6';
+				}
 				// get aceBase value
 				let re = /^..(ace.*)/;
 				let aceMatch = ace.name && ace.name.match(re);
@@ -826,17 +862,17 @@ function reloadFields(){
 				// Secondary dedupe: name-based, kept so we
 				// don't double-render if two ACEs happen to
 				// share aceBase but produce different sigs
-				// (e.g. partial loads).
-				if (seenAceBases[aceBase]) {
+				// (e.g. partial loads).  Qualified by ipver
+				// so a v4 and a v6 flow that happen to share
+				// the same aceN suffix don't collide -- MUD
+				// files whose v4 and v6 ACLs both start
+				// numbering from 1 (as this generator emits)
+				// otherwise silently drop one of the two.
+				var aceBaseKey = (ipVer || 'any') + ':' + aceBase;
+				if (seenAceBases[aceBaseKey]) {
 					return;
 				}
-				seenAceBases[aceBase] = true;
-				// figure out type and then proceed.
-				if (typeof ace['matches']["ipv4"] != 'undefined') {
-					ipVer = 'ipv4';
-				} else if (typeof ace['matches']["ipv6"] != 'undefined') {
-					ipVer = 'ipv6';
-				}
+				seenAceBases[aceBaseKey] = true;
 				if (typeof ace['matches']["ietf-mud:mud"] != 'undefined'){
 					for (let val in mudtypes ) {
 						if ( typeof ace['matches']["ietf-mud:mud"][mudtypes[val]] != 'undefined') {
@@ -1308,35 +1344,102 @@ function makeAcls(){
 	var toacls;
 	var fracls;
 
-	if (typeof document.aclBase != 'undefined') {
-		return;
+	// Bootstrap the ACL container on a fresh MUD (no aclBase, no
+	// existing ACLs).  When either is present we skip the reset so
+	// we can top up missing address-family ACLs below without
+	// destroying the user's existing work.
+	if (typeof document.aclBase == 'undefined') {
+		if (!restoreAclBaseFromMUDFile()) {
+			document.mudFile["ietf-access-control-list:acls"] = {"acl": []};
+			document.aclBase = 'acl' + Math.floor(Math.random()*100000);
+		}
 	}
-	if (restoreAclBaseFromMUDFile()) {
-		return;
-	}
-	document.mudFile["ietf-access-control-list:acls"] = {"acl": []};
-
-	document.aclBase= 'acl' + Math.floor(Math.random()*100000);
 	bn = document.aclBase;
-	mud['from-device-policy'] = {
-		"access-lists" : {"access-list" : []}
-	};
-	mud['to-device-policy'] = {
-		"access-lists" : {"access-list" : []}
-	};
+
+	// Ensure the policy blocks exist so we can register any newly
+	// added ACLs below.
+	if (typeof mud['from-device-policy'] == 'undefined') {
+		mud['from-device-policy'] = {
+			"access-lists" : {"access-list" : []}
+		};
+	}
+	if (typeof mud['to-device-policy'] == 'undefined') {
+		mud['to-device-policy'] = {
+			"access-lists" : {"access-list" : []}
+		};
+	}
 	toacls=mud['to-device-policy']['access-lists']["access-list"];
 	fracls=mud['from-device-policy']['access-lists']["access-list"];
-	if ( acltype == 'ipv4' || acltype == 'both') {
-		toacls.push({'name' : 'toipv4-' + bn});
-		makeAcl('toipv4-' + bn, "ipv4");
-		fracls.push({'name' : 'fripv4-' + bn});
-		makeAcl('fripv4-' + bn, "ipv4");
+
+	// Detect which address families already have ACLs so we only
+	// add the ones that are actually missing.  This lets the user
+	// switch #ipchoice from "IPv4" to "Both" (or edit a Both MUD
+	// that currently only carries v4 ACEs) and have subsequent
+	// updates land in a fresh v6 ACL pair -- previously the extra
+	// entries were silently dropped because updateAce()'s per-ACL
+	// address-family guard filtered them out with no v6 ACL to
+	// receive them.
+	var hasV4 = false;
+	var hasV6 = false;
+	var aclList = (document.mudFile["ietf-access-control-list:acls"]
+		&& document.mudFile["ietf-access-control-list:acls"]["acl"]) || [];
+	aclList.forEach(function(a) {
+		if (!a || typeof a.type !== 'string') { return; }
+		if (a.type === 'ipv4-acl-type') { hasV4 = true; }
+		else if (a.type === 'ipv6-acl-type') { hasV6 = true; }
+	});
+
+	function pushRef(list, name) {
+		for (var i = 0; i < list.length; i++) {
+			if (list[i] && list[i].name === name) { return; }
+		}
+		list.push({'name' : name});
 	}
-	if ( acltype == 'ipv6' || acltype == 'both') {
-		toacls.push({'name' : 'toipv6-' + bn});
-		makeAcl('toipv6-' + bn, "ipv6");
-		fracls.push({'name' : 'fripv6-' + bn});
-		makeAcl('fripv6-' + bn, "ipv6");
+
+	// When topping up a missing address family, prefer to derive the
+	// new ACL names from the existing peers' shared prefix so the
+	// naming stays symmetric (e.g. mud-88149-v4fr + mud-88149-v6fr).
+	// If no consistent prefix can be found, fall back to the
+	// aclBase-based names used for fresh MUDs.
+	function deriveNames(missingIpver) {
+		var peerToken = missingIpver === 'v4' ? 'v6' : 'v4';
+		var frRe = new RegExp('^(.+)-' + peerToken + 'fr$');
+		var toRe = new RegExp('^(.+)-' + peerToken + 'to$');
+		var frPrefix = null;
+		var toPrefix = null;
+		for (var i = 0; i < aclList.length; i++) {
+			var a = aclList[i];
+			if (!a || typeof a.name !== 'string') { continue; }
+			var m = a.name.match(frRe);
+			if (m && frPrefix == null) { frPrefix = m[1]; }
+			m = a.name.match(toRe);
+			if (m && toPrefix == null) { toPrefix = m[1]; }
+		}
+		if (frPrefix && toPrefix && frPrefix === toPrefix) {
+			return {
+				fr: frPrefix + '-' + missingIpver + 'fr',
+				to: toPrefix + '-' + missingIpver + 'to'
+			};
+		}
+		return {
+			fr: 'fr' + (missingIpver === 'v4' ? 'ipv4' : 'ipv6') + '-' + bn,
+			to: 'to' + (missingIpver === 'v4' ? 'ipv4' : 'ipv6') + '-' + bn
+		};
+	}
+
+	if ((acltype == 'ipv4' || acltype == 'both') && !hasV4) {
+		var v4 = deriveNames('v4');
+		pushRef(toacls, v4.to);
+		makeAcl(v4.to, "ipv4");
+		pushRef(fracls, v4.fr);
+		makeAcl(v4.fr, "ipv4");
+	}
+	if ((acltype == 'ipv6' || acltype == 'both') && !hasV6) {
+		var v6 = deriveNames('v6');
+		pushRef(toacls, v6.to);
+		makeAcl(v6.to, "ipv6");
+		pushRef(fracls, v6.fr);
+		makeAcl(v6.fr, "ipv6");
 	}
 }
 
