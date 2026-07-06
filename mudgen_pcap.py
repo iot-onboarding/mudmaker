@@ -17,8 +17,14 @@ Behaviour:
     ``ietf-mud:direction-initiated`` leaf.
   - Remote endpoints are classified:
 
-      * Private / link-local / multicast / broadcast addresses are
-        treated as RFC 8520 ``local-networks``.
+      * Private / link-local / loopback addresses are treated as
+        RFC 8520 ``local-networks``.
+      * Multicast destinations (IPv4 224.0.0.0/4, IPv6 ff00::/8) and
+        the IPv4 limited broadcast address (255.255.255.255) are
+        emitted as their own RFC 8519 destination-prefix ACEs
+        (``destination-ipv4-network``/``destination-ipv6-network`` at
+        /32 or /128).  They do not contribute to the ``local-networks``
+        aggregation.
       * For public addresses we consult an ``IP -> name`` map built
         from DNS responses observed *in the captures themselves*.
         When the IP appears in that map the queried name is used
@@ -66,20 +72,46 @@ except ImportError:  # pragma: no cover
 # ---------------------------------------------------------------------------
 
 
+def _is_multicast_or_broadcast(ip: str) -> bool:
+    """True for IPv4/IPv6 multicast or the IPv4 limited broadcast address.
+
+    These destinations only appear on the wire as *outbound* packets from
+    the device (multicast/broadcast source addresses are illegal), so the
+    generator emits them as their own RFC 8519 destination-prefix ACEs
+    rather than folding them into the ``local-networks`` abstraction.
+    """
+    try:
+        addr = ipaddress.ip_address(ip)
+    except ValueError:
+        return False
+    if addr.is_multicast:
+        return True
+    if (isinstance(addr, ipaddress.IPv4Address)
+            and str(addr) == "255.255.255.255"):
+        return True
+    return False
+
+
 def _is_local(ip: str) -> bool:
-    """Private, link-local, multicast, broadcast or loopback."""
+    """Private, link-local or loopback unicast addresses.
+
+    Multicast and broadcast destinations are deliberately excluded here
+    even though they nominally sit within the local segment: they are
+    classified separately by ``_is_multicast_or_broadcast`` and become
+    explicit RFC 8519 destination-prefix ACEs instead of collapsing into
+    the ``local-networks`` abstraction.
+    """
     try:
         addr = ipaddress.ip_address(ip)
     except ValueError:
         return True
+    if _is_multicast_or_broadcast(ip):
+        return False
     return (
         addr.is_private
         or addr.is_link_local
-        or addr.is_multicast
         or addr.is_loopback
         or addr.is_unspecified
-        or (isinstance(addr, ipaddress.IPv4Address)
-            and str(addr) == "255.255.255.255")
     )
 
 
