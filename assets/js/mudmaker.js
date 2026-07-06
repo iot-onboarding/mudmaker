@@ -1380,7 +1380,6 @@ function makeproto(acl_entry,proto,sport,dport,cominit){
 function updateAce(acl,ace_entry,aceBase,p){
 	// distinguish between to and from.  just means choosing src or dst fields; also for transport.
 	const actions = { "forwarding" : "accept"};
-	const re=/^fr.*/;
 	var direction;
 	var ace_name;
 	var matchname;
@@ -1406,13 +1405,25 @@ function updateAce(acl,ace_entry,aceBase,p){
 		ipver = "ipv6";
 	}
 
-	if (acl.name.match(re) == null) {
-		direction='to';
-		ace_name = 'to' + aceBase;
-	} else {
-		direction='from';
-		ace_name = 'fr' + aceBase;
+	// Resolve the ACL's direction from the policy references (the
+	// authoritative source), falling back to the historical naming
+	// convention where the ACL name ends in "fr" or "to".  The old
+	// check used /^fr.*/, which never matched the generator's actual
+	// names (e.g. "mud-88149-v4fr"), so every ACL was treated as
+	// to-device and edits appended a stray to<aceBase> ACE with
+	// source-* fields into the from-device ACL.
+	var mudBlock = (typeof document !== 'undefined' && document.mudFile)
+		? document.mudFile['ietf-mud:mud'] : null;
+	var dirMap = mudBlock ? _aclDirections(mudBlock) : {};
+	direction = dirMap[acl.name];
+	if (direction !== 'from' && direction !== 'to') {
+		if (/fr$/.test(acl.name)) {
+			direction = 'from';
+		} else {
+			direction = 'to';
+		}
 	}
+	ace_name = (direction === 'from' ? 'fr' : 'to') + aceBase;
 
 	if ( p.id == 'cl') {
 		if ( direction == 'to') {
