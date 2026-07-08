@@ -103,18 +103,18 @@ def main():
     resp = client.open(environ_overrides=env, method="POST", path="/therest")
     body = resp.get_json()
     assert resp.status_code == 200, (resp.status_code, body)
-    assert body["mfg"] == "Acme-Devices", body
-    assert body["model"] == "Acme-Thermostat", body
+    assert body["mfg"] == "acme-devices", body
+    assert body["model"] == "acme-thermostat", body
     stored = [p["stored"] for p in body["pcaps"]]
     assert stored == [
-        "Acme-Devices/Acme-Thermostat/setup-1.pcap",
-        "Acme-Devices/Acme-Thermostat/setup_a.pcap",
-        "Acme-Devices/Acme-Thermostat/setup_a-1.pcap",
+        "acme-devices/acme-thermostat/setup-1.pcap",
+        "acme-devices/acme-thermostat/setup_a.pcap",
+        "acme-devices/acme-thermostat/setup_a-1.pcap",
     ], stored
     # 1 MUD JSON + 3 pcaps = 4 uploads, all in the same directory
     assert len(uploaded) == 4, [u["filename"] for u in uploaded]
     assert uploaded[0]["filename"] == \
-        "Acme-Devices/Acme-Thermostat/Acme-Thermostat.json"
+        "acme-devices/acme-thermostat/acme-thermostat.json"
     print("ok case 1: 3 pcaps including a collision uploaded with -N suffix")
 
     # -- Case 2: zero pcaps -> only the MUD JSON is uploaded. --
@@ -162,10 +162,10 @@ def main():
     # legacy path keeps the historical pcap filename layout, but the
     # JSON now lives next to it under the model directory.
     assert uploaded[0]["filename"] == \
-        "Acme-Devices/Acme-Thermostat/Acme-Thermostat.json", uploaded
-    assert uploaded[1]["filename"] == "Acme-Devices/Acme-Thermostat.pcap", \
+        "acme-devices/acme-thermostat/acme-thermostat.json", uploaded
+    assert uploaded[1]["filename"] == "acme-devices/acme-thermostat.pcap", \
         uploaded
-    assert body["pcaps"][0]["stored"] == "Acme-Devices/Acme-Thermostat.pcap"
+    assert body["pcaps"][0]["stored"] == "acme-devices/acme-thermostat.pcap"
     print("ok case 4: legacy JSON body still uploads as <mfg>/<model>.pcap")
 
     print("OK")

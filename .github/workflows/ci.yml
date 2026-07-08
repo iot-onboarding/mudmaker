@@ -29,6 +29,35 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      - name: Dockerfile guard rail — no secrets in image layers
+        # T-05/T-18 defence-in-depth: fail the build if the Dockerfile
+        # ever tries to bake a secret into an image layer.  Secrets
+        # must arrive at container start via a compose `secrets:`
+        # block, a runtime bind-mount, or an external secret manager
+        # -- never via COPY, ENV, or ARG.  The bind-mounted
+        # `config.ini` handled by docker-compose.yml is fine; this
+        # check only fires on `COPY .../config.ini` lines in
+        # Dockerfile itself.
+        run: |
+          set -e
+          bad=$(grep -nEi \
+              -e '^[[:space:]]*COPY[[:space:]].*config\.ini' \
+              -e '^[[:space:]]*ENV[[:space:]].*(SECRET|CLIENT_SECRET|TOKEN|PASSWORD|PASSPHRASE|API_?KEY|CREDENTIAL|PRIVATE_KEY)([[:space:]=]|$)' \
+              -e '^[[:space:]]*ARG[[:space:]].*(SECRET|CLIENT_SECRET|TOKEN|PASSWORD|PASSPHRASE|API_?KEY|CREDENTIAL|PRIVATE_KEY)([[:space:]=]|$)' \
+              Dockerfile || true)
+          if [ -n "$bad" ]; then
+            echo "::error title=Dockerfile secret leak::Secrets must not be baked into image layers." >&2
+            echo "Offending lines:" >&2
+            echo "$bad" >&2
+            echo "" >&2
+            echo "Fix: inject secrets at container start via a compose" >&2
+            echo "'secrets:' block, a runtime bind-mount, or an external" >&2
+            echo "secret manager.  See GITHUB_REMEDIATION_PLAN.md and the" >&2
+            echo "discussion in the security notes for details." >&2
+            exit 1
+          fi
+          echo "OK: no secret-shaped tokens or config.ini COPYs in Dockerfile."
+
       - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
@@ -75,11 +104,20 @@ jobs:
 
           [storage]
           db_path = /tmp/gitmud-ci.sqlite
+
+          [security]
+          allowed_origins =
+          session_ttl_seconds = 3600
+          janitor_interval_seconds = 3600
+          legacy_mudurl_fallback = true
           CFG
           python tests/test_pcap_sanitise.py
           python tests/test_publish_multi.py
           python tests/test_acl_dedupe.py
           python tests/test_pcap_merge.py
+          python tests/test_ref_sanitise.py
+          python tests/test_session_bearer.py
+          python tests/test_oauth_complete.py
 
   docker-build:
     name: Build docker images
@@ -92,6 +130,18 @@ jobs:
 
       - name: Validate docker-compose
         run: docker compose config --quiet
+
+      - name: Verify MUDCERTS_REF is pinned to a commit SHA (T-28)
+        # Phase 5: reject non-SHA pins so a future accidental
+        # ``ARG MUDCERTS_REF=main`` cannot silently ship.  A 40-char
+        # lowercase hex string is the only accepted form.
+        run: |
+          ref=$(awk '/^ARG MUDCERTS_REF=/{sub(/^ARG MUDCERTS_REF=/,"",$0); print; exit}' Dockerfile)
+          echo "MUDCERTS_REF = $ref"
+          if ! echo "$ref" | grep -Eq '^[0-9a-f]{40}$'; then
+            echo "MUDCERTS_REF must be a 40-char lowercase hex commit SHA" >&2
+            exit 1
+          fi
 
       - name: Build mudzipserver
         uses: docker/build-push-action@v7
@@ -180,6 +230,12 @@ jobs:
 
           [storage]
           db_path = /var/lib/gitmud/tokens.sqlite
+
+          [security]
+          allowed_origins =
+          session_ttl_seconds = 3600
+          janitor_interval_seconds = 3600
+          legacy_mudurl_fallback = true
           CFG
 
       - name: Stage SmarterCoffee pcap fixtures
