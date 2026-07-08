@@ -956,7 +956,8 @@ def do_branch():
         mfg = _sanitise_ref_component(req.get("mfg"), "mfg")
         model = _sanitise_ref_component(req.get("model"), "model")
     except ValueError as exc:
-        return jsonify({"error": str(exc)}), 400
+        log.warning("Invalid branch request payload: %s", exc)
+        return jsonify({"error": "invalid request payload"}), 400
 
     ref_obj = git_get(
         _github_path("repos", user, "mudfiles", "git", "refs",
