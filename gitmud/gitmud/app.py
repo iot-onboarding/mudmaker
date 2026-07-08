@@ -956,8 +956,17 @@ def do_branch():
         mfg = _sanitise_ref_component(req.get("mfg"), "mfg")
         model = _sanitise_ref_component(req.get("model"), "model")
     except ValueError as exc:
+        # Reflecting str(exc) is safe here: _sanitise_ref_component
+        # only raises messages built from developer-authored literals
+        # (e.g. "mfg: forbidden characters").  It NEVER interpolates
+        # the user-supplied ``name`` argument into the message, so
+        # nothing attacker-influenced reaches the response body.
+        # Telling the caller which field is wrong is required for the
+        # UI to render a useful error to the user.
+        # lgtm[py/stack-trace-exposure]
+        # codeql[py/stack-trace-exposure]
         log.warning("Invalid branch request payload: %s", exc)
-        return jsonify({"error": "invalid request payload"}), 400
+        return jsonify({"error": str(exc)}), 400
 
     ref_obj = git_get(
         _github_path("repos", user, "mudfiles", "git", "refs",
@@ -1058,8 +1067,17 @@ def do_the_rest():
         model = _sanitise_ref_component(
             mud["ietf-mud:mud"].get("systeminfo"), "systeminfo")
     except ValueError as exc:
+        # Reflecting str(exc) is safe here: _sanitise_ref_component
+        # only raises messages built from developer-authored literals
+        # (e.g. "mfg-name: forbidden characters").  It NEVER
+        # interpolates the user-supplied ``name`` argument into the
+        # message, so nothing attacker-influenced reaches the response
+        # body.  Telling the caller which field is wrong is required
+        # for the UI to render a useful error to the user.
+        # lgtm[py/stack-trace-exposure]
+        # codeql[py/stack-trace-exposure]
         log.info("Invalid ref component in request payload: %s", exc)
-        return jsonify({"error": "invalid request payload"}), 400
+        return jsonify({"error": str(exc)}), 400
     branch_name = mfg + "-" + model
 
     pcaps_result = []   # list[{original, stored, sha}]
