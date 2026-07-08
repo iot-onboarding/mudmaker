@@ -148,23 +148,11 @@ function openTab(evt, tabName) {
 		pre.innerText = JSON.stringify(document.mudFile,null,2);
 	} else if (tabName == "publish") {
 		refreshmans();
-		let mud=document.mudFile["ietf-mud:mud"];
-		if ( typeof mud["mud-url"] != 'undefined' ) {
-			let gotTokenURL = new URL("/gitShovel/gottoken", window.location.href);
-			gotTokenURL.searchParams.set("mudurl", mud["mud-url"]);
-			fetch(gotTokenURL.href, {
-				method : "GET",
-				headers :{
-				"Accept" : "application/json"
-				}
-			})
-			.then(response => {
-				if ( ! response.ok ) {
-				return;
-				}
-				sessionStorage.setItem("gottoken","true");
-			})
-		}
+		// Phase 3: whether we already have credentials is a purely
+		// local question -- if the browser holds a session bearer in
+		// sessionStorage, oAuthP1/oAuthP2 will use it; otherwise a
+		// fresh OAuth dance runs.  No server round-trip needed here
+		// (kills T-02, the /gottoken presence oracle).
 	}
 	// Get all elements with class="tablinks" and remove the class "active"
 	tablinks = document.getElementsByClassName("tablinks");

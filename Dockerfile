@@ -1,12 +1,25 @@
 FROM golang:1.26-bookworm AS mudcerts-builder
 
-ARG MUDCERTS_REF=main
+# Pin mudcerts to a specific commit SHA (T-28).  Bump this on every
+# mudcerts release with a matching PR here.  A branch name (e.g.
+# ``main``) is rejected at build time by the [ -z "$non_hex" ] check
+# below so a future accidental "MUDCERTS_REF=main" cannot slip
+# through -- the whole point of pinning is that ``go mod verify`` is
+# only meaningful if the tree it verifies is itself immutable.
+ARG MUDCERTS_REF=46fc87dae8d88b9306d03c507d54910840dc24c2
 
-RUN git clone https://github.com/iot-onboarding/mudcerts.git /src/mudcerts && \
-    cd /src/mudcerts && \
-    git checkout "${MUDCERTS_REF}" && \
-    go mod download && \
-    CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o /out/mudzipserver ./web
+RUN case "${MUDCERTS_REF}" in \
+      [0-9a-f]*) : ;; \
+      *) echo "MUDCERTS_REF must be a 40-char commit SHA, got: ${MUDCERTS_REF}" >&2; exit 1 ;; \
+    esac \
+    && test "$(printf '%s' "${MUDCERTS_REF}" | wc -c)" = "40" \
+    && git clone https://github.com/iot-onboarding/mudcerts.git /src/mudcerts \
+    && cd /src/mudcerts \
+    && git checkout "${MUDCERTS_REF}" \
+    && test "$(git rev-parse HEAD)" = "${MUDCERTS_REF}" \
+    && go mod download \
+    && go mod verify \
+    && CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o /out/mudzipserver ./web
 
 FROM scratch AS mudzipserver
 

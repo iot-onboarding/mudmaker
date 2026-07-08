@@ -1,7 +1,9 @@
 #!/bin/sh
 # Initialise the gitmud SQLite database on first run, then exec the supplied
 # command (typically gunicorn). Safe to run on every container start because
-# the schema is only created when the database file is missing.
+# the schema is only created when the database file is missing, and the
+# in-app _ensure_schema() call handles new tables (e.g. Phase 3 ``sessions``)
+# on existing databases idempotently.
 
 set -eu
 
@@ -24,5 +26,9 @@ finally:
     conn.close()
 PY
 fi
+
+# T-18 remediation: the token store contains bearer credentials.
+# Keep it readable only by the gitmud user regardless of umask history.
+chmod 600 "${DB_PATH}"
 
 exec "$@"

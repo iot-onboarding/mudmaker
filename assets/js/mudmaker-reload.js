@@ -58,6 +58,13 @@
 	try {
 		global.sessionStorage.removeItem("mudfile");
 		global.sessionStorage.removeItem("pcap");
+		global.sessionStorage.removeItem("pcaps");
+		// Phase 3: session bearer lives here.  Reloading the tab is
+		// the user's implicit "start over"; drop the bearer so the
+		// next publish requires a fresh OAuth dance.
+		global.sessionStorage.removeItem("mudmaker_session");
+		// Legacy Phase-2 key; still cleared so browsers upgrading
+		// mid-session don't leave a stale flag behind.
 		global.sessionStorage.removeItem("gottoken");
 	} catch (e) {
 		return;
