@@ -1058,7 +1058,8 @@ def do_the_rest():
         model = _sanitise_ref_component(
             mud["ietf-mud:mud"].get("systeminfo"), "systeminfo")
     except ValueError as exc:
-        return jsonify({"error": str(exc)}), 400
+        log.info("Invalid ref component in request payload: %s", exc)
+        return jsonify({"error": "invalid request payload"}), 400
     branch_name = mfg + "-" + model
 
     pcaps_result = []   # list[{original, stored, sha}]
