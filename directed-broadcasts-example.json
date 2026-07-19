@@ -1,0 +1,22 @@
+{
+  "ietf-mud:mud": {
+    "mud-version": 1,
+    "mud-url": "https://iot.example.com/modelX.json",
+    "mud-signature": "https://iot.example.com/modelX.p7s",
+    "last-update": "2022-01-05T13:30:31+00:00",
+    "extensions": [
+      "directed-broadcasts",
+      "multicast-across-segments"
+    ],
+    "mud-directed-broadcasts:directed-broadcasts": {
+      "inbound": true,
+      "outbound": true
+    },
+    "cache-validity": 48,
+    "is-supported": true,
+    "systeminfo": "Sample IoT device",
+    "mfg-name": "Example, Inc.",
+    "documentation": "https://iot.example.com/doc/modelX",
+    "model-name": "modelX"
+  }
+}
