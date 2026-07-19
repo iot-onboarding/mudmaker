@@ -714,9 +714,14 @@
 
 		drawNodeIcon(group, position, kind, radius);
 		var labelText = shorten(label, isDevice ? 30 : 24);
-		var labelY = position.y + radius + 24;
+		// Sit the label just below the icon so it visually belongs to
+		// its own node rather than to the next node down.  The old
+		// offset (+24) put the label roughly at the midpoint between
+		// two vertically-stacked nodes, so packed layouts read the
+		// label as belonging to the *next* icon.
+		var labelY = position.y + radius + 6;
 		var subtitleText = subtitle ? shorten(subtitle, 22) : "";
-		var subtitleY = position.y + radius + 43;
+		var subtitleY = position.y + radius + 25;
 
 		group.appendChild(createSvg("rect", {
 			x: position.x - labelWidth(labelText) / 2,
@@ -779,11 +784,46 @@
 		});
 		internetEndpoints.forEach(function(endpoint, index) {
 			var count = internetEndpoints.length;
-			var y = count === 1 ? 300 : 145 + (index * 310 / Math.max(1, count - 1));
-			positions[endpoint.id] = {
-				x: 750,
-				y: y
-			};
+			// Vertical range available for internet endpoints, and the
+			// minimum vertical spacing needed so a cloud's label
+			// (rect ends at center + radius + 30) does not collide
+			// with the next cloud's icon (starts at next center - 14).
+			// That requires a per-row gap of at least ~82 units.
+			var yTop = 145;
+			var yBottom = 555;
+			var minRowGap = 82;
+			var maxRows = Math.max(
+				1,
+				Math.floor((yBottom - yTop) / minRowGap) + 1
+			);
+			var totalColumns = Math.max(1, Math.ceil(count / maxRows));
+			var totalRows = Math.min(count, maxRows * totalColumns);
+			// One-column path stays flush right at x=750, matching the
+			// pre-wrap layout.
+			if (totalColumns === 1) {
+				var y1 = count === 1
+					? 300
+					: yTop + index *
+						(yBottom - yTop) / Math.max(1, count - 1);
+				positions[endpoint.id] = { x: 750, y: y1 };
+				return;
+			}
+			// Interleave endpoints across columns.  Row R (across the
+			// full vertical range) is assigned to column R % totalCols.
+			// This guarantees labels in adjacent columns sit at
+			// different y values and never overlap horizontally.
+			var rowGlobal = index;
+			var column = rowGlobal % totalColumns;
+			var y = yTop + rowGlobal *
+				(yBottom - yTop) / Math.max(1, totalRows - 1);
+			// Two-column layout: shift the pair symmetrically around
+			// the single-column anchor (x=750) so cloud icons stay
+			// clear of each other but both columns stay inside the
+			// SVG's internet zone.
+			var xBase = 750;
+			var xStride = 90;
+			var x = xBase + (column - (totalColumns - 1) / 2) * xStride;
+			positions[endpoint.id] = { x: x, y: y };
 		});
 		return positions;
 	}
@@ -809,7 +849,7 @@
 		svg.appendChild(tipText);
 		svg.appendChild(textNode("text", {
 			x: 450,
-			y: 614,
+			y: 714,
 			class: "mud-live-empty-copy"
 		}, "Open a traffic category and add an entry to update this view."));
 	}
@@ -819,7 +859,7 @@
 			x: 55,
 			y: 78,
 			width: 560,
-			height: 444,
+			height: 544,
 			rx: 10,
 			class: "mud-live-enterprise-border"
 		}));
@@ -830,14 +870,14 @@
 		}, "Enterprise"));
 		svg.appendChild(textNode("text", {
 			x: 860,
-			y: 304,
+			y: 108,
 			class: "mud-live-border-label mud-live-internet-label"
 		}, "Internet"));
 	}
 
 	function drawLegend(svg) {
 		var x = 62;
-		var y = 555;
+		var y = 655;
 		svg.appendChild(createSvg("rect", {
 			x: x - 12,
 			y: y - 26,
