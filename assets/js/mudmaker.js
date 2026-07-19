@@ -134,6 +134,115 @@ function addMudExtension(mudFile, extension) {
 	}
 }
 
+function removeMudExtension(mudFile, extension) {
+	if (typeof mudFile == 'undefined' ||
+		typeof mudFile['ietf-mud:mud'] == 'undefined') {
+		return;
+	}
+	var mud = mudFile['ietf-mud:mud'];
+	if (!Array.isArray(mud['extensions'])) {
+		return;
+	}
+	mud['extensions'] = mud['extensions'].filter(function(e) {
+		return e !== extension;
+	});
+	if (mud['extensions'].length === 0) {
+		delete mud['extensions'];
+	}
+}
+
+// draft-lear-iotops-mudextras: extension identifiers and helpers for
+// the directed-broadcasts and multicast-across-segments extensions.
+var EXT_DIRECTED_BROADCASTS = 'directed-broadcasts';
+var EXT_MULTICAST_ACROSS_SEGMENTS = 'multicast-across-segments';
+// RFC 7951 module-qualified key derived from the YANG module
+// namespace prefix (mud-directed-broadcasts).
+var MUD_DB_KEY = 'mud-directed-broadcasts:directed-broadcasts';
+
+function getDirectedBroadcasts(mudFile) {
+	if (typeof mudFile == 'undefined' ||
+		typeof mudFile['ietf-mud:mud'] == 'undefined') {
+		return null;
+	}
+	var mud = mudFile['ietf-mud:mud'];
+	var container = mud[MUD_DB_KEY];
+	if (typeof container != 'object' || container == null) {
+		return null;
+	}
+	return {
+		inbound: container['inbound'] === true,
+		outbound: container['outbound'] === true
+	};
+}
+
+function setDirectedBroadcasts(mudFile, flags) {
+	if (typeof mudFile == 'undefined' ||
+		typeof mudFile['ietf-mud:mud'] == 'undefined') {
+		return;
+	}
+	var inbound = !!(flags && flags.inbound);
+	var outbound = !!(flags && flags.outbound);
+	if (!inbound && !outbound) {
+		removeDirectedBroadcasts(mudFile);
+		return;
+	}
+	var mud = mudFile['ietf-mud:mud'];
+	var container = {};
+	if (inbound) { container['inbound'] = true; }
+	if (outbound) { container['outbound'] = true; }
+	mud[MUD_DB_KEY] = container;
+	addMudExtension(mudFile, EXT_DIRECTED_BROADCASTS);
+}
+
+function removeDirectedBroadcasts(mudFile) {
+	if (typeof mudFile == 'undefined' ||
+		typeof mudFile['ietf-mud:mud'] == 'undefined') {
+		return;
+	}
+	var mud = mudFile['ietf-mud:mud'];
+	delete mud[MUD_DB_KEY];
+	// Also drop the bare/unqualified key that older files may carry.
+	delete mud[EXT_DIRECTED_BROADCASTS];
+	removeMudExtension(mudFile, EXT_DIRECTED_BROADCASTS);
+}
+
+function hasMulticastAcrossSegments(mudFile) {
+	if (typeof mudFile == 'undefined' ||
+		typeof mudFile['ietf-mud:mud'] == 'undefined') {
+		return false;
+	}
+	var mud = mudFile['ietf-mud:mud'];
+	return Array.isArray(mud['extensions']) &&
+		mud['extensions'].includes(EXT_MULTICAST_ACROSS_SEGMENTS);
+}
+
+function setMulticastAcrossSegments(mudFile, enabled) {
+	if (enabled) {
+		addMudExtension(mudFile, EXT_MULTICAST_ACROSS_SEGMENTS);
+	} else {
+		removeMudExtension(mudFile, EXT_MULTICAST_ACROSS_SEGMENTS);
+	}
+}
+
+// Normalise the legacy bare `directed-broadcasts` key that draft
+// example prose used to the RFC 7951 module-qualified form the tool
+// emits.
+function normalizeDirectedBroadcasts(mudFile) {
+	if (typeof mudFile == 'undefined' ||
+		typeof mudFile['ietf-mud:mud'] == 'undefined') {
+		return;
+	}
+	var mud = mudFile['ietf-mud:mud'];
+	if (typeof mud[MUD_DB_KEY] != 'undefined') {
+		return;
+	}
+	if (typeof mud[EXT_DIRECTED_BROADCASTS] == 'object' &&
+		mud[EXT_DIRECTED_BROADCASTS] !== null) {
+		mud[MUD_DB_KEY] = mud[EXT_DIRECTED_BROADCASTS];
+		delete mud[EXT_DIRECTED_BROADCASTS];
+	}
+}
+
 function ensureOlExtension(mudFile) {
 	if (typeof mudFile == 'undefined' ||
 		typeof mudFile['ietf-mud:mud'] == 'undefined') {
@@ -164,6 +273,30 @@ function syncOlOwnerFromForm() {
 	}
 }
 
+function syncDirectedBroadcastsFromForm() {
+	if (typeof document == 'undefined' ||
+		typeof document.mudFile == 'undefined') {
+		return;
+	}
+	var inb = document.getElementById('db-inbound');
+	var outb = document.getElementById('db-outbound');
+	setDirectedBroadcasts(document.mudFile, {
+		inbound: !!(inb && inb.checked),
+		outbound: !!(outb && outb.checked)
+	});
+	if (typeof saveMUD == 'function') { saveMUD(); }
+}
+
+function syncMulticastAcrossSegmentsFromForm() {
+	if (typeof document == 'undefined' ||
+		typeof document.mudFile == 'undefined') {
+		return;
+	}
+	var el = document.getElementById('mcast-across-segments');
+	setMulticastAcrossSegments(document.mudFile, !!(el && el.checked));
+	if (typeof saveMUD == 'function') { saveMUD(); }
+}
+
 function normalizeMUDFile(mudFile) {
 	if (typeof mudFile == 'undefined' ||
 		typeof mudFile['ietf-mud:mud'] == 'undefined') {
@@ -171,6 +304,7 @@ function normalizeMUDFile(mudFile) {
 	}
 	var mud = mudFile['ietf-mud:mud'];
 	ensureOlExtension(mudFile);
+	normalizeDirectedBroadcasts(mudFile);
 	if (typeof mud['last-update'] == 'undefined' &&
 		typeof mud['last-change'] != 'undefined') {
 		mud['last-update'] = mud['last-change'];
@@ -800,6 +934,16 @@ function reloadFields(){
 			document.getElementById('vulnview').style.display='inherit';
 		}
 		setVisibility(document.getElementById('sbom'));
+	}
+	// Populate the mudextras extension checkboxes.
+	var db = getDirectedBroadcasts(document.mudFile);
+	var dbInboundEl = document.getElementById('db-inbound');
+	var dbOutboundEl = document.getElementById('db-outbound');
+	if (dbInboundEl) { dbInboundEl.checked = !!(db && db.inbound); }
+	if (dbOutboundEl) { dbOutboundEl.checked = !!(db && db.outbound); }
+	var mcastEl = document.getElementById('mcast-across-segments');
+	if (mcastEl) {
+		mcastEl.checked = hasMulticastAcrossSegments(document.mudFile);
 	}
 	clearAclUI();
 	var acls = getAcls();
