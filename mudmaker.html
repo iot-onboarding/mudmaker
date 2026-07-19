@@ -822,6 +822,35 @@
               </span>
             </div>
           </details>
+          <details id="special-cases" class="addable">
+            <summary>Special cases</summary>
+            <div class="clentry">
+              <ul class="threecol">
+                <li>
+                  <label>
+                    <input type="checkbox" id="db-outbound" name="db-outbound"
+                      onchange="syncDirectedBroadcastsFromForm();">
+                    This device must send directed broadcasts
+                  </label>
+                </li>
+                <li>
+                  <label>
+                    <input type="checkbox" id="db-inbound" name="db-inbound"
+                      onchange="syncDirectedBroadcastsFromForm();">
+                    This device must receive directed broadcasts
+                  </label>
+                </li>
+                <li>
+                  <label>
+                    <input type="checkbox" id="mcast-across-segments"
+                      name="mcast-across-segments"
+                      onchange="syncMulticastAcrossSegmentsFromForm();">
+                    This device's multicast may need to cross segments
+                  </label>
+                </li>
+              </ul>
+            </div>
+          </details>
           <br>
           </div>
       </form>

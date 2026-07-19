@@ -6,6 +6,17 @@ MUD intended to assist IoT device manufacturers in explaining what network resou
 
 For more information about MUD, see [RFC8520](https://tools.ietf.org/html/rfc8520).
 
+MudMaker also supports two extensions from
+[draft-lear-iotops-mudextras](https://datatracker.ietf.org/doc/draft-lear-iotops-mudextras/):
+
+- `directed-broadcasts` — declares whether the device sends and/or
+  receives directed broadcasts (see the *Multicast & Directed Broadcast*
+  section of the form).
+- `multicast-across-segments` — a marker that signals the device's
+  multicast traffic may need to traverse network segments. Multicast
+  destination addresses themselves are still listed as ordinary ACL
+  entries (via the *Host or network address* category).
+
 Please feel free to post issues and PRs.
 
 This package also requires the python mudpp package, also available
