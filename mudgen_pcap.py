@@ -19,12 +19,15 @@ Behaviour:
 
       * Private / link-local / loopback addresses are treated as
         RFC 8520 ``local-networks``.
-      * Multicast destinations (IPv4 224.0.0.0/4, IPv6 ff00::/8) and
-        the IPv4 limited broadcast address (255.255.255.255) are
+      * Multicast destinations (IPv4 224.0.0.0/4, IPv6 ff00::/8) are
         emitted as their own RFC 8519 destination-prefix ACEs
         (``destination-ipv4-network``/``destination-ipv6-network`` at
         /32 or /128).  They do not contribute to the ``local-networks``
         aggregation.
+      * Broadcast destinations — the IPv4 limited broadcast address
+        (255.255.255.255), directed subnet broadcasts (any packet sent
+        to the Ethernet broadcast MAC ``ff:ff:ff:ff:ff:ff``) — are
+        suppressed entirely: no ACE is emitted for them.
       * For public addresses we consult an ``IP -> name`` map built
         from DNS responses observed *in the captures themselves*.
         When the IP appears in that map the queried name is used
@@ -90,6 +93,22 @@ def _is_multicast_or_broadcast(ip: str) -> bool:
             and str(addr) == "255.255.255.255"):
         return True
     return False
+
+
+def _is_broadcast_ip(ip: str) -> bool:
+    """True for the IPv4 limited broadcast address (255.255.255.255).
+
+    Directed (subnet) broadcasts cannot be detected from the L3
+    address alone; they are recognised at the Ethernet layer by the
+    broadcast destination MAC ``ff:ff:ff:ff:ff:ff``.  IPv6 has no
+    broadcast concept.
+    """
+    try:
+        addr = ipaddress.ip_address(ip)
+    except ValueError:
+        return False
+    return (isinstance(addr, ipaddress.IPv4Address)
+            and str(addr) == "255.255.255.255")
 
 
 def _is_local(ip: str) -> bool:
@@ -212,6 +231,18 @@ def collect_flows(pcap_files, device_mac: str) -> Dict[Tuple, Flow]:
                 continue
 
             remote_ip = l3.dst if from_device else l3.src
+
+            # Suppress broadcast traffic entirely: the IPv4 limited
+            # broadcast (255.255.255.255) and any packet whose
+            # Ethernet destination is the broadcast MAC
+            # ``ff:ff:ff:ff:ff:ff`` (which catches directed subnet
+            # broadcasts too).  Broadcasts are local-segment
+            # infrastructure noise and are not usefully expressed in
+            # MUD policy.
+            if from_device and dst_mac == "ff:ff:ff:ff:ff:ff":
+                continue
+            if _is_broadcast_ip(remote_ip):
+                continue
 
             sport = dport = None
             proto: Optional[str] = None
