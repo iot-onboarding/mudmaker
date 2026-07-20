@@ -6,6 +6,6 @@ itsdangerous==2.2.0
 MarkupSafe>=3.0.3
 requests>=2.34.2
 scapy>=2.7.0
-setuptools>=82.0.1
+setuptools>=83.0.0
 urllib3>=2.7.0
 Werkzeug>=3.1.8
