@@ -7,6 +7,8 @@ sudi.py~
 # Flask session key). Never commit.
 gitmud/config.ini
 
+__pycache__
+
 # skip zips
 *.zip
 tmp
