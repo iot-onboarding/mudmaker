@@ -1,11 +1,15 @@
 """Regression tests for the multicast/broadcast classification in
-mudgen_pcap.  Multicast (IPv4 224.0.0.0/4, IPv6 ff00::/8) and the
-IPv4 limited broadcast (255.255.255.255) must:
+mudgen_pcap.  Multicast (IPv4 224.0.0.0/4, IPv6 ff00::/8) must:
 
   * NOT be treated as ``local`` (so they do not contribute to the
     ``local-networks`` aggregation), and
   * classify as an ``ipnet`` endpoint with a /32 or /128 prefix so
     ``build_ace`` emits an RFC 8519 destination-prefix ACE.
+
+The IPv4 limited broadcast (255.255.255.255) is likewise excluded
+from ``local-networks``, but higher-level flow collection now
+suppresses broadcast traffic entirely (see ``collect_flows``), so
+no ACE is emitted for it.
 
 The tests are pure-Python (no scapy required) and exercise the
 classifiers/builders directly.
@@ -112,16 +116,30 @@ def test_build_ace_multicast_is_destination_prefix():
            "IPv6 from-device ACE uses destination-ipv6-network=ff02::fb/128")
 
 
+def test_is_broadcast_ip():
+    print("\n_is_broadcast_ip:")
+    _check(mudgen_pcap._is_broadcast_ip("255.255.255.255"),
+           "255.255.255.255 is the limited broadcast")
+    for ip in ("224.0.0.1", "239.255.255.250", "192.168.1.255",
+               "10.0.0.1", "8.8.8.8", "ff02::fb", "::1", "not-an-ip"):
+        _check(not mudgen_pcap._is_broadcast_ip(ip),
+               f"{ip} is not the limited broadcast")
+
+
 def test_build_mud_multicast_is_not_local_networks():
     """A device whose only 'local' peers are multicast destinations
     must not produce any ``local-networks`` ACE — those destinations
-    must appear individually as destination-prefix ACEs."""
+    must appear individually as destination-prefix ACEs.
+
+    Broadcast destinations (e.g. 255.255.255.255) are suppressed
+    entirely at flow-collection time, so this test does not include
+    them; see ``test_broadcast_suppressed_from_flows``.
+    """
     print("\nbuild_mud: multicast-only device has no local-networks ACE:")
     Flow = mudgen_pcap.Flow
     flows = {}
     for ip, port in (("239.255.255.250", 1900),
-                     ("224.0.0.251", 5353),
-                     ("255.255.255.255", 5353)):
+                     ("224.0.0.251", 5353)):
         f = Flow(4, "udp", ip, port)
         f.samples = 1
         flows[f.key] = f
@@ -154,10 +172,12 @@ def test_build_mud_multicast_is_not_local_networks():
                 "destination-ipv4-network")
             if pfx:
                 fr_prefixes.add(pfx)
-    for expected in ("239.255.255.250/32", "224.0.0.251/32",
-                     "255.255.255.255/32"):
+    for expected in ("239.255.255.250/32", "224.0.0.251/32"):
         _check(expected in fr_prefixes,
                f"from-device ACL contains destination prefix {expected}")
+    _check("255.255.255.255/32" not in fr_prefixes,
+           "from-device ACL contains NO 255.255.255.255/32 prefix "
+           "(broadcasts are suppressed)")
 
 
 if __name__ == "__main__":
@@ -166,6 +186,7 @@ if __name__ == "__main__":
     test_classify_endpoint_produces_ipnet_for_multicast()
     test_build_ace_multicast_is_destination_prefix()
     test_build_mud_multicast_is_not_local_networks()
+    test_is_broadcast_ip()
     if FAILURES:
         print(f"\n{len(FAILURES)} FAILED")
         sys.exit(1)
