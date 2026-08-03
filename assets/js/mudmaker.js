@@ -304,6 +304,7 @@ function normalizeMUDFile(mudFile) {
 	}
 	var mud = mudFile['ietf-mud:mud'];
 	ensureOlExtension(mudFile);
+<<<<<<< HEAD
 	// Backfill RFC 8520 `model-name` from the mud-url slug whenever it
 	// is missing, so files that predate the explicit write in
 	// makemudurl() (or arrive from server-side generators) still
@@ -315,6 +316,9 @@ function normalizeMUDFile(mudFile) {
 			mud['model-name'] = _parts.model_name;
 		}
 	}
+=======
+	normalizeDirectedBroadcasts(mudFile);
+>>>>>>> c0a4f83 (initial commit)
 	if (typeof mud['last-update'] == 'undefined' &&
 		typeof mud['last-change'] != 'undefined') {
 		mud['last-update'] = mud['last-change'];
