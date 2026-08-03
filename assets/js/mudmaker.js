@@ -171,6 +171,17 @@ function normalizeMUDFile(mudFile) {
 	}
 	var mud = mudFile['ietf-mud:mud'];
 	ensureOlExtension(mudFile);
+	// Backfill RFC 8520 `model-name` from the mud-url slug whenever it
+	// is missing, so files that predate the explicit write in
+	// makemudurl() (or arrive from server-side generators) still
+	// round-trip a compliant leaf.
+	if ((typeof mud['model-name'] != 'string' || mud['model-name'] == '')
+		&& typeof mud['mud-url'] == 'string') {
+		var _parts = mudUrlPartsFromMudUrl(mud['mud-url']);
+		if (_parts && _parts.model_name) {
+			mud['model-name'] = _parts.model_name;
+		}
+	}
 	if (typeof mud['last-update'] == 'undefined' &&
 		typeof mud['last-change'] != 'undefined') {
 		mud['last-update'] = mud['last-change'];
