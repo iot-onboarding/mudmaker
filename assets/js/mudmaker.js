@@ -171,6 +171,17 @@ function normalizeMUDFile(mudFile) {
 	}
 	var mud = mudFile['ietf-mud:mud'];
 	ensureOlExtension(mudFile);
+	// Backfill RFC 8520 `model-name` from the mud-url slug whenever it
+	// is missing, so files that predate the explicit write in
+	// makemudurl() (or arrive from server-side generators) still
+	// round-trip a compliant leaf.
+	if ((typeof mud['model-name'] != 'string' || mud['model-name'] == '')
+		&& typeof mud['mud-url'] == 'string') {
+		var _parts = mudUrlPartsFromMudUrl(mud['mud-url']);
+		if (_parts && _parts.model_name) {
+			mud['model-name'] = _parts.model_name;
+		}
+	}
 	if (typeof mud['last-update'] == 'undefined' &&
 		typeof mud['last-change'] != 'undefined') {
 		mud['last-update'] = mud['last-change'];
@@ -779,6 +790,12 @@ function reloadFields(){
 	} else {
 		syncMudUrlPreviewFromForm();
 	}
+	// Prefer an explicit `model-name` leaf over the URL-slug guess
+	// so a loaded file round-trips its own value into #model_name.
+	if (typeof mf['model-name'] === 'string' && mf['model-name'] !== '') {
+		var mmEl = document.getElementById('model_name');
+		if (mmEl) { mmEl.value = mf['model-name']; }
+	}
 	if (Array.isArray(mf['extensions']) && mf['extensions'].includes('transparency')){
 		var tx= mf['mudtx:transparency'];
 		if (sbomtype == 'local') {
@@ -1279,6 +1296,12 @@ function makemudurl() {
 			var mudurlbits = 'https://' + mh.value + '/' + mm.value;
 			document.mudFile['ietf-mud:mud']['mud-url'] = mudurlbits + '.json';
 			document.mudFile['ietf-mud:mud']['mud-signature'] = mudurlbits + '.p7s';
+			// RFC 8520 leaf is `model-name` (hyphen); the HTML id
+			// uses an underscore because YANG hyphens aren't legal there.
+			document.mudFile['ietf-mud:mud']['model-name'] = mm.value;
+			saveMUD();
+		} else {
+			delete document.mudFile['ietf-mud:mud']['model-name'];
 			saveMUD();
 		}
     }

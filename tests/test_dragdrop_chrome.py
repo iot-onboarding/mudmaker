@@ -248,9 +248,10 @@ def _drive() -> None:
             )
             mfg = page.input_value("#mfg-name")
             mdl = page.input_value("#model_name")
-            # mudmaker derives #model_name from the mud-url slug, not
-            # from the MUD's model-name field — see reloadFields().
-            if mfg != "DragDrop Inc" or mdl != "dragdrop-test":
+            # #model_name mirrors the loaded MUD's `model-name` leaf
+            # when present (RFC 8520), and otherwise falls back to
+            # the mud-url slug — see reloadFields().
+            if mfg != "DragDrop Inc" or mdl != "DD-1":
                 sys.exit(f"form not populated: mfg={mfg!r}, model={mdl!r}")
             svg_nodes = page.evaluate(
                 "() => document.querySelectorAll('#mud-live-svg *').length"
