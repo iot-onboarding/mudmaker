@@ -779,6 +779,12 @@ function reloadFields(){
 	} else {
 		syncMudUrlPreviewFromForm();
 	}
+	// Prefer an explicit `model-name` leaf over the URL-slug guess
+	// so a loaded file round-trips its own value into #model_name.
+	if (typeof mf['model-name'] === 'string' && mf['model-name'] !== '') {
+		var mmEl = document.getElementById('model_name');
+		if (mmEl) { mmEl.value = mf['model-name']; }
+	}
 	if (Array.isArray(mf['extensions']) && mf['extensions'].includes('transparency')){
 		var tx= mf['mudtx:transparency'];
 		if (sbomtype == 'local') {
@@ -1279,6 +1285,12 @@ function makemudurl() {
 			var mudurlbits = 'https://' + mh.value + '/' + mm.value;
 			document.mudFile['ietf-mud:mud']['mud-url'] = mudurlbits + '.json';
 			document.mudFile['ietf-mud:mud']['mud-signature'] = mudurlbits + '.p7s';
+			// RFC 8520 leaf is `model-name` (hyphen); the HTML id
+			// uses an underscore because YANG hyphens aren't legal there.
+			document.mudFile['ietf-mud:mud']['model-name'] = mm.value;
+			saveMUD();
+		} else {
+			delete document.mudFile['ietf-mud:mud']['model-name'];
 			saveMUD();
 		}
     }
