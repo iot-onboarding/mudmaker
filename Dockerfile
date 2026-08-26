@@ -1,4 +1,4 @@
-FROM golang:1.26-bookworm AS mudcerts-builder
+FROM golang:1.27-bookworm AS mudcerts-builder
 
 # Pin mudcerts to a specific commit SHA (T-28).  Bump this on every
 # mudcerts release with a matching PR here.  A branch name (e.g.
@@ -6,7 +6,7 @@ FROM golang:1.26-bookworm AS mudcerts-builder
 # below so a future accidental "MUDCERTS_REF=main" cannot slip
 # through -- the whole point of pinning is that ``go mod verify`` is
 # only meaningful if the tree it verifies is itself immutable.
-ARG MUDCERTS_REF=46fc87dae8d88b9306d03c507d54910840dc24c2
+ARG MUDCERTS_REF=8932e5882a8e9fee0f6084d8024c617f421e4a19
 
 RUN case "${MUDCERTS_REF}" in \
       [0-9a-f]*) : ;; \
